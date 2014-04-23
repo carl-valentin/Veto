@@ -1,1092 +1,1168 @@
 package de.carlvalentin.ValentinConsole;
 
+import de.carlvalentin.Common.*;
+import de.carlvalentin.Common.UI.*;
+import de.carlvalentin.Interface.*;
+import de.carlvalentin.Interface.UI.*;
+import de.carlvalentin.Protocol.*;
+import de.carlvalentin.Protocol.UI.*;
+import de.carlvalentin.Scripting.UI.*;
+
+import java.util.*;
+import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 
-import javax.comm.CommPortIdentifier;
-import javax.swing.*;
-
-import java.awt.BorderLayout;
-
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
-import javax.swing.JLabel;
-import javax.swing.JComboBox;
-import javax.swing.JButton;
-import javax.swing.JRadioButton;
-import javax.swing.JCheckBox;
+import javax.swing.JMenuItem;
+import javax.swing.JTabbedPane;
+import javax.swing.JMenu;
 /**
  * Stellt eine Shell-&Auml;hnliche Konsole zur Verf&uuml;gung um im 
  * Carl Valentin Printer Language-Format (CVPL) mit einem Device 
  * kommunizieren zu k&ouml;nnen. 
  */
 public class ValentinConsole extends JFrame {
+    
+    /**
+     * Ausgabe von Fehlermeldungen in Form von Dialogen
+     */
+    private CVErrorMessage       lk_cErrorMessage = null;
+    
+    /**
+     * Ausgabe von Fehlermeldungen in Logdatei
+     */
+    private CVLogging            lk_cErrorFile = null;
+    
+    /**
+     * Ausgabe von Statusmeldungen auf Statuszeile
+     */
+    private CVStatusLine         lk_cStatusMessage = null;
+    
+    /**
+     * Verwaltet die Verbindungen zum Drucker
+     */
+    private CVConnectionManager  lk_cConnectionManager = null;
+    
+    /**
+     * Datei zum Speichern der akutellen Konfiguration
+     */
+    private CVConfigFile         lk_cConfigFile = null;
+    
+    /**
+     * Einstellung Start-/Stopzeichen CVPL
+     */
+    private CVSohEtb             lk_cSohEtb = null;
+    /**
+     * Toekn zum Speichern der gewaehlten Zeichen in Konfigurationsdatei
+     */
+    private final String         lk_szConfigTokenSohEtb = 
+        "ValentinConsoleSettingsSohEtb";
+    
+    /**
+     * Token zum Speichern der gewaehlten Schnittstelle in Konfigurationsdatei
+     */
+    private final String         lk_szConfigTokenInterface = 
+        "ValentinConsoleSettingsInterface";
+    
+    /**
+     * Token zum Speichern des gewaehlten Dateipfades in Konfigurationsdatei
+     */
+    private final String         lk_szConfigTokenPath = 
+        "ValentinConsoleSettingsPath";
+    
+    /**
+     * Grafische Oberflaeche fuer Einstellung Start-/Stopzeichen CVPL 
+     */
+    private CVUISohEtb           lk_cUISohEtb = null;
+    
+    /**
+     *  Konsole fuer Benutzereingaben
+     */
+    private CVConsole            lk_cConsoleInput = null;
+    /**
+     *  Titel der Konsole fuer Benutzereingaben
+     */
+    private String               lk_sConsoleInputTitle;
+    
+    /**
+     * Gibt Inhalt der Konsole hexadezimal aus
+     */
+    private CVTextDisplay        lk_cConsoleInputHEX = null;
+    /**
+     * Titel der hexadezimalen Ausgabe der Konsolendaten
+     */
+    private String               lk_sConsoleInputHEXTitle;
+    
+    /**
+     *  Grafische Oberflaeche fuer Skriptverarbeitung
+     */
+    private CVUIBeanShell        lk_cBeanShellScriptingUI = null;
+    /**
+     *  Titel der grafischen Oberflaeche fuer Skriptverarbeitung
+     */
+    private String               lk_sBeanShellScriptingTitle;
+    
+	private javax.swing.JPanel      jPanelMain         = null;
+    private JTabbedPane             jTabbedPaneMain    = null;
+	private javax.swing.JScrollPane jScrollPaneConsole = null;  
 	
-    private final String strNetworkIPConfigID = "IP-Address";
-    private final String strNetworkSohEtbConfigID = "SOH/ETBNetwork";
-    private final String strFileLastOpenedID = "Last opened file";
-    private final String strRS232SohEtbConfigID = "SOH/ETBRS232";
-    
-    private StatusWriter writerStatus = new StatusWriter();
-    
-	private CVPLnet    cvplNet    = new CVPLnet(writerStatus);
-    private CVPLsendThread sendDataThreadNetwork;
-    private CVPLrecvThread recvDataThreadNetwork;
-    private SohEtb sohEtbNetwork = SohEtb.x0117;
-    private CVPLserial cvplSerial = new CVPLserial(writerStatus);
-    private CVPLsendThread sendDataThreadRS232;
-    private CVPLrecvThread recvDataThreadRS232;
-    private SohEtb sohEtbRS232   = SohEtb.x0117;
-    
-	private de.carlvalentin.ValentinConsole.Console console = 
-        new de.carlvalentin.ValentinConsole.Console();
-    private Config config = new Config("ValentinConsole", "0.1");
-    private File fileLastOpened = null;
-
-	private javax.swing.JPanel jPanelMain = null;
-	private javax.swing.JPanel jPanelToolbarNetwork = null;
-	private javax.swing.JScrollPane jScrollPaneConsole = null;
-	private javax.swing.JPanel jPanelBottom = null;	
-	private javax.swing.JTextField jTextFieldIPAddr = null;
-	private javax.swing.JButton jButtonNetworkConnect = null;
-	private javax.swing.JLabel jLabelIPAddr = null;
-	private javax.swing.JRadioButton jrb0117Network = null;
-	private javax.swing.JRadioButton jrb5E5FNetwork = null;
-	
-	private javax.swing.JLabel jLabelStatus = null;    
-    
-	private JToolBar jToolBar = null;
-	private JMenuBar jJMenuBar = null;
-	private JMenu jMenuFile = null;
-	private JMenuItem jMenuItemOpen = null;
-	private JPanel jPanelToolbar = null;
-	private JPanel jPanelToolbarRS232 = null;
-	private JToolBar jToolBarRS232A = null;
-	private JLabel jLabelRS232Port = null;
-	private JComboBox jComboBoxRS232PortList = null;
-	private JLabel jLabelRS232Baudrate = null;
-	private JComboBox jComboBoxRS232BaudrateList = null;
-	private JLabel jLabelRS232DataBits = null;
-	private JComboBox jComboBoxRS232DatabitsList = null;
-	private JLabel jLabelRS232Stopbits = null;
-	private JComboBox jComboBoxRS232StopbitsList = null;
-	private JLabel jLabelRS232Parity = null;
-	private JComboBox jComboBoxRS232ParityList = null;
-	private JToolBar jToolBarRS232B = null;
-	private JButton jButtonRS232Open = null;
-	private JButton jButtonRS232Close = null;
-	private JRadioButton jRadioButtonEncoding5E5FRS232 = null;
-	private JRadioButton jRadioButtonEncoding0117RS232 = null;
-	private JRadioButton jRadioButtonEncodingNoneRS232 = null;
-	private JCheckBox jCheckBoxRS232CD = null;
-	private JCheckBox jCheckBoxRS232CTS = null;
-	private JCheckBox jCheckBoxRS232DSR = null;
-	private JCheckBox jCheckBoxRS232DA = null;
-	private JLabel jLabelUARTBits = null;
-	private JCheckBox jCheckBoxRS232DTR = null;
-	private JCheckBox jCheckBoxRS232RTS = null;
 	/**
-	 * This method initializes jToolBar	
-	 * 	
-	 * @return javax.swing.JToolBar	
-	 */    
-	private JToolBar getJToolBar() {
-		if (jToolBar == null) {
-			jToolBar = new JToolBar();
-			jToolBar.add(getJLabelIPAddr());
-			jToolBar.add(getJTextFieldIPAddr());
-			jToolBar.add(getJButtonNetworkConnect());
-			jToolBar.add(getJrb0117Network());
-			jToolBar.add(getJrb5E5FNetwork());
-		}
-		return jToolBar;
-	}
+     * Zentrale Knopfleiste zur Einstellung der Verbindung/Schnittstelle
+	 */
+	private JPanel    jPanelConnectBar                   = null;
+	private JLabel    jLabelConnectBarInterface          = null;
+	private JComboBox jComboBoxConnectBarChooseInterface = null;
+	private JButton   jButtonConnectBarConfigInterface   = null;
+	private JLabel    jLabelConnectBarEncoding           = null;
+	private JComboBox jComboBoxConnectBarChooseEncoding  = null;  
+	private JButton   jButtonConnectBarConnect           = null;
+	private JButton   jButtonConnectBarDisconnect        = null;
+    
+    /**
+     * Zentrale Men&uumlbar
+     */
+    private JMenuBar jMenuBarMain = null;
+    /**
+     * Men&uuml zur Arbeit mit Dateien
+     */
+    private JMenu     jMenuFile             = null;
+	private JMenuItem jMenuItemTransmitFile = null;
+    /**
+     * Men&uuml zur Konfiguration der verschiedenen Schnittstellen
+     */
+    private JMenu     jMenuInterface                = null;
+	private JMenuItem jMenuItemConfigureNetworkTCP  = null;
+	private JMenuItem jMenuItemConfigureNetworkUDP  = null;
+    private JMenuItem jMenuItemConfigureRS232       = null;
+	private JMenuItem jMenuItemConfigureParallel    = null;
+    /**
+     * Men&uuml zur Beeinflussung der Konsole
+     */
+	private JMenu     jMenuConsole          = null;
+	private JMenuItem jMenuItemClearConsole = null;
+	
+ 	/**
+     * main-Funktion des Programms
+     *
+     */
+    public static void main(String[] args)
+    {
+    	//----------------------------------------------------------------------
+        // Classpath anpassen
+        //----------------------------------------------------------------------
+        System.setProperty("java.class.path", 
+        		"Veto.jar;" +
+        		".\\comm.jar;" +
+        		".\\bsh-2.0b2.jar;" +
+        		".\\lava3-core.jar;" +
+        		".\\lava3-printf.jar");
+    	
+        ValentinConsole rc = new ValentinConsole();
+        rc.show();
+       
+    }
+    
+    /**
+     * Konstruktor der Klasse ValentinConsole
+     */
+    public ValentinConsole() 
+    {
+        super();
+        
+        this.initVC();                
+        this.initialize();
+        
+        return;
+    }
+    
+    /**
+     * Initialisiere Valentin Komponenten
+     */
+    private void initVC()
+    {
+        // Konsole zur Eingabe von Daten
+        this.lk_cConsoleInput = new CVConsole();
+        this.lk_sConsoleInputTitle = "Console ASCII";
+        
+        // Ausgabe von Fehelermeldungen als Dialog
+        this.lk_cErrorMessage = new CVErrorMessage(this);
+        // Ausgabe von Fehlermeldungen in Logdatei
+        this.lk_cErrorFile = 
+                new CVLogging("ErrorLog.txt", this.lk_cErrorMessage);
+        // Ausgabe von Fehlermeldungen in Statuszeile des Programms
+        this.lk_cStatusMessage = new CVStatusLine();
+        
+        // Anlegen der Konfigurationsdatei
+        this.lk_cConfigFile = new CVConfigFile("ValentinConsole", "0.1");
+        
+        // Hexadezimale Ausgabe der Konsolendaten
+        this.lk_cConsoleInputHEX = new CVTextDisplay(
+        		this.lk_cErrorMessage,
+        		this.lk_cErrorFile,
+        		this.lk_cStatusMessage);
+        this.lk_cConsoleInputHEX.setOutputFormat(false, true); // (ASCII, HEX)
+        this.lk_sConsoleInputHEXTitle = "Console HEX";
+        
+        // Verbindungsmanager zum Drucker
+        this.lk_cConnectionManager = new CVConnectionManager(
+                this.lk_cConfigFile,
+                this.lk_cErrorMessage,
+                this.lk_cErrorFile,
+                this.lk_cStatusMessage);
+        
+        // Grafische Oberflaeche Skriptverarbeitung
+        this.lk_cBeanShellScriptingUI = new CVUIBeanShell(
+                this,
+                this.lk_cErrorMessage,
+                this.lk_cErrorFile,
+                this.lk_cStatusMessage,
+                this.lk_cConfigFile,
+                this.lk_cConnectionManager);
+        this.lk_sBeanShellScriptingTitle = "Scripting";
+        
+        // Start-/Stopzeichen CVPL
+        this.lk_cSohEtb = CVSohEtb.x0117;
+        
+        this.lk_cConsoleInput.restoreHistory(lk_cConfigFile);
+        
+    	return;
+    }
+    
+    /**
+     * Anzeige der grafischen Oberflaeche zur Konfiguration TCP-Netzwerk.
+     * 
+     */
+    private void showUINetworkTCPConfig()
+    {
+        CVUINetwork cTCPNetworkUI = new CVUINetwork(
+            		this.lk_cErrorMessage, 
+            		this.lk_cErrorFile, 
+            		this.lk_cStatusMessage, 
+            		this.lk_cConnectionManager, 
+            		CVNetworkProtocol.TCP);
+        cTCPNetworkUI.setVisible(true);
+        
+        return;
+    }
+    
+    /**
+     * Anzeige der grafischen Oberflaeche zur Konfiguration UDP-Netzwerk.
+     * 
+     */
+    private void showUINetworkUDPConfig()
+    {
+    	CVUINetwork cUDPNetworkUI = new CVUINetwork(
+    				this.lk_cErrorMessage, 
+    				this.lk_cErrorFile,
+    				this.lk_cStatusMessage,
+    				this.lk_cConnectionManager,
+    				CVNetworkProtocol.UDP);
+    	cUDPNetworkUI.setVisible(true);
+    	return;
+    }
+    
+    /**
+     * Anzeige der grafischen Oberflaeche zur Konfiguration serieller Ports.
+     * 
+     */
+    private void showUISerialPortConfig()
+    {
+        CVUISerial serialUI = new CVUISerial(
+            		this.lk_cErrorMessage, 
+            		this.lk_cErrorFile, 
+            		this.lk_cStatusMessage, 
+            		this.lk_cConnectionManager);
+        serialUI.setVisible(true);
+        
+        return;
+    }
+    
+    /**
+     * Anzeige der grafischen Oberflaeche zur Konfiguration serieller Ports.
+     * 
+     */
+    private void showUIParallelPortConfig()
+    {
+        CVUIParallel parallelUI = new CVUIParallel(
+        			this.lk_cErrorMessage, 
+        			this.lk_cErrorFile, 
+        			this.lk_cStatusMessage, 
+        			this.lk_cConnectionManager);
+        parallelUI.setVisible(true);
+        
+        return;
+    }
+    
+    /**
+     * Console mit Drucker verbinden.
+     * 
+     * @param connectionInterface verwendete Schnittstelle
+     * @return true, wenn Verbindung hergestellt, sonst false
+     */
+    private boolean connectConsole(CVInterface connectionInterface)
+    {
+        this.lk_cConnectionManager.setSink
+        		(this.lk_cConsoleInput.getWriter(), true, false);
+        this.lk_cConnectionManager.setSink
+        		(this.lk_cConsoleInputHEX.getWriter(), true, true);
+        this.lk_cConnectionManager.setSource
+        		(this.lk_cConsoleInput.getReader());
+        
+        this.lk_cConnectionManager.setSohEtb(this.lk_cSohEtb);
+        
+        if(this.lk_cConnectionManager.connect(connectionInterface) == true)
+        {
+        	this.lk_cConsoleInput.getTextArea().setEnabled(true);
+            
+          	return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Verbindung zwischen Console und Drucker beenden.
+     *
+     * @param connectionInterface verwendete Schnittstelle
+     * @return true, wenn Verbindung abgebaut, sonst false 
+     */
+    private boolean disconnectConsole(CVInterface connectionInterface)
+    {
+        this.lk_cConsoleInput.getTextArea().setEnabled(false);
+        this.lk_cConsoleInput.saveHistory(lk_cConfigFile);
+        
+        return this.lk_cConnectionManager.disconnect(connectionInterface);
+    }
+    
+    /**
+     * Scripting mit Drucker verbinden
+     * 
+     * @param connectionInterface verwendete Schnittstelle
+     * @return true, wenn Verbindung hergestellt, sonst false
+     */
+    private boolean connectScripting(CVInterface connectionInterface)
+    {     
+        this.lk_cConnectionManager.setSink(
+                this.lk_cBeanShellScriptingUI.getBeanShell().getWriter(),
+                true, false);
+        this.lk_cConnectionManager.setSink(
+        		this.lk_cBeanShellScriptingUI.getDisplayInterfaceASCIIWriter(),
+        		true, true);
+        this.lk_cConnectionManager.setSink(
+        		this.lk_cBeanShellScriptingUI.getDisplayInterfaceHEXWriter(),
+        		true, true);
+        this.lk_cConnectionManager.setSource(
+                this.lk_cBeanShellScriptingUI.getBeanShell().getReader());
+        
+        this.lk_cConnectionManager.setSohEtb(this.lk_cSohEtb);
+        
+//        if(this.lk_cConnectionManager.connect(connectionInterface) == true)        
+        if(this.lk_cConnectionManager.connectLight(connectionInterface) == true)
+        {         
+        	return true;
+        }
+        
+    	return false;
+    }
+    
+    /**
+     * Verbindung zwischen Scripting und Drucker beenden.
+     * 
+     * @param connectionInterface verwendete Schnittstelle
+     * @return true, wenn Verbindung abgebaut, sonst false
+     */
+    private boolean disconnectScripting(CVInterface connectionInterface)
+    {      
+    	return this.lk_cConnectionManager.disconnect(connectionInterface);        
+    }
+    
+    /**
+     * Verbindung zum Drucker herstellen.
+     * 
+     * @return true, wenn mit Drucker verbunden.
+     */
+    private boolean connectPrinter()
+    {
+        if(this.lk_cConnectionManager.isConnected() == true)
+        {
+            // schon mit Drucker verbunden
+            this.lk_cErrorMessage.write("allready connected to printer");
+            
+        	return false;
+        }
+        else
+        {
+            // welche Schnittstelle wird verwendet
+        	String sDescrInterface = (String)
+                this.jComboBoxConnectBarChooseInterface.getSelectedItem();
+            CVInterface cSelectedInterface = null;
+            
+            if(sDescrInterface.equals((String)"TCP network"))
+            {
+                cSelectedInterface = (CVInterface)
+                        this.lk_cConnectionManager.getTCPNetworkInterface();
+            }
+            else if(sDescrInterface.equals((String)"UDP network"))
+            {
+            	cSelectedInterface = (CVInterface)
+            			this.lk_cConnectionManager.getUDPNetworkInterface();
+            }
+            else if(sDescrInterface.equals((String)"serial port"))
+            {
+                cSelectedInterface = (CVInterface)
+                        this.lk_cConnectionManager.getSerialInterface();
+            }
+            else 
+            {
+                cSelectedInterface = (CVInterface)
+                        this.lk_cConnectionManager.getParallelInterface();
+            }
+            
+            // soll Console oder Scripting verbunden werden
+            int iSelTabIndex = this.jTabbedPaneMain.getSelectedIndex();
+            String sSelTabTitle = this.jTabbedPaneMain.getTitleAt(iSelTabIndex);
+            
+            if(sSelTabTitle.equals(this.lk_sConsoleInputTitle) == true)
+            {
+            	if(this.connectConsole(cSelectedInterface) == true)
+            	{
+                    // andere Tab deaktivieren
+                    this.jTabbedPaneMain.setEnabledAt(
+                        this.jTabbedPaneMain.indexOfTab(
+                            this.lk_sBeanShellScriptingTitle),
+                        false);
+                    
+            		return true;
+            	}
+            }
+            
+            if(sSelTabTitle.equals(this.lk_sBeanShellScriptingTitle) == true)
+            {
+            	if(this.connectScripting(cSelectedInterface) == true)
+                {
+            		// andere Tab deaktivieren
+                    this.jTabbedPaneMain.setEnabledAt(
+                        this.jTabbedPaneMain.indexOfTab(
+                            this.lk_sConsoleInputTitle),
+                        false);
+/*                    
+                    this.jTabbedPaneMain.setEnabledAt(
+                    	this.jTabbedPaneMain.indexOfTab(
+                    		this.lk_sConsoleInputHEXTitle),
+                    	false);
+*/                    
+            		return true;
+                }
+            }
+            
+    	    return false;
+        }
+    }
+    
+    /**
+     * Verbindung zum Drucker beenden.
+     * 
+     * @return true, wenn Verbindung beendet.
+     */
+    private boolean disconnectPrinter()
+    {       
+        if(this.lk_cConnectionManager.isConnected() == false)
+        {
+        	// mit keinem Drucker verbunden
+            this.lk_cErrorMessage.write("not connected to printer");
+            
+            return false;
+        }
+        else
+        {
+        	// welche Schnittstelle wird verwendet
+        	String sDescrInterface = (String)
+                this.jComboBoxConnectBarChooseInterface.getSelectedItem();
+            CVInterface cSelectedInterface = null;
+            
+        	if(sDescrInterface.equals((String)"TCP network"))
+        	{
+        		cSelectedInterface = (CVInterface)
+                        this.lk_cConnectionManager.getTCPNetworkInterface();
+        	}
+        	else if(sDescrInterface.equals((String)"UDP network"))
+        	{
+        		cSelectedInterface = (CVInterface)
+        				this.lk_cConnectionManager.getUDPNetworkInterface();
+        	}
+        	else if(sDescrInterface.equals((String)"serial port"))
+        	{
+        		cSelectedInterface = (CVInterface)
+                        this.lk_cConnectionManager.getSerialInterface();
+        	}
+            else
+            {
+                cSelectedInterface = (CVInterface)
+                        this.lk_cConnectionManager.getParallelInterface();
+            }
+            
+        	// soll Console oder Scripting beendet werden
+            int cSelTabIndex = this.jTabbedPaneMain.getSelectedIndex();
+            String sSelTabTitle = this.jTabbedPaneMain.getTitleAt(cSelTabIndex);
+        
+            if(sSelTabTitle.equals(this.lk_sConsoleInputTitle) == true)
+            {
+            	if(this.disconnectConsole(cSelectedInterface) == true)
+            	{
+                    // andere Tab wieder aktivieren
+                    this.jTabbedPaneMain.setEnabledAt(
+                        this.jTabbedPaneMain.indexOfTab(
+                            this.lk_sBeanShellScriptingTitle),
+                        true);
+                    
+            		return true;
+            	}
+            }
+            
+            if(sSelTabTitle.equals(this.lk_sBeanShellScriptingTitle) == true)
+            {
+            	if(this.disconnectScripting(cSelectedInterface) == true)
+                {
+                    // andere Tab wieder aktivieren
+                    this.jTabbedPaneMain.setEnabledAt(
+                        this.jTabbedPaneMain.indexOfTab(
+                            this.lk_sConsoleInputTitle),
+                        true);
+/*
+                    this.jTabbedPaneMain.setEnabledAt(
+                    	this.jTabbedPaneMain.indexOfTab(
+                    		this.lk_sConsoleInputHEXTitle),
+                    	true);
+*/                    
+            		return true;
+                }
+            }
+
+        	return false;
+        }
+    }
+    
+    /**
+     * Datei zum Drucker senden
+     *
+     */
+    private void transmitFile()
+    {
+        final JFileChooser fc = new JFileChooser();
+        
+        // Einlesen gewaehlter Pfad aus Konfigurationsdatei
+        if(this.lk_cConfigFile != null)
+        {
+            String configValue = null;
+            configValue = 
+                this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPath);
+            if(configValue != null)
+            {
+            	fc.setCurrentDirectory(new File(configValue));
+            }
+        }
+        
+        int returnVal = fc.showOpenDialog(ValentinConsole.this);
+        
+        // Datei mit Auswahldialog abfragen
+        if (returnVal == JFileChooser.APPROVE_OPTION)
+        {
+            final File fileTransmit     = fc.getSelectedFile();
+            
+            // Speichern gewaehlter Pfad in Konfigurationsdatei
+            if(this.lk_cConfigFile != null)
+            {
+                lk_cConfigFile.setConfig(
+                   this.lk_szConfigTokenPath,
+                   fileTransmit.getAbsolutePath());
+            }
+            
+            CVSohEtb cStoreCVSohEtb = this.lk_cConnectionManager.getSohEtb();
+            this.lk_cConnectionManager.setSohEtb(CVSohEtb.none);
+            
+            new Thread(new Runnable() 
+            {
+            	public void run()
+                {
+            		CVFileTransmit fileTransmitUI = new CVFileTransmit(
+            				lk_cErrorMessage,
+                            lk_cErrorFile,
+                            lk_cStatusMessage);
+                    fileTransmitUI.setFile(fileTransmit);
+                    fileTransmitUI.setOutputStream(
+                            lk_cConnectionManager.getInterfaceBinaryOutput());
+                    fileTransmitUI.setVisible(true);
+                    fileTransmitUI.startFileTransfer();
+                }
+            }).start();
+            
+            this.lk_cConnectionManager.setSohEtb(cStoreCVSohEtb);
+        }
+        
+    	return;
+    }
+    
+    /**
+     * This method initializes this
+     * 
+     * @return void
+     */
+    private void initialize() 
+    {
+        this.setBounds(0, 0, 800, 600);
+        this.setJMenuBar(getJMenuBarMain());
+        this.setContentPane(getJPanelMain());
+        this.setTitle("VETO - Valentin Embedded Test Office");
+        this.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+    }
+  			
+  /**
+     * This method initializes jTabbedPane  
+     *  
+     * @return javax.swing.JTabbedPane  
+     */    
+    private JTabbedPane getJTabbedPaneMain() 
+    {
+        if (jTabbedPaneMain == null) 
+        {
+            jTabbedPaneMain = new JTabbedPane();
+            jTabbedPaneMain.addTab(this.lk_sConsoleInputTitle, 
+                    null, getJScrollPaneConsole(), null);    
+/*            
+            jTabbedPaneMain.addTab(this.lk_sConsoleInputHEXTitle,
+            		null, this.lk_cConsoleInputHEX.getTextAreaPane(), null);
+*/            
+            jTabbedPaneMain.addTab(this.lk_sBeanShellScriptingTitle, 
+                    null, this.lk_cBeanShellScriptingUI, null);
+        }
+        return jTabbedPaneMain;
+    }
+    /**
+     * This method initializes jPanelMain
+     * 
+     * @return javax.swing.JPanel
+     */
+    private javax.swing.JPanel getJPanelMain() 
+    {
+        if(jPanelMain == null) 
+        {
+            jPanelMain = new javax.swing.JPanel();
+            jPanelMain.setLayout(new java.awt.BorderLayout());
+            jPanelMain.add(getJPanelConnectBar(), BorderLayout.NORTH);
+            jPanelMain.add(getJTabbedPaneMain(), java.awt.BorderLayout.CENTER);
+            jPanelMain.add(lk_cStatusMessage, BorderLayout.SOUTH);
+        }
+        return jPanelMain;
+    }
+    /**
+     * This method initializes jScrollPaneConsole
+     * 
+     * @return javax.swing.JScrollPane
+     */
+    private javax.swing.JScrollPane getJScrollPaneConsole() 
+    {
+        if(jScrollPaneConsole == null) 
+        {
+            jScrollPaneConsole = new javax.swing.JScrollPane();
+            jScrollPaneConsole.setViewportView(lk_cConsoleInput.getTextArea());
+            lk_cConsoleInput.getTextArea().setEnabled(false);
+        }
+        return jScrollPaneConsole;
+    }
+    /**
+     * This method initializes jPanel   
+     *  
+     * @return javax.swing.JPanel   
+     */    
+    private JPanel getJPanelConnectBar() 
+    {
+        if (jPanelConnectBar == null) 
+        {
+            jLabelConnectBarEncoding = new JLabel();
+            jLabelConnectBarInterface = new JLabel();
+            FlowLayout ConnectBarFlowLayout = new FlowLayout();
+            jPanelConnectBar = new JPanel();
+            jPanelConnectBar.setLayout(ConnectBarFlowLayout);
+            jPanelConnectBar.setPreferredSize(new java.awt.Dimension(20,36));
+            ConnectBarFlowLayout.setAlignment(java.awt.FlowLayout.LEFT);
+            jLabelConnectBarInterface.setText("Interface:");
+            jLabelConnectBarInterface.setToolTipText(
+                    "choose interface for connection");
+            jLabelConnectBarInterface.setPreferredSize(
+                    new java.awt.Dimension(100,26));
+            jLabelConnectBarInterface.setHorizontalTextPosition(
+                    javax.swing.SwingConstants.CENTER);
+            jLabelConnectBarInterface.setHorizontalAlignment(
+                    javax.swing.SwingConstants.CENTER);
+            jLabelConnectBarEncoding.setText("Encoding:");
+            jLabelConnectBarEncoding.setPreferredSize(
+                    new java.awt.Dimension(100,26));
+            jLabelConnectBarEncoding.setToolTipText("encoding CVPL");
+            jLabelConnectBarEncoding.setHorizontalAlignment(
+                    javax.swing.SwingConstants.CENTER);
+            jLabelConnectBarEncoding.setHorizontalTextPosition(
+                    javax.swing.SwingConstants.CENTER);
+            jPanelConnectBar.add(jLabelConnectBarInterface, null);
+            jPanelConnectBar.add(getJComboBoxConnectBarChooseInterface(), null);
+            jPanelConnectBar.add(getJButtonConnectBarConfigInterface(), null);
+            jPanelConnectBar.add(jLabelConnectBarEncoding, null);
+            jPanelConnectBar.add(getJComboBoxConnectBarChooseEncoding(), null);
+            jPanelConnectBar.add(getJButtonConnectBarConnect(), null);
+            jPanelConnectBar.add(getJButtonConnectBarDisconnect(), null);
+        }
+        return jPanelConnectBar;
+    }
+    /**
+     * This method initializes jComboBox    
+     *  
+     * @return javax.swing.JComboBox    
+     */    
+    private JComboBox getJComboBoxConnectBarChooseInterface() 
+    {
+        if (jComboBoxConnectBarChooseInterface == null) 
+        {
+            jComboBoxConnectBarChooseInterface = new JComboBox();
+            jComboBoxConnectBarChooseInterface.setPreferredSize(
+                    new java.awt.Dimension(100,26));
+            jComboBoxConnectBarChooseInterface.setToolTipText(
+                    "choose interface for connection");
+            jComboBoxConnectBarChooseInterface.setBackground(Color.white);
+            
+            // Einlesen aller Schnittstellen
+            jComboBoxConnectBarChooseInterface.addItem(
+                    (String)"serial port");
+            jComboBoxConnectBarChooseInterface.addItem(
+                    (String)"parallel port");
+            jComboBoxConnectBarChooseInterface.addItem(
+                    (String)"TCP network");
+            jComboBoxConnectBarChooseInterface.addItem(
+            		(String)"UDP network");
+            
+            jComboBoxConnectBarChooseInterface.setSelectedItem(
+                    (String)"serial port");
+            
+            // Einlesen gewaehlte Schnittstelle aus Konfigurationsdatei
+            if(lk_cConfigFile != null)
+            {
+                String configValue = null;
+                configValue = 
+                    lk_cConfigFile.getConfig(lk_szConfigTokenInterface);
+                if(configValue != null)
+                {
+                    jComboBoxConnectBarChooseInterface.setSelectedItem(
+                        configValue);
+                }
+            }
+            
+            jComboBoxConnectBarChooseInterface.addItemListener
+                (new java.awt.event.ItemListener() 
+            { 
+            	public void itemStateChanged(java.awt.event.ItemEvent e) 
+                {    
+            		// Speichern gewaehlte Schnittstelle in Konfigurationsdatei
+                    if(lk_cConfigFile != null)
+                    {
+                        lk_cConfigFile.setConfig(
+                          lk_szConfigTokenInterface, (String)
+                          jComboBoxConnectBarChooseInterface.getSelectedItem());
+                    }
+            	}
+            });
+        }
+        return jComboBoxConnectBarChooseInterface;
+    }
+    /**
+     * This method initializes jButton  
+     *  
+     * @return javax.swing.JButton  
+     */    
+    private JButton getJButtonConnectBarConfigInterface() {
+        if (jButtonConnectBarConfigInterface == null) {
+            jButtonConnectBarConfigInterface = new JButton();
+            jButtonConnectBarConfigInterface.setPreferredSize(
+                    new java.awt.Dimension(100,26));
+            jButtonConnectBarConfigInterface.setText("Configure");
+            jButtonConnectBarConfigInterface.setToolTipText(
+                    "configure interface");
+            jButtonConnectBarConfigInterface.addActionListener(
+                    new java.awt.event.ActionListener() 
+            { 
+                public void actionPerformed(java.awt.event.ActionEvent e) 
+                {    
+                    String currentInterface = (String) 
+                        jComboBoxConnectBarChooseInterface.getSelectedItem();
+                    if(currentInterface.equals(
+                    		(String)"TCP network") == true)
+                    {
+                        // TCP network
+                        showUINetworkTCPConfig();
+                    }
+                    else if(currentInterface.equals(
+                    		(String)"UDP network") == true)
+                    {
+                    	// UDP network
+                    	showUINetworkUDPConfig();
+                    }
+                    else if(currentInterface.equals(
+                    		(String)"serial port") == true)
+                    {
+                        // serial port
+                        showUISerialPortConfig();
+                    }
+                    else
+                    {
+                    	// parallel port
+                        showUIParallelPortConfig();
+                    }
+                }
+            });
+        }
+        return jButtonConnectBarConfigInterface;
+    }
+    /**
+     * This method initializes jComboBox    
+     *  
+     * @return javax.swing.JComboBox    
+     */    
+    private JComboBox getJComboBoxConnectBarChooseEncoding() {
+        if (jComboBoxConnectBarChooseEncoding == null) {
+            jComboBoxConnectBarChooseEncoding = new JComboBox();
+            jComboBoxConnectBarChooseEncoding.setPreferredSize(
+                    new java.awt.Dimension(100,26));
+            jComboBoxConnectBarChooseEncoding.setBackground(Color.white);
+            jComboBoxConnectBarChooseEncoding.setToolTipText("encoding CVPL");
+            
+//          Einlesen aller Enkodierungen
+            for(Enumeration encodingEnum = CVSohEtb.elements();
+                encodingEnum.hasMoreElements(); )
+            {
+                CVSohEtb encodingCurrent = (CVSohEtb)encodingEnum.nextElement();
+                jComboBoxConnectBarChooseEncoding.addItem(
+                        (String)encodingCurrent.toString());
+                jComboBoxConnectBarChooseEncoding.setSelectedItem(
+                        (String)encodingCurrent.toString());
+            }
+            
+            // Einlesen gewaehlte Enkodierung aus Konfigurationsdatei
+            if(lk_cConfigFile != null)
+            {
+                String configValue = null;
+                configValue = lk_cConfigFile.getConfig(lk_szConfigTokenSohEtb);
+                if(configValue != null)
+                {
+                    jComboBoxConnectBarChooseEncoding.setSelectedItem(
+                        configValue);                    
+                    lk_cSohEtb = CVSohEtb.fromString(configValue);                    
+                }
+                else
+                {
+                    jComboBoxConnectBarChooseEncoding.setSelectedIndex(0);
+                }
+            }
+            else
+            {
+                jComboBoxConnectBarChooseEncoding.setSelectedIndex(0);
+            }            
+            
+            jComboBoxConnectBarChooseEncoding.addItemListener(
+                    new java.awt.event.ItemListener() 
+            { 
+                public void itemStateChanged(java.awt.event.ItemEvent e) 
+                {
+                    lk_cSohEtb = CVSohEtb.fromString((String)
+                        jComboBoxConnectBarChooseEncoding.getSelectedItem());
+                    
+                    // Speichern gewaehlte Enkodierung in Konfigurationsdatei
+                    if(lk_cConfigFile != null)
+                    {
+                        lk_cConfigFile.setConfig(
+                           lk_szConfigTokenSohEtb, (String)
+                           jComboBoxConnectBarChooseEncoding.getSelectedItem());
+                    }
+                }
+            }); 
+        }
+        return jComboBoxConnectBarChooseEncoding;
+    }
+    
+    public void setButtonsOnConnect(String s) {
+        jComboBoxConnectBarChooseInterface.setSelectedItem(s);
+        jButtonConnectBarConnect.setEnabled(false);
+        jButtonConnectBarDisconnect.setEnabled(true);   
+    }
+    
+    /**
+     * This method initializes jButton  
+     *  
+     * @return javax.swing.JButton  
+     */    
+    private JButton getJButtonConnectBarConnect() {
+        if (jButtonConnectBarConnect == null) {
+            jButtonConnectBarConnect = new JButton();
+            jButtonConnectBarConnect.setPreferredSize(
+                    new java.awt.Dimension(100,26));
+            jButtonConnectBarConnect.setText("Connect");
+            jButtonConnectBarConnect.setToolTipText("connect to printer");
+            jButtonConnectBarConnect.addActionListener(
+                    new java.awt.event.ActionListener() 
+            { 
+                public void actionPerformed(java.awt.event.ActionEvent e) 
+                {    
+                    if(connectPrinter() == true)
+                    {
+                        jButtonConnectBarConnect.setEnabled(false);
+                        jButtonConnectBarDisconnect.setEnabled(true); 
+                        
+                        jComboBoxConnectBarChooseEncoding.setEnabled(false);
+                        jButtonConnectBarConfigInterface.setEnabled(false);
+                        jComboBoxConnectBarChooseInterface.setEnabled(false);
+                        jMenuItemConfigureNetworkTCP.setEnabled(false);
+                        jMenuItemConfigureRS232.setEnabled(false);
+                        jMenuItemConfigureParallel.setEnabled(false);
+                        
+                        jMenuItemTransmitFile.setEnabled(true);
+                    }
+                }
+            });
+        }
+        return jButtonConnectBarConnect;
+    }
+    
+    public void setButtonsOnDisconnect() {
+        jButtonConnectBarConnect.setEnabled(true);
+        jButtonConnectBarDisconnect.setEnabled(false);   
+    }
+    
+    /**
+     * This method initializes jButton  
+     *  
+     * @return javax.swing.JButton  
+     */    
+    private JButton getJButtonConnectBarDisconnect() {
+        if (jButtonConnectBarDisconnect == null) {
+            jButtonConnectBarDisconnect = new JButton();
+            jButtonConnectBarDisconnect.setPreferredSize(
+                    new java.awt.Dimension(100,26));
+            jButtonConnectBarDisconnect.setText("Disconnect");
+            jButtonConnectBarDisconnect.setToolTipText("disconnect printer");
+            jButtonConnectBarDisconnect.addActionListener(
+                    new java.awt.event.ActionListener() 
+            { 
+                public void actionPerformed(java.awt.event.ActionEvent e) 
+                {    
+                    if(disconnectPrinter() == true)
+                    {
+                        jButtonConnectBarConnect.setEnabled(true);
+                        jButtonConnectBarDisconnect.setEnabled(false);  
+                        
+                        jComboBoxConnectBarChooseEncoding.setEnabled(true);
+                        jButtonConnectBarConfigInterface.setEnabled(true);
+                        jComboBoxConnectBarChooseInterface.setEnabled(true);
+                        jMenuItemConfigureNetworkTCP.setEnabled(true);
+                        jMenuItemConfigureRS232.setEnabled(true);
+                        jMenuItemConfigureParallel.setEnabled(true);
+                        
+                        jMenuItemTransmitFile.setEnabled(false);
+                    }
+                }
+            });
+        }
+        return jButtonConnectBarDisconnect;
+    }
 	/**
 	 * This method initializes jJMenuBar	
 	 * 	
 	 * @return javax.swing.JMenuBar	
 	 */    
-	private JMenuBar getJJMenuBar() {
-		if (jJMenuBar == null) {
-			jJMenuBar = new JMenuBar();
-			jJMenuBar.setName("");
-			jJMenuBar.setPreferredSize(new java.awt.Dimension(0,30));
-			jJMenuBar.add(getJMenuFile());
-		}
-		return jJMenuBar;
+	private JMenuBar getJMenuBarMain() {
+		if (jMenuBarMain == null) {
+			jMenuBarMain = new JMenuBar();
+			jMenuBarMain.setName("");
+			jMenuBarMain.setPreferredSize(new java.awt.Dimension(0,30));
+			jMenuBarMain.add(getJMenuFile());
+			jMenuBarMain.add(getJMenuInterface());
+            jMenuBarMain.add(getJMenuConsole());
+		}				
+
+		return jMenuBarMain;
 	}
+    /**
+     * This method initializes jMenu    
+     *  
+     * @return javax.swing.JMenu    
+     */    
+    private JMenu getJMenuFile() {
+        if (jMenuFile == null) {
+            jMenuFile = new JMenu();
+            jMenuFile.setName("");
+            jMenuFile.setText("File");
+            jMenuFile.setMnemonic(java.awt.event.KeyEvent.VK_F);
+            jMenuFile.add(getJMenuItemTransmitFile());
+        }
+        return jMenuFile;
+    }
+    /**
+     * This method initializes jMenuItem    
+     *  
+     * @return javax.swing.JMenuItem    
+     */    
+    private JMenuItem getJMenuItemTransmitFile() {
+        if (jMenuItemTransmitFile == null) {
+            jMenuItemTransmitFile = new JMenuItem();
+            jMenuItemTransmitFile.setText("Transmit File");
+            jMenuItemTransmitFile.setToolTipText("transmit file to printer");
+            jMenuItemTransmitFile.setEnabled(false);
+            jMenuItemTransmitFile.addActionListener(
+                    new java.awt.event.ActionListener() 
+            { 
+                public void actionPerformed(java.awt.event.ActionEvent e) 
+                {    
+                	transmitFile();
+                }
+            });
+        }
+        return jMenuItemTransmitFile;
+    }
+	
 	/**
 	 * This method initializes jMenu	
 	 * 	
 	 * @return javax.swing.JMenu	
 	 */    
-	private JMenu getJMenuFile() {
-		if (jMenuFile == null) {
-			jMenuFile = new JMenu();
-			jMenuFile.setName("");
-			jMenuFile.setText("File");
-			jMenuFile.setMnemonic(java.awt.event.KeyEvent.VK_F);
-			jMenuFile.add(getJMenuItemOpen());
+	private JMenu getJMenuInterface() {
+		if (jMenuInterface == null) {
+			jMenuInterface = new JMenu();
+			jMenuInterface.setText("Interface");
+			jMenuInterface.setToolTipText("configure interfaces");
+			jMenuInterface.setMnemonic(java.awt.event.KeyEvent.VK_I);
+			jMenuInterface.add(getJMenuItemConfigureNetworkTCP());
+			jMenuInterface.add(getJMenuItemConfigureNetworkUDP());
+			jMenuInterface.add(getJMenuItemConfigureRS232());
+			jMenuInterface.add(getJMenuItemConfigureParallel());
 		}
-		return jMenuFile;
+		return jMenuInterface;
+	}
+    
+	/**
+	 * This method initializes jMenuItem	
+	 * 	
+	 * @return javax.swing.JMenuItem	
+	 */    
+	private JMenuItem getJMenuItemConfigureNetworkTCP() {
+		if (jMenuItemConfigureNetworkTCP == null) {
+			jMenuItemConfigureNetworkTCP = new JMenuItem();
+			jMenuItemConfigureNetworkTCP.setText("Configure Network TCP");
+			jMenuItemConfigureNetworkTCP.setToolTipText(
+                    "configure TCP network interface");
+			jMenuItemConfigureNetworkTCP.addActionListener(
+                    new java.awt.event.ActionListener() 
+            { 
+				public void actionPerformed(java.awt.event.ActionEvent e) 
+                {    
+					showUINetworkTCPConfig();
+				}
+			});
+		}
+		return jMenuItemConfigureNetworkTCP;
+	}
+	/**
+	 * This method initializes jMenuItem	
+	 * 	
+	 * @return javax.swing.JMenuItem	
+	 */ 
+	private JMenuItem getJMenuItemConfigureNetworkUDP() {
+		if (jMenuItemConfigureNetworkUDP == null) {
+			jMenuItemConfigureNetworkUDP = new JMenuItem();
+			jMenuItemConfigureNetworkUDP.setText("Configure Network UDP");
+			jMenuItemConfigureNetworkUDP.setToolTipText(
+                    "configure UDP network interface");
+			jMenuItemConfigureNetworkUDP.addActionListener(
+                    new java.awt.event.ActionListener() 
+            { 
+				public void actionPerformed(java.awt.event.ActionEvent e) 
+                {    
+					showUINetworkUDPConfig();
+				}
+			});
+		}
+		return jMenuItemConfigureNetworkUDP;
 	}
 	/**
 	 * This method initializes jMenuItem	
 	 * 	
 	 * @return javax.swing.JMenuItem	
 	 */    
-	private JMenuItem getJMenuItemOpen() {
-		if (jMenuItemOpen == null) {
-			jMenuItemOpen = new JMenuItem();
-			jMenuItemOpen.setText("Open");
-			jMenuItemOpen.setMnemonic(java.awt.event.KeyEvent.VK_O);
-			jMenuItemOpen.setEnabled(false);
-			jMenuItemOpen.addActionListener(new java.awt.event.ActionListener() { 
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-                    final JFileChooser fc = new JFileChooser();
-                    int returnVal;
-                    
-                    if (fileLastOpened != null) {
-                    	fc.setCurrentDirectory(fileLastOpened);
-                    }
-                    returnVal = fc.showOpenDialog(ValentinConsole.this);
-
-                    if (returnVal == JFileChooser.APPROVE_OPTION) {                        
-                        fileLastOpened = fc.getSelectedFile();
-                        config.setConfig(strFileLastOpenedID, 
-                                         fileLastOpened.getAbsolutePath());
-                                               
-                        try {
-                            final int iBufSize = 1500;
-                            byte[] bData = new byte[iBufSize];
-                            FileInputStream fileInputStream = 
-                                new FileInputStream(fileLastOpened);
-                            DataInputStream fileOpened = 
-                                new DataInputStream( fileInputStream ); 
-                           
-                            int iDataRead = 0;
-                                                        
-                            do {                              
-                                iDataRead = 
-                                    fileOpened.read(bData, 0, iBufSize);
-                                if (iDataRead != -1) {
-                                	cvplNet.writeRaw(bData, iDataRead);
-                                }
-                            } while (iDataRead != -1);
-
-                            fileOpened.close();
-                            fileInputStream.close();
-                        }
-                        catch (FileNotFoundException ex) {
-                        }
-                        catch (IOException ex) {
-                            writeError("I/O error while trying to read from file" + 
-                                       fileLastOpened.getName());
-                        }
-                    }
-				}
-			});
-		}
-		return jMenuItemOpen;
-	}
-	/**
-	 * This method initializes jPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
-	 */    
-	private JPanel getJPanelToolbar() {
-		if (jPanelToolbar == null) {
-			jPanelToolbar = new JPanel();
-			jPanelToolbar.setLayout(new BorderLayout());
-			jPanelToolbar.add(getJPanelToolbarNetwork(), java.awt.BorderLayout.NORTH);
-			jPanelToolbar.add(getJPanelToolbarRS232(), java.awt.BorderLayout.SOUTH);
-		}
-		return jPanelToolbar;
-	}
-	/**
-	 * This method initializes jPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
-	 */    
-	private JPanel getJPanelToolbarRS232() {
-		if (jPanelToolbarRS232 == null) {
-			jPanelToolbarRS232 = new JPanel();
-			jPanelToolbarRS232.setLayout(new BorderLayout());
-			jPanelToolbarRS232.setPreferredSize(new java.awt.Dimension(20,72));
-			jPanelToolbarRS232.add(getJToolBarRS232A(), java.awt.BorderLayout.NORTH);
-			jPanelToolbarRS232.add(getJToolBarRS232B(), java.awt.BorderLayout.SOUTH);
-		}
-		return jPanelToolbarRS232;
-	}
-	/**
-	 * This method initializes jToolBar1	
-	 * 	
-	 * @return javax.swing.JToolBar	
-	 */    
-	private JToolBar getJToolBarRS232A() {
-		if (jToolBarRS232A == null) {
-			jLabelRS232Baudrate = new JLabel();
-			jLabelRS232DataBits = new JLabel();
-			jLabelRS232Stopbits = new JLabel();
-			jLabelRS232Parity = new JLabel();
-			jLabelRS232Port = new JLabel();
-			jToolBarRS232A = new JToolBar();
-			jLabelRS232Port.setText("Serial port:");
-			jToolBarRS232A.setPreferredSize(new java.awt.Dimension(402,36));
-			jToolBarRS232A.setBackground(new java.awt.Color(214,204,204));
-			jLabelRS232Baudrate.setText("Baudrate:");
-			jLabelRS232DataBits.setText("Databits:");
-			jLabelRS232Stopbits.setText("Stopbits");
-			jLabelRS232Parity.setText("Parity:");
-			jToolBarRS232A.add(jLabelRS232Port);
-			jToolBarRS232A.add(getJComboBoxRS232PortList());
-			jToolBarRS232A.add(jLabelRS232Baudrate);
-			jToolBarRS232A.add(getJComboBoxRS232BaudrateList());
-			jToolBarRS232A.add(jLabelRS232DataBits);
-			jToolBarRS232A.add(getJComboBoxRS232DatabitsList());
-			jToolBarRS232A.add(jLabelRS232Stopbits);
-			jToolBarRS232A.add(getJComboBoxRS232StopbitsList());
-			jToolBarRS232A.add(jLabelRS232Parity);
-			jToolBarRS232A.add(getJComboBoxRS232ParityList());
-		}
-		return jToolBarRS232A;
-	}
-	/**
-	 * This method initializes jComboBox	
-	 * 	
-	 * @return javax.swing.JComboBox	
-	 */    
-	private JComboBox getJComboBoxRS232PortList() {
-		if (jComboBoxRS232PortList == null) {
-			jComboBoxRS232PortList = new JComboBox();
-			jComboBoxRS232PortList.setBackground(java.awt.Color.white);
-			jComboBoxRS232PortList.addItemListener(new java.awt.event.ItemListener() { 
-				public void itemStateChanged(java.awt.event.ItemEvent e) {    
-                    cvplSerial.setPort((String)jComboBoxRS232PortList.getSelectedItem());
-				}
-			});
-            for(java.util.Enumeration sPortList = cvplSerial.getCommPortList(); sPortList.hasMoreElements(); )
-            {
-            	String szPortName = ((CommPortIdentifier)sPortList.nextElement()).getName();
-                jComboBoxRS232PortList.addItem(szPortName);
-            }
-            if(jComboBoxRS232PortList.getItemCount() > 0)
-            {
-                jComboBoxRS232PortList.setSelectedIndex(0);
-                cvplSerial.setPort((String)jComboBoxRS232PortList.getSelectedItem());
-            }
-		}
-		return jComboBoxRS232PortList;
-	}
-	/**
-	 * This method initializes jComboBox	
-	 * 	
-	 * @return javax.swing.JComboBox	
-	 */    
-	private JComboBox getJComboBoxRS232BaudrateList() {
-		if (jComboBoxRS232BaudrateList == null) {
-			jComboBoxRS232BaudrateList = new JComboBox();
-			jComboBoxRS232BaudrateList.setBackground(java.awt.Color.white);
-			jComboBoxRS232BaudrateList.addItemListener(new java.awt.event.ItemListener() { 
-				public void itemStateChanged(java.awt.event.ItemEvent e) {    
-					cvplSerial.setBaudRate((String)jComboBoxRS232BaudrateList.getSelectedItem());
-				}
-			});
-            jComboBoxRS232BaudrateList.addItem("57600 Bits/Sec");
-            jComboBoxRS232BaudrateList.addItem("38400 Bits/Sec");
-            jComboBoxRS232BaudrateList.addItem("19200 Bits/Sec");
-            jComboBoxRS232BaudrateList.addItem("9600 Bits/Sec");
-            jComboBoxRS232BaudrateList.addItem("4800 Bits/Sec");
-            jComboBoxRS232BaudrateList.addItem("2400 Bits/Sec");
-            if(jComboBoxRS232BaudrateList.getItemCount() > 0)
-            {
-                jComboBoxRS232BaudrateList.setSelectedIndex(0);
-                cvplSerial.setBaudRate((String)jComboBoxRS232BaudrateList.getSelectedItem());
-            }
-		}
-		return jComboBoxRS232BaudrateList;
-	}
-	/**
-	 * This method initializes jComboBox	
-	 * 	
-	 * @return javax.swing.JComboBox	
-	 */    
-	private JComboBox getJComboBoxRS232DatabitsList() {
-		if (jComboBoxRS232DatabitsList == null) {
-			jComboBoxRS232DatabitsList = new JComboBox();
-			jComboBoxRS232DatabitsList.setBackground(java.awt.Color.white);
-			jComboBoxRS232DatabitsList.addItemListener(new java.awt.event.ItemListener() { 
-				public void itemStateChanged(java.awt.event.ItemEvent e) {    
-					cvplSerial.setDataBits((String)jComboBoxRS232DatabitsList.getSelectedItem());
-				}
-			});
-            jComboBoxRS232DatabitsList.addItem("8");
-            jComboBoxRS232DatabitsList.addItem("7");
-            if(jComboBoxRS232DatabitsList.getItemCount() > 0)
-            {
-                jComboBoxRS232DatabitsList.setSelectedIndex(0);
-                cvplSerial.setDataBits((String)jComboBoxRS232DatabitsList.getSelectedItem());
-            }
-		}
-		return jComboBoxRS232DatabitsList;
-	}
-	/**
-	 * This method initializes jComboBox	
-	 * 	
-	 * @return javax.swing.JComboBox	
-	 */    
-	private JComboBox getJComboBoxRS232StopbitsList() {
-		if (jComboBoxRS232StopbitsList == null) {
-			jComboBoxRS232StopbitsList = new JComboBox();
-			jComboBoxRS232StopbitsList.setBackground(java.awt.Color.white);
-			jComboBoxRS232StopbitsList.addItemListener(new java.awt.event.ItemListener() { 
-				public void itemStateChanged(java.awt.event.ItemEvent e) {    
-					cvplSerial.setStopBits((String)jComboBoxRS232StopbitsList.getSelectedItem());
-				}
-			});
-            jComboBoxRS232StopbitsList.addItem("1");
-            jComboBoxRS232StopbitsList.addItem("2");
-            if(jComboBoxRS232StopbitsList.getItemCount() > 0)
-            {
-                jComboBoxRS232StopbitsList.setSelectedIndex(0);
-                cvplSerial.setStopBits((String)jComboBoxRS232StopbitsList.getSelectedItem());
-            }
-		}
-		return jComboBoxRS232StopbitsList;
-	}
-	/**
-	 * This method initializes jComboBox	
-	 * 	
-	 * @return javax.swing.JComboBox	
-	 */    
-	private JComboBox getJComboBoxRS232ParityList() {
-		if (jComboBoxRS232ParityList == null) {
-			jComboBoxRS232ParityList = new JComboBox();
-			jComboBoxRS232ParityList.setBackground(java.awt.Color.white);
-			jComboBoxRS232ParityList.addItemListener(new java.awt.event.ItemListener() { 
-				public void itemStateChanged(java.awt.event.ItemEvent e) {    
-					cvplSerial.setParity((String)jComboBoxRS232ParityList.getSelectedItem());
-				}
-			});
-            jComboBoxRS232ParityList.addItem("none");
-            jComboBoxRS232ParityList.addItem("odd");
-            jComboBoxRS232ParityList.addItem("even");
-            if(jComboBoxRS232ParityList.getItemCount() > 0)
-            {
-                jComboBoxRS232ParityList.setSelectedIndex(0);
-                cvplSerial.setParity((String)jComboBoxRS232ParityList.getSelectedItem());
-            }
-		}
-		return jComboBoxRS232ParityList;
-	}
-	/**
-	 * This method initializes jToolBar1	
-	 * 	
-	 * @return javax.swing.JToolBar	
-	 */    
-	private JToolBar getJToolBarRS232B() {
-		if (jToolBarRS232B == null) {
-			jLabelUARTBits = new JLabel();
-			jToolBarRS232B = new JToolBar();
-			jToolBarRS232B.setBackground(new java.awt.Color(214,204,204));
-			jToolBarRS232B.setPreferredSize(new java.awt.Dimension(402,36));
-			jLabelUARTBits.setText("UART Bits:");
-			jLabelUARTBits.setBackground(new java.awt.Color(214,204,204));
-			jToolBarRS232B.add(getJRadioButtonEncodingNoneRS232());
-			jToolBarRS232B.add(getJRadioButtonEncoding0117RS232());
-			jToolBarRS232B.add(getJRadioButtonEncoding5E5FRS232());
-			jToolBarRS232B.add(jLabelUARTBits);
-			jToolBarRS232B.add(getJCheckBoxRS232RTS());
-			jToolBarRS232B.add(getJCheckBoxRS232DTR());
-			jToolBarRS232B.add(getJCheckBoxRS232DSR());
-			jToolBarRS232B.add(getJCheckBoxRS232DA());
-			jToolBarRS232B.add(getJCheckBoxRS232CTS());
-			jToolBarRS232B.add(getJCheckBoxRS232CD());
-			jToolBarRS232B.add(getJButtonRS232Open());
-			jToolBarRS232B.add(getJButtonRS232Close());
-		}
-		return jToolBarRS232B;
-	}
-	/**
-	 * This method initializes jButton1	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */    
-	private JButton getJButtonRS232Open() {
-		if (jButtonRS232Open == null) {
-			jButtonRS232Open = new JButton();
-			jButtonRS232Open.setPreferredSize(new java.awt.Dimension(40,36));
-			jButtonRS232Open.setText("Open serial port");
-			jButtonRS232Open.addActionListener(new java.awt.event.ActionListener() { 
-				public void actionPerformed(java.awt.event.ActionEvent e) {    
-                    if(cvplSerial.openSerialPort() == true)
-                    {
-                        jButtonRS232Open.setEnabled(false);
-                        jButtonRS232Close.setEnabled(true);
-                    
-                        jComboBoxRS232PortList.setEnabled(false);
-                        jComboBoxRS232BaudrateList.setEnabled(false);
-                        jComboBoxRS232DatabitsList.setEnabled(false);
-                        jComboBoxRS232StopbitsList.setEnabled(false);
-                        jComboBoxRS232ParityList.setEnabled(false);
-                        jRadioButtonEncoding0117RS232.setEnabled(false);
-                        jRadioButtonEncoding5E5FRS232.setEnabled(false);
-                        jRadioButtonEncodingNoneRS232.setEnabled(false);
-                        
-                        sendDataThreadRS232 = new CVPLsendThread(writerStatus);
-                        sendDataThreadRS232.setInputReader(console.getReader());
-                        sendDataThreadRS232.setOutputWriter(cvplSerial.getPortWriter());
-                        sendDataThreadRS232.setSohEtb(sohEtbRS232);
-                        sendDataThreadRS232.start();
-                        recvDataThreadRS232 = new CVPLrecvThread(writerStatus);
-                        recvDataThreadRS232.setInputReader(cvplSerial.getPortReader());
-                        recvDataThreadRS232.setOutputWriter(console.getWriter());
-                        recvDataThreadRS232.setSohEtb(sohEtbRS232);
-                        recvDataThreadRS232.start();
-                        console.getTextArea().setEnabled(true);
-                    }
-				}
-			});
-		}
-		return jButtonRS232Open;
-	}
-	/**
-	 * This method initializes jButton1	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */    
-	private JButton getJButtonRS232Close() {
-		if (jButtonRS232Close == null) {
-			jButtonRS232Close = new JButton();
-			jButtonRS232Close.setPreferredSize(new java.awt.Dimension(40,36));
-			jButtonRS232Close.setText("Close serial port");
-			jButtonRS232Close.setEnabled(false);
-			jButtonRS232Close.addActionListener(new java.awt.event.ActionListener() { 
-				public void actionPerformed(java.awt.event.ActionEvent e) {    
-                    if(cvplSerial.closeSerialPort() == true)
-                    {
-                        jButtonRS232Close.setEnabled(false);
-                        jButtonRS232Open.setEnabled(true);
-                    
-                        jComboBoxRS232PortList.setEnabled(true);
-                        jComboBoxRS232BaudrateList.setEnabled(true);
-                        jComboBoxRS232DatabitsList.setEnabled(true);
-                        jComboBoxRS232StopbitsList.setEnabled(true);
-                        jComboBoxRS232ParityList.setEnabled(true);
-                        jRadioButtonEncoding0117RS232.setEnabled(true);
-                        jRadioButtonEncoding5E5FRS232.setEnabled(true);
-                        jRadioButtonEncodingNoneRS232.setEnabled(true);
-                        
-                        sendDataThreadRS232.stop();
-                        recvDataThreadRS232.stop();
-                        console.getTextArea().setEnabled(false);
-                    }
-				}
-			});
-		}
-		return jButtonRS232Close;
-	}
-	/**
-	 * This method initializes jrbEncoding5E5FRS232	
-	 * 	
-	 * @return javax.swing.JRadioButton	
-	 */    
-	private JRadioButton getJRadioButtonEncoding5E5FRS232() {
-		if (jRadioButtonEncoding5E5FRS232 == null) {
-			jRadioButtonEncoding5E5FRS232 = new JRadioButton();
-			jRadioButtonEncoding5E5FRS232.setText("5E/5F");
-			jRadioButtonEncoding5E5FRS232.setBackground(new java.awt.Color(214,204,204));
-			jRadioButtonEncoding5E5FRS232.setSelected(true);
-			jRadioButtonEncoding5E5FRS232.setToolTipText("use 0x5E and 0x5F to encode start and stop according to the CVPL");
-            if (sohEtbRS232 == SohEtb.x5E5F)
-            {
-                jRadioButtonEncoding5E5FRS232.setSelected(true);
-            }
-            else
-            {
-                jRadioButtonEncoding5E5FRS232.setSelected(false);
-            }
-			jRadioButtonEncoding5E5FRS232.addActionListener(new java.awt.event.ActionListener() { 
-				public void actionPerformed(java.awt.event.ActionEvent e) {    
-                    sohEtbRS232 = SohEtb.x5E5F;
-                    jRadioButtonEncoding5E5FRS232.setSelected(true);
-                    jRadioButtonEncoding0117RS232.setSelected(false);
-                    jRadioButtonEncodingNoneRS232.setSelected(false);
-				}
-			});
-		}
-		return jRadioButtonEncoding5E5FRS232;
-	}
-	/**
-	 * This method initializes jRadioButton2	
-	 * 	
-	 * @return javax.swing.JRadioButton	
-	 */    
-	private JRadioButton getJRadioButtonEncoding0117RS232() {
-		if (jRadioButtonEncoding0117RS232 == null) {
-			jRadioButtonEncoding0117RS232 = new JRadioButton();
-			jRadioButtonEncoding0117RS232.setText("01/17");
-			jRadioButtonEncoding0117RS232.setSelected(true);
-			jRadioButtonEncoding0117RS232.setBackground(new java.awt.Color(214,204,204));
-			jRadioButtonEncoding0117RS232.setToolTipText("use 0x01 and 0x17 to encode start and stop according to the CVPL");
-            if (sohEtbRS232 == SohEtb.x0117)
-            {
-                jRadioButtonEncoding0117RS232.setSelected(true);
-            }
-            else
-            {
-                jRadioButtonEncoding0117RS232.setSelected(false);
-            }
-			jRadioButtonEncoding0117RS232.addActionListener(new java.awt.event.ActionListener() { 
-				public void actionPerformed(java.awt.event.ActionEvent e) {    
-                    sohEtbRS232 = SohEtb.x0117;
-                    jRadioButtonEncoding0117RS232.setSelected(true);
-                    jRadioButtonEncoding5E5FRS232.setSelected(false);
-                    jRadioButtonEncodingNoneRS232.setSelected(false);
-				}
-			});
-		}
-		return jRadioButtonEncoding0117RS232;
-	}
-	/**
-	 * This method initializes jRadioButton1	
-	 * 	
-	 * @return javax.swing.JRadioButton	
-	 */    
-	private JRadioButton getJRadioButtonEncodingNoneRS232() {
-		if (jRadioButtonEncodingNoneRS232 == null) {
-			jRadioButtonEncodingNoneRS232 = new JRadioButton();
-			jRadioButtonEncodingNoneRS232.setBackground(new java.awt.Color(214,204,204));
-			jRadioButtonEncodingNoneRS232.setSelected(true);
-			jRadioButtonEncodingNoneRS232.setText("none");
-			jRadioButtonEncodingNoneRS232.setToolTipText("no start and stop sign");
-            if (sohEtbRS232 == null)
-            {
-                jRadioButtonEncodingNoneRS232.setSelected(true);
-            }
-            else
-            {
-                jRadioButtonEncodingNoneRS232.setSelected(false);
-            }
-			jRadioButtonEncodingNoneRS232.addActionListener(new java.awt.event.ActionListener() { 
-				public void actionPerformed(java.awt.event.ActionEvent e) {    
-                    sohEtbRS232 = SohEtb.none;
-                    jRadioButtonEncoding0117RS232.setSelected(false);
-                    jRadioButtonEncoding5E5FRS232.setSelected(false);
-                    jRadioButtonEncodingNoneRS232.setSelected(true);
-				}
-			});
-		}
-		return jRadioButtonEncodingNoneRS232;
-	}
-    
-	/**
-	 * This method initializes jCheckBox	
-	 * 	
-	 * @return javax.swing.JCheckBox	
-	 */    
-	private JCheckBox getJCheckBoxRS232CD() {
-		if (jCheckBoxRS232CD == null) {
-			jCheckBoxRS232CD = new JCheckBox();
-			jCheckBoxRS232CD.setText("CD");
-			jCheckBoxRS232CD.setToolTipText("carrier detect");
-			jCheckBoxRS232CD.setBackground(new java.awt.Color(214,204,204));
-			jCheckBoxRS232CD.setEnabled(true);
-			jCheckBoxRS232CD.addActionListener(new java.awt.event.ActionListener() { 
-				public void actionPerformed(java.awt.event.ActionEvent e) {    
-                    jCheckBoxRS232CD.setSelected(!jCheckBoxRS232CD.isSelected());
-				}
-			});
-            cvplSerial.registerCheckboxCarrierDetect(jCheckBoxRS232CD);
-		}
-		return jCheckBoxRS232CD;
-	}
-	/**
-	 * This method initializes jCheckBox	
-	 * 	
-	 * @return javax.swing.JCheckBox	
-	 */    
-	private JCheckBox getJCheckBoxRS232CTS() {
-		if (jCheckBoxRS232CTS == null) {
-			jCheckBoxRS232CTS = new JCheckBox();
-			jCheckBoxRS232CTS.setBackground(new java.awt.Color(214,204,204));
-			jCheckBoxRS232CTS.setText("CTS");
-			jCheckBoxRS232CTS.setToolTipText("clear to send");
-			jCheckBoxRS232CTS.addActionListener(new java.awt.event.ActionListener() { 
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-                    jCheckBoxRS232CTS.setSelected(!jCheckBoxRS232CTS.isSelected());
-				}
-			});
-            cvplSerial.registerCheckboxClearToSend(jCheckBoxRS232CTS);
-		}
-		return jCheckBoxRS232CTS;
-	}
-	/**
-	 * This method initializes jCheckBox	
-	 * 	
-	 * @return javax.swing.JCheckBox	
-	 */    
-	private JCheckBox getJCheckBoxRS232DSR() {
-		if (jCheckBoxRS232DSR == null) {
-			jCheckBoxRS232DSR = new JCheckBox();
-			jCheckBoxRS232DSR.setBackground(new java.awt.Color(214,204,204));
-			jCheckBoxRS232DSR.setText("DSR");
-			jCheckBoxRS232DSR.setToolTipText("data set ready");
-			jCheckBoxRS232DSR.addActionListener(new java.awt.event.ActionListener() { 
-				public void actionPerformed(java.awt.event.ActionEvent e) {    
-                    jCheckBoxRS232DSR.setSelected(!jCheckBoxRS232DSR.isSelected());
-				}
-			});
-            cvplSerial.registerCheckboxDataSetReady(jCheckBoxRS232DSR);
-		}
-		return jCheckBoxRS232DSR;
-	}
-	/**
-	 * This method initializes jCheckBox	
-	 * 	
-	 * @return javax.swing.JCheckBox	
-	 */    
-	private JCheckBox getJCheckBoxRS232DA() {
-		if (jCheckBoxRS232DA == null) {
-			jCheckBoxRS232DA = new JCheckBox();
-			jCheckBoxRS232DA.setBackground(new java.awt.Color(214,204,204));
-			jCheckBoxRS232DA.setText("DA");
-			jCheckBoxRS232DA.setToolTipText("data available");
-			jCheckBoxRS232DA.addActionListener(new java.awt.event.ActionListener() { 
-				public void actionPerformed(java.awt.event.ActionEvent e) {    
-                    jCheckBoxRS232DA.setSelected(!jCheckBoxRS232DA.isSelected());
-				}
-			});
-            cvplSerial.registerCheckboxDataAvailable(jCheckBoxRS232DA);
-		}
-		return jCheckBoxRS232DA;
-	}
-	/**
-	 * This method initializes jCheckBox	
-	 * 	
-	 * @return javax.swing.JCheckBox	
-	 */    
-	private JCheckBox getJCheckBoxRS232DTR() {
-		if (jCheckBoxRS232DTR == null) {
-			jCheckBoxRS232DTR = new JCheckBox();
-			jCheckBoxRS232DTR.setBackground(new java.awt.Color(214,204,204));
-			jCheckBoxRS232DTR.setText("DTR");
-			jCheckBoxRS232DTR.setToolTipText("data terminal ready");
-            new Thread( new Runnable()
-                    {
-                        public void run()
-                        {
-                            while(true)
-                            {
-                                jCheckBoxRS232DTR.setSelected(cvplSerial.getRequestToSend());
-                                try
-                                {
-                                    Thread.sleep(1000);
-                                }
-                                catch(InterruptedException ex)
-                                {
-                                    System.err.println("jCheckBoxRS232DTR Interrupted Exception: " + ex.getMessage());
-                                    writeError(        "jCheckBoxRS232DTR Interrupted Exception: " + ex.getMessage());
-                                }
-                            }
-                        }
-                    }
-                    ).start();
-			jCheckBoxRS232DTR.addActionListener(new java.awt.event.ActionListener() { 
-				public void actionPerformed(java.awt.event.ActionEvent e) {    
-                    cvplSerial.setDataTerminalReady(jCheckBoxRS232DTR.isSelected());
-				}
-			});
-		}
-		return jCheckBoxRS232DTR;
-	}
-	/**
-	 * This method initializes jCheckBox	
-	 * 	
-	 * @return javax.swing.JCheckBox	
-	 */    
-	private JCheckBox getJCheckBoxRS232RTS() {
-		if (jCheckBoxRS232RTS == null) {
-			jCheckBoxRS232RTS = new JCheckBox();
-			jCheckBoxRS232RTS.setBackground(new java.awt.Color(214,204,204));
-			jCheckBoxRS232RTS.setText("RTS");
-			jCheckBoxRS232RTS.setToolTipText("request to send");
-            new Thread( new Runnable()
-            {
-                public void run()
-                {
-                    while(true)
-                    {
-                        jCheckBoxRS232RTS.setSelected(cvplSerial.getRequestToSend());
-                        try
-                        {
-                            Thread.sleep(1000);
-                        }
-                        catch(InterruptedException ex)
-                        {
-                            System.err.println("jCheckBoxRS232RTS Interrupted Exception: " + ex.getMessage());
-                            writeError(        "jCheckBoxRS232RTS Interrupted Exception: " + ex.getMessage());
-                        }
-                    }
-                }
-            }
-            ).start();
-			jCheckBoxRS232RTS.addActionListener(new java.awt.event.ActionListener() { 
-				public void actionPerformed(java.awt.event.ActionEvent e) {    
-                    cvplSerial.setRequestToSend(jCheckBoxRS232RTS.isSelected());
-				}
-			});
-		}
-		return jCheckBoxRS232RTS;
-	}
-          public static void main(String[] args) 
-    {
-		ValentinConsole rc = new ValentinConsole();
-		rc.show();
-	}
-
-	/**
-	 * This is the default constructor
-	 */
-	public ValentinConsole() {
-		super();
-		initialize();
-	}
-    
-	/**
-	 * This method initializes this
-	 * 
-	 * @return void
-	 */
-	private void initialize() {
-        String strIPAddr;
-        SohEtb sohEtb;
-        String strFileLastOpened;
-
-        sohEtb = SohEtb.fromString(config.getConfig(strNetworkSohEtbConfigID));
-        if (sohEtb != null) 
-        {
-        	this.sohEtbNetwork = sohEtb;
-        }
-        
-        sohEtb = SohEtb.fromString(config.getConfig(strRS232SohEtbConfigID));
-        if (sohEtb != null)
-        {
-            this.sohEtbRS232 = sohEtb;
-        }
-        
-        strFileLastOpened = config.getConfig(strFileLastOpenedID);
-        if (strFileLastOpened != null) 
-        {
-        	fileLastOpened = new File(strFileLastOpened);
-        }
-        
-		this.setBounds(0, 0, 800, 600);
-		this.setJMenuBar(getJJMenuBar());
-		this.setContentPane(getJPanelMain());
-		this.setTitle("ValentinConsole");
-		this.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
-		
-		javax.swing.ButtonGroup group = new javax.swing.ButtonGroup();
-		group.add(jrb0117Network);
-		group.add(jrb5E5FNetwork);
-        
-        strIPAddr = config.getConfig(strNetworkIPConfigID);
-        if (strIPAddr != null) {
-            jTextFieldIPAddr.setText(strIPAddr);
-        }
-        
-        console.restoreHistory(config);
-    }
-	/**
-	 * This method initializes jPanelMain
-	 * 
-	 * @return javax.swing.JPanel
-	 */
-	private javax.swing.JPanel getJPanelMain() {
-		if(jPanelMain == null) {
-			jPanelMain = new javax.swing.JPanel();
-			jPanelMain.setLayout(new java.awt.BorderLayout());
-			jPanelMain.add(getJPanelToolbar(), java.awt.BorderLayout.NORTH);
-			jPanelMain.add(getJScrollPaneConsole(), java.awt.BorderLayout.CENTER);
-			jPanelMain.add(getJPanelBottom(), java.awt.BorderLayout.SOUTH);
-		}
-		return jPanelMain;
-	}
-	/**
-	 * This method initializes jPanelTop1
-	 * 
-	 * @return javax.swing.JPanel
-	 */
-	private javax.swing.JPanel getJPanelToolbarNetwork() {
-		if(jPanelToolbarNetwork == null) {
-			jPanelToolbarNetwork = new javax.swing.JPanel();
-			jPanelToolbarNetwork.setLayout(new BorderLayout());
-			jPanelToolbarNetwork.setPreferredSize(new java.awt.Dimension(20,36));
-			jPanelToolbarNetwork.add(getJToolBar(), java.awt.BorderLayout.NORTH);
-		}
-		return jPanelToolbarNetwork;
-	}
-	/**
-	 * This method initializes jScrollPaneConsole
-	 * 
-	 * @return javax.swing.JScrollPane
-	 */
-	private javax.swing.JScrollPane getJScrollPaneConsole() {
-		if(jScrollPaneConsole == null) {
-			jScrollPaneConsole = new javax.swing.JScrollPane();
-            jScrollPaneConsole.setViewportView(console.getTextArea());
-            console.getTextArea().setEnabled(false);
-		}
-		return jScrollPaneConsole;
-	}
-	/**
-	 * This method initializes jPanelTop1
-	 * 
-	 * @return javax.swing.JPanel
-	 */
-	private javax.swing.JPanel getJPanelBottom() {
-		if(jPanelBottom == null) {
-			jPanelBottom = new javax.swing.JPanel();
-			jPanelBottom.setLayout(new java.awt.BorderLayout());
-			jPanelBottom.add(getJLabelStatus(), java.awt.BorderLayout.NORTH);
-			jPanelBottom.setName("");
-			jPanelBottom.setToolTipText("");
-			jPanelBottom.setPreferredSize(new java.awt.Dimension(10,17));
-		}
-		return jPanelBottom;
-	}	
-    
-	/**
-	 * This method initializes jTextFieldIPAddr
-	 * 
-	 * @return javax.swing.JTextField
-	 */
-	private javax.swing.JTextField getJTextFieldIPAddr() {
-		if(jTextFieldIPAddr == null) {
-			jTextFieldIPAddr = new javax.swing.JTextField();
-			jTextFieldIPAddr.setText("192.168.0.21");
-			jTextFieldIPAddr.setPreferredSize(new java.awt.Dimension(100,21));
-		}
-		return jTextFieldIPAddr;
-	}
-
-   /**
-	 * This method initializes jButtonNetworkConnect
-	 * 
-	 * @return javax.swing.JButtonNetworkConnect
-	 */
-	private javax.swing.JButton getJButtonNetworkConnect() {
-		if(jButtonNetworkConnect == null) {
-			jButtonNetworkConnect = new javax.swing.JButton();
-			jButtonNetworkConnect.setText("Connect");
-			jButtonNetworkConnect.setPreferredSize(new java.awt.Dimension(99,27));
-			jButtonNetworkConnect.setActionCommand("Connect");
-			jButtonNetworkConnect.addActionListener(new java.awt.event.ActionListener() { 
-				public void actionPerformed(java.awt.event.ActionEvent e) 
-                {
-                    doNetworkConnect();
-				}
-			});
-		}
-		return jButtonNetworkConnect;
-	}
-    
-    private void doNetworkConnect()
-    {
-        if (jTextFieldIPAddr.isEnabled()) 
-        {
-            jButtonNetworkConnect.setEnabled(false);
-            String[] strIPTok = jTextFieldIPAddr.getText().split(":");
-            String strIP = strIPTok[0];
-            int iPort;
-            if (strIPTok.length > 1) 
+	private JMenuItem getJMenuItemConfigureRS232() {
+		if (jMenuItemConfigureRS232 == null) {
+			jMenuItemConfigureRS232 = new JMenuItem();
+			jMenuItemConfigureRS232.setText("Configure RS232");
+			jMenuItemConfigureRS232.setToolTipText("configure serial ports");
+			jMenuItemConfigureRS232.addActionListener(
+                    new java.awt.event.ActionListener() 
             { 
-                iPort = Integer.parseInt(strIPTok[1]);
-            }
-            else 
-            {
-                iPort = 9100;
-            }
-            if (cvplNet.openConnect(strIP, iPort)) 
-            {
-                jTextFieldIPAddr.setEnabled(false);
-                jButtonNetworkConnect.setText("Disconnect");
-                jrb0117Network.setEnabled(false);
-                jrb5E5FNetwork.setEnabled(false);
-                jMenuItemOpen.setEnabled(true);
-                console.getTextArea().setEnabled(true);
-            }
-            
-            // Threads zum Senden/Empfangen starten
-            sendDataThreadNetwork = new CVPLsendThread(writerStatus);
-            sendDataThreadNetwork.setInputReader(console.getReader());
-            sendDataThreadNetwork.setOutputWriter(cvplNet.getNetworkWriter());
-            sendDataThreadNetwork.setSohEtb(sohEtbNetwork);
-            sendDataThreadNetwork.start();
-            recvDataThreadNetwork = new CVPLrecvThread(writerStatus);
-            recvDataThreadNetwork.setInputReader(cvplNet.getNetworkReader());
-            recvDataThreadNetwork.setOutputWriter(console.getWriter());
-            recvDataThreadNetwork.setSohEtb(sohEtbNetwork);
-            recvDataThreadNetwork.start();
-            console.getTextArea().setEnabled(true);
-            
-            config.setConfig(strNetworkIPConfigID, jTextFieldIPAddr.getText());
-            config.setConfig(strNetworkSohEtbConfigID, sohEtbNetwork.toString());
-            
-            jButtonNetworkConnect.setEnabled(true);
-        }
-        else
-        {
-            // Threads zum Senden/Empfangen beenden
-            sendDataThreadNetwork.stop();
-            recvDataThreadNetwork.stop();
-            console.getTextArea().setEnabled(false);
-            
-            cvplNet.closeConnect();
-            console.saveHistory(config);
-            console.getTextArea().setEnabled(false);
-            jMenuItemOpen.setEnabled(false);
-            jrb0117Network.setEnabled(true);
-            jrb5E5FNetwork.setEnabled(true);
-            jButtonNetworkConnect.setText("Connect");
-            jTextFieldIPAddr.setEnabled(true);
-        }
-    }
-    
-	/**
-	 * This method initializes jLabelIPAddr
-	 * 
-	 * @return javax.swing.JLabel
-	 */
-	private javax.swing.JLabel getJLabelIPAddr() {
-		if(jLabelIPAddr == null) {
-			jLabelIPAddr = new javax.swing.JLabel();
-			jLabelIPAddr.setText("IP-Address:");
-		}
-		return jLabelIPAddr;
-	}
-	/**
-	 * This method initializes jrb0117
-	 * 
-	 * @return javax.swing.JRadioButton
-	 */
-	private javax.swing.JRadioButton getJrb0117Network() {
-		if(jrb0117Network == null) {
-			jrb0117Network = new javax.swing.JRadioButton();
-			jrb0117Network.setText("01/17");
-			jrb0117Network.setRolloverEnabled(false);
-            if (sohEtbNetwork == SohEtb.x0117)
-            {
-                jrb0117Network.setSelected(true);
-            }
-            else
-            {
-                jrb0117Network.setSelected(false);
-            }
-			jrb0117Network.addActionListener(new java.awt.event.ActionListener() { 
 				public void actionPerformed(java.awt.event.ActionEvent e) 
-                {
-                    sohEtbNetwork = SohEtb.x0117;
+                {    
+					showUISerialPortConfig();
 				}
 			});
 		}
-		return jrb0117Network;
+		return jMenuItemConfigureRS232;
 	}
-	/**
-	 * This method initializes jrb5E5F
-	 * 
-	 * @return javax.swing.JRadioButton
-	 */
-	private javax.swing.JRadioButton getJrb5E5FNetwork() {
-		if(jrb5E5FNetwork == null) 
-        {
-			jrb5E5FNetwork = new javax.swing.JRadioButton();
-			jrb5E5FNetwork.setText("5E/5F");
-            if (sohEtbNetwork == SohEtb.x5E5F)
-            {
-                jrb5E5FNetwork.setSelected(true);
-            }
-            else
-            {
-                jrb5E5FNetwork.setSelected(false);
-            }
-			jrb5E5FNetwork.addActionListener(new java.awt.event.ActionListener() { 
-				public void actionPerformed(java.awt.event.ActionEvent e) 
-                {
-                    sohEtbNetwork = SohEtb.x5E5F;
-				}
-			});
-		}
-		return jrb5E5FNetwork;
-	}
-    
-	/**
-	 * This method initializes jLabelStatus
-	 * 
-	 * @return javax.swing.JLabel
-	 */
-	private javax.swing.JLabel getJLabelStatus() 
-    {
-		if(jLabelStatus == null) 
-        {
-			jLabelStatus = new javax.swing.JLabel();
-			jLabelStatus.setText("Status");
-		}
-		return jLabelStatus;
-	}
-
     /**
-     * Gibt eine Fehlermeldung als Dialogbox aus.
-     * 
-     * @param s Inhalt der Fehlermeldung
-     */
-    private void writeError(String s) 
-    {
-        try 
-        {
-            writerStatus.write(s);
-            JOptionPane.showMessageDialog(null, s, "Error",
-                                          JOptionPane.ERROR_MESSAGE);
-        }
-        catch (IOException ex) {
-            System.err.println("I/O Excexption writeError: "  + ex.getMessage());
-        }
-    }
-    
-    private class StatusWriter extends Writer {
-        private StringBuffer buf = new StringBuffer();
-        
-        public synchronized void write(char[] data, int off, int len) {
-            for (int i = off; i < len; i++) {
-                buf.append(data[i]);
-            }
-            flushBuffer();
-        }
-        
-        public synchronized void flush() throws IOException {
-            if (buf.length() > 0) {
-            	flushBuffer();
-            }
-        }
-        
-        public void close() throws IOException {
-            flush();
-        }
-        
-        private void flushBuffer()
-        {
-            final String str = buf.toString();
-            buf.setLength(0);
-            SwingUtilities.invokeLater(new Runnable()
-            {
-                public void run()
-                {
-                    if(jLabelStatus != null)
-                    {
-                        jLabelStatus.setText(str);
-                    }
+     * This method initializes jMenuItem    
+     *  
+     * @return javax.swing.JMenuItem    
+     */    
+    private JMenuItem getJMenuItemConfigureParallel() {
+        if (jMenuItemConfigureParallel == null) {
+            jMenuItemConfigureParallel = new JMenuItem();
+            jMenuItemConfigureParallel.setText("Configure Parallel");
+            jMenuItemConfigureParallel.setToolTipText(
+                        "configure parallel ports");
+            jMenuItemConfigureParallel.
+                        addActionListener(new java.awt.event.ActionListener() 
+            { 
+                public void actionPerformed(java.awt.event.ActionEvent e) 
+                {    
+                    showUIParallelPortConfig();
                 }
             });
         }
+        return jMenuItemConfigureParallel;
+    }
+    /**
+     * This method initializes jMenu    
+     *  
+     * @return javax.swing.JMenu    
+     */    
+    private JMenu getJMenuConsole() {
+        if (jMenuConsole == null) {
+            jMenuConsole = new JMenu();
+            jMenuConsole.setText("Console");
+            jMenuConsole.setMnemonic(java.awt.event.KeyEvent.VK_C);
+            jMenuConsole.add(getJMenuItemClearConsole());
+        }
+        return jMenuConsole;
+    }
+    /**
+     * This method initializes jMenuItem    
+     *  
+     * @return javax.swing.JMenuItem    
+     */    
+    private JMenuItem getJMenuItemClearConsole() {
+        if (jMenuItemClearConsole == null) {
+            jMenuItemClearConsole = new JMenuItem();
+            jMenuItemClearConsole.setText("Clear");
+            jMenuItemClearConsole.setToolTipText("clear console");
+            jMenuItemClearConsole.addActionListener
+                (new java.awt.event.ActionListener() 
+            { 
+            	public void actionPerformed(java.awt.event.ActionEvent e) 
+                {    
+            		lk_cConsoleInput.getTextArea().setText("");
+            		lk_cConsoleInputHEX.getTextArea().setText("");
+            	}
+            });
+        }
+        return jMenuItemClearConsole;
     }
 }  //  @jve:visual-info  decl-index=0 visual-constraint="10,10"

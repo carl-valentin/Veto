@@ -1,0 +1,71 @@
+import de.carlvalentin.Interface.*;
+import de.carlvalentin.Protocol.*;
+
+import java.io.*;
+
+//-----------------------------------------------------------------------------
+//-> CVParallel openParallel( );
+CVParallel openParallel( )
+{
+	return openParallel(null);
+}
+
+//-----------------------------------------------------------------------------
+//-> CVParallel openParallel( String );
+CVParallel openParallel(String sLPT)
+{
+    CVParallel cParallelInterface;
+    
+    chk4StpScr();
+    
+    if( true == cConnectionManager.isConnected() )
+    {
+        error("Scritping: open->could not open parallel port interface");
+        return null;
+    }
+    
+    // Schnittstelle holen
+    cParallelInterface = cConnectionManager.getParallelInterface();
+ 
+    // aktuelle Einstellungen parallele Schnittstelle
+    CVParallelSettings cParallelSettings = (CVParallelSettings)
+         cParallelInterface.getInterfaceSettings();
+    
+    cParallelSettings.setDefaults();
+    if (sLPT != null) 
+    {
+    	cParallelSettings.setCommPort(sLPT);
+    }
+    
+    cParallelInterface.setInterfaceSettings( (Object) cParallelSettings );
+ 
+    // Schnittstelle zurueckgeben
+    cConnectionManager.setParallelInterface( cParallelInterface );
+
+    // Verbindung ueber cConnectionManager herstellen
+    if( null == cExternalWriter )
+    {
+        error("Scripting: open->no valid external writer");
+        return null;
+    }
+    cConnectionManager.setSink( cExternWriter, true, false );
+    cConnectionManager.setSink( cDisplayInterfaceASCII.getWriter(), true, true );
+    cConnectionManager.setSink( cDisplayInterfaceHEX.getWriter(), true, true );
+    if( null == cExternalReader )
+    {
+       error("Scripting: open->no valid external reader");
+       return null;
+    }
+    cConnectionManager.setSource( cExternReader );
+    cConnectionManager.setSohEtb( CVSohEtb.x0117 );
+ 
+    if( true == cConnectionManager.connectLight( cParallelInterface ) )
+    {
+        ValentinConsole.setButtonsOnConnect("parallel port");
+        chk4StpScr();
+        return cParallelInterface;
+    }
+ 
+    error("Scripting: open->could not open parallel port interface");
+    return null;
+}

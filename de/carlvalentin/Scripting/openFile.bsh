@@ -1,0 +1,29 @@
+import de.carlvalentin.Interface.*;
+import de.carlvalentin.Protocol.*;
+
+import java.io.*;
+
+//-----------------------------------------------------------------------------
+//-> File openFile( String );
+//Oeffnet die Datei cFile, welche durch sPath spezifiziert wird. Gibt cFile 
+//zurueck.
+//Beispiel: fileIn = openFile( "C:\input.txt" );
+File openFile( String sPath )
+{
+    File cFile;
+    
+    chk4StpScr();
+    
+    try
+    {
+        cFile = new File( sPath );
+    }
+    catch(NullPointerException ex)
+    {
+        error("Scripting: open->wrong path or file name: \n" + ex.getMessage());
+        return null;
+    }
+    
+    chk4StpScr();
+    return cFile;
+}

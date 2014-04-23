@@ -1,0 +1,29 @@
+/* Zum Parametersaetze testen:
+ * 1st send string: Befehl zum Setzten des Parameters
+ * 2nd send string: Befehl zum Abfragen des Parameters
+ * Beispiel: Zuerst Brennstaerke auf 150% setzen, dann auslesen und schauen 
+ * ob's stimmt:
+ * "RCAB--r150-----", "RCAB--w12345678", "A150-----12345678",
+*/
+
+String[] testCases = {
+// 1st send string  |  2nd send string  |  Expected answer string
+   "",                 "SE",               "#Idle",
+   "RCAB--r150-----",  "RCAB--w12345678",  "A150-----12345678",
+};
+
+for (i=0; i<testCases.length; i+=3)
+{
+    write(testCases[i]);
+    write(testCases[i+1]);
+    msg = read();
+    if ( !msg.equals(testCases[i+2]) )
+    {
+        error("Test failed!");
+        printf("Send: " + testCases[i+1] + "\n"); 
+        printf("    Expected Answer: " + testCases[i+2] + "\n");
+        printf("    Return Value:    " + msg + "\n");
+        break;
+    }
+}
+

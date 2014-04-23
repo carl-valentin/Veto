@@ -1,0 +1,72 @@
+import de.carlvalentin.Interface.*;
+import de.carlvalentin.Protocol.*;
+
+import java.io.*;
+
+//-----------------------------------------------------------------------------
+//-> CVNetworkTCP openTCP( String );
+//Oeffnet die TCP-Netzwerkschnittstelle. sIP gibt die gewuenschte IP-Adresse an.
+//Beispiel: NetworkInterfaceTCP = openTCP( "192.168.0.1" );
+CVNetworkTCP openTCP( String sIP )
+{
+    return openTCP(sIP, 9100);
+}
+
+//-----------------------------------------------------------------------------
+//-> CVNetworkTCP openTCP( String, int );
+//Oeffnet die TCP-Netzwerkschnittstelle. sIP gibt die gewuenschte IP-Adresse und 
+//iPort den gewaehlten Port an.
+//Beispiel: NetworkInterfaceTCP = openTCP( "192.168.0.1", 9001 );
+CVNetworkTCP openTCP( String sIP, int iPort )
+{
+    CVNetworkTCP cTCPNetworkInterface;
+
+    chk4StpScr();
+    
+    if( true == cConnectionManager.isConnected() )
+    {
+        error("Scripting: open->could not open network interface");
+        return null;
+    }
+    
+    // Schnittstelle holen
+    cTCPNetworkInterface = cConnectionManager.getTCPNetworkInterface();
+ 
+    // aktuelle Einstellungen Netzwerkschnittstelle
+    CVNetworkSettings cTCPNetworkSettings = (CVNetworkSettings) cTCPNetworkInterface.getInterfaceSettings();
+ 
+    cTCPNetworkSettings.setIPAdress( sIP );
+    cTCPNetworkSettings.setPort( iPort );
+ 
+    cTCPNetworkInterface.setInterfaceSettings( (Object) cTCPNetworkSettings );
+ 
+    // Schnittstelle zurueckgeben
+    cConnectionManager.setTCPNetworkInterface( cTCPNetworkInterface );
+
+    // Verbinudng ueber cConnectionManager herstellen
+    if( null == cExternalWriter )
+    {
+       error("Scripting: open->no valid external writer");
+       return null;
+    }
+    cConnectionManager.setSink( cExternWriter, true, false );
+    cConnectionManager.setSink( cDisplayInterfaceASCII.getWriter(), true, true );
+    cConnectionManager.setSink( cDisplayInterfaceHEX.getWriter(), true, true );
+    if( null == cExternalReader )
+    {
+        error("Scripting: open->no valid external reader");
+        return null;
+    }
+    cConnectionManager.setSource( cExternReader );
+    cConnectionManager.setSohEtb( CVSohEtb.x0117 );
+ 
+    if( true == cConnectionManager.connectLight( cTCPNetworkInterface ) )
+    {
+        ValentinConsole.setButtonsOnConnect("TCP network");
+        chk4StpScr();
+        return cTCPNetworkInterface;
+    }
+ 
+    error("Scripting: open->could not open network interface");
+    return null;
+}

@@ -1,0 +1,107 @@
+import de.carlvalentin.Interface.*;
+import de.carlvalentin.Protocol.*;
+
+import java.io.*;
+
+//-----------------------------------------------------------------------------
+//-> CVSerial openSerial( )
+CVSerial openSerial(  )
+{
+	return openSerial(null, null, null, null, null);
+}
+
+//-----------------------------------------------------------------------------
+//-> CVSerial openSerial( String )
+CVSerial openSerial(String sPort)
+{
+    return openSerial(sPort, null, null, null, null);
+}
+
+//-----------------------------------------------------------------------------
+//-> CVSerial openSerial( String )
+CVSerial openSerial(String sPort, String sBaudrate)
+{
+    return openSerial(sPort, sBaudrate, null, null, null);
+}
+
+//-----------------------------------------------------------------------------
+//-> CVSerial openSerial( String, String, String, String, String )
+// Beispiele: openSerial("COM1", "9600", "none", "8", "2")
+//            openSerial("COM1", "9600", null, null, null)
+CVSerial openSerial(String sPort, String sBaudrate, String sParity, 
+                    String sDatabits, String sStopbits )
+{
+    CVSerial cSerialInterface;
+    
+    chk4StpScr();
+    
+    if( true == cConnectionManager.isConnected() )
+    {
+        error("Scripting: open->could not open serial port interface");
+        return null;
+    }
+  
+    // Schnittstelle holen
+    cSerialInterface = cConnectionManager.getSerialInterface();
+
+    // aktuelle Einstellungen serielle Schnittstelle
+    CVSerialSettings cSerialSettings = (CVSerialSettings)
+         cSerialInterface.getInterfaceSettings();
+
+    cSerialSettings.setDefaults();
+    if (sPort != null)
+    {
+    	cSerialSettings.setCommPort(sPort);
+    }
+    if (sBaudrate != null)
+    {
+        cSerialSettings.setBaudrate(
+                CVSerialBaudrate.fromString(sBaudrate + " bps"));
+    }
+    if (sParity != null)
+    {
+        cSerialSettings.setParity(CVSerialParity.fromString(sParity));
+    }
+    if (sDatabits != null)
+    {
+        cSerialSettings.setDatabits(
+                CVSerialDatabits.fromString(sDatabits + " bits"));
+    }
+    if (sStopbits != null)
+    {
+        cSerialSettings.setStopbits(
+                CVSerialStopbits.fromString(sStopbits + " bits"));
+    }
+
+    cSerialInterface.setInterfaceSettings( (Object) cSerialSettings );
+
+    // Schnittstelle zurueckgeben
+    cConnectionManager.setSerialInterface( cSerialInterface );
+
+    // Verbinudng ueber cConnectionManager herstellen
+    if( null == cExternalWriter )
+    {
+        error("Scripting: open->no valid external writer");
+        return null;
+    }
+    cConnectionManager.setSink( cExternWriter, true, false );
+    cConnectionManager.setSink( cDisplayInterfaceASCII.getWriter(), true, true );
+    cConnectionManager.setSink( cDisplayInterfaceHEX.getWriter(), true, true );
+    if( null == cExternalReader )
+    {
+        error("Scripting: open->no valid external reader");
+        return null;
+    }
+    cConnectionManager.setSource( cExternReader );
+    cConnectionManager.setSohEtb( CVSohEtb.x0117 );
+
+    if( true == cConnectionManager.connectLight( cSerialInterface ) )
+    {
+        ValentinConsole.setButtonsOnConnect("serial port");
+        chk4StpScr();
+        return cSerialInterface;
+    }
+ 
+    error("Scripting: open->could not open serial port interface");
+    return null;
+}

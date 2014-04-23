@@ -1,0 +1,26 @@
+// BeanShell-Skriptdatei
+// ---------------------------------------------------------------------------
+// Implementierte Kommandos
+// -> void sleep( long );
+// ---------------------------------------------------------------------------
+// Ausführung des Skriptes unterbrechen.
+// ---------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// -> void printf( long );
+// Legt die Ausführung des Skriipts um die angegebene Anzahl Millisekunden
+// schlafen - im Beispiel also für 5 Sekunden.
+// Beispiel: printf( 5000 );
+void sleep( long lMilliSeconds )
+{
+    chk4StpScr();
+	try
+	{
+		java.lang.Thread.sleep(lMilliSeconds);
+	}
+	catch(InterruptedException ex)
+	{
+		error("Scritping: sleep->InterruptedException: \n" + ex.getMessage());
+	}
+    chk4StpScr();
+}

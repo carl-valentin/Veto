@@ -1,0 +1,26 @@
+/*
+ * Der CRCComTest als Funktion
+ */
+import java.util.zip.CRC32;
+
+void CRCComTest(String name, int noOfBytes, int timeout)
+{
+    rand = new Random(1);
+    crc32 = new CRC32();
+    
+    bytes = new byte[noOfBytes];
+    rand.nextBytes(bytes);
+    
+    crc32.update(bytes);
+    
+                      // C-Style sprintf (bis zu 10 Argumente) 
+    startCRCTestCmd = sprintf("FCYXCTr%x;%x", noOfBytes, timeout);
+                 // Java-Style printf (unbegrenzte Argumentanzahl)
+    giveCRCCmd = sprintf("FCYXC-r%x;%x;%s", 
+                         new Object[]{bytes.length, crc32.getValue(), 
+                         name});
+    
+    write(startCRCTestCmd);
+    write(giveCRCCmd);
+    write(bytes);
+}

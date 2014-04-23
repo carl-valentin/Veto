@@ -1,0 +1,30 @@
+/*
+ * CRCComTest. Allerdings werden die Daten nicht ueber die Schnittstelle
+ * uebertragen sondern in eine Datei geschrieben.
+ * (Kann man fuer MemoCard-Test verwenden) 
+ */
+import java.util.zip.CRC32;
+
+NoOfBytes = 1024;
+Timeout = 10000; // ms
+file = openFile("D:\\CRCTest.prn");
+
+rand = new Random(1);
+crc32 = new CRC32();
+
+bytes = new byte[NoOfBytes];
+rand.nextBytes(bytes);
+
+crc32.update(bytes);
+
+                  // C-Style sprintf (bis zu 10 Argumente) 
+startCRCTestCmd = sprintf("FCYXCTr%x;%x", NoOfBytes, 10000);
+             // Java-Style printf (unbegrenzte Argumentanzahl)
+giveCRCCmd = sprintf("FCYXC-r%x;%x;%uK", 
+                     new Object[]{bytes.length, crc32.getValue(), 
+                     NoOfBytes/1024});
+
+file.delete(); // Datei loeschen falls bereits existent
+write(file, "0x1/0x17", startCRCTestCmd);
+write(file, "0x1/0x17", giveCRCCmd);
+write(file, bytes); // Bytes sind immer binaer und ohne Start/Stop

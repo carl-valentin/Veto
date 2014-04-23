@@ -1,0 +1,72 @@
+import de.carlvalentin.Interface.*;
+import de.carlvalentin.Protocol.*;
+
+import java.io.*;
+
+//-----------------------------------------------------------------------------
+//-> CVNetworkUDP openUDP( String );
+//Oeffnet die UDP-Netzwerkschnittstelle. sIP gibt die gewuenschte IP-Adresse an.
+//Beispiel: NetworkInterfaceUDP = openUDP( "192.168.0.1" );
+CVNetworkUDP openUDP( String sIP )
+{
+    return openUDP(sIP, 9100);
+}
+
+//-----------------------------------------------------------------------------
+//-> CVNetworkUDP openUDP( String, int, boolean );
+//Oeffnet die UDP-Netzwerkschnittstelle. sIP gibt die gewuenschte IP-Adresse und 
+//iPort den gewaehlten Port an.
+//Beispiel: NetworkInterfaceUDP = openUDP( "192.168.0.1", 9001 );
+CVNetworkUDP openUDP( String sIP, int iPort )
+{
+    CVNetworkUDP cUDPNetworkInterface;
+    
+    chk4StpScr();
+    
+    if( true == cConnectionManager.isConnected() )
+    {
+        error("Scripting: open->could not open network interface");
+        return null;
+    }
+    
+    // Schnittstelle holen
+    cUDPNetworkInterface = cConnectionManager.getUDPNetworkInterface();
+
+    // aktuelle Einstellungen Netzwerkschnittstelle
+    CVNetworkSettings cUDPNetworkSettings = (CVNetworkSettings) cUDPNetworkInterface.getInterfaceSettings();
+
+    cUDPNetworkSettings.setIPAdress( sIP );
+    cUDPNetworkSettings.setPort( iPort );
+
+    cUDPNetworkInterface.setInterfaceSettings( (Object) cUDPNetworkSettings );
+
+    // Schnittstelle zurueckgeben
+    cConnectionManager.setUDPNetworkInterface( cUDPNetworkInterface );
+
+    // Verbindung ueber cConnectionManager herstellen
+    if( null == cExternalWriter )
+    {
+        error("Scripting: open->no valid external writer");
+        return null;
+    }
+    cConnectionManager.setSink( cExternWriter, true, false );
+    cConnectionManager.setSink( cDisplayInterfaceASCII.getWriter(), true, true );
+    cConnectionManager.setSink( cDisplayInterfaceHEX.getWriter(), true, true );
+    if( null == cExternalReader )
+    {
+        error("Scripting: open->no valid external reader");
+        return null;
+    }
+    cConnectionManager.setSource( cExternReader );
+    cConnectionManager.setSohEtb( CVSohEtb.x0117 );
+
+    if( true == cConnectionManager.connectLight( cUDPNetworkInterface ) )
+    {
+        ValentinConsole.setButtonsOnConnect("UDP network");
+        chk4StpScr();
+        return cUDPNetworkInterface;
+    }
+
+    error("Scripting: open->could not open network interface");
+    return null;
+}

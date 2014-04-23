@@ -1,0 +1,4 @@
+void MsgBox(String sMsg)
+{
+    cErrorMessage.writeMsg( sMsg );   
+}

@@ -1,4 +1,4 @@
-package de.carlvalentin.ValentinConsole;
+package de.carlvalentin.Common;
 
 import java.io.*;
 import java.util.*;
@@ -8,43 +8,61 @@ import javax.swing.JOptionPane;
  * Speicher Konfigurationsdaten in einer "Cookie"-Datei im Temp-Verzeichniss
  * des Benutzers.
  */
-public class Config {
+public class CVConfigFile 
+{
     private final String strConfigVersionID = "Cfg-File Version";
     private final String strConfigVersion = "0.1";
     
     private String strConfigFileName;
     private List list = Collections.synchronizedList(new LinkedList());
     
-    private class Config_Element {
-    	public String strID;
+    private class Config_Element 
+    {
+        public String strID;
         public String strValue;
         
-        private Config_Element() {}
-        public  Config_Element(String _strID, String _strValue) {
-        	strID = _strID;
+        private Config_Element() 
+        {
+        	return;
+        }
+        
+        public  Config_Element(String _strID, String _strValue) 
+        {
+            strID = _strID;
             strValue = _strValue;
+            
+            return;
         }
     }
     
-    private void writeError(String s) {
-        try {
+    private void writeError(String s) 
+    {
+        try 
+        {
             JOptionPane.showMessageDialog(null, s, "Error",
                                           JOptionPane.ERROR_MESSAGE);
         }
-        catch (java.awt.HeadlessException ex) {
+        catch (java.awt.HeadlessException ex) 
+        {
             System.err.println(ex);
         }
+        
+        return;
     }    
 
-    private boolean checkVersion(String strVersionID, String strVersion) {
+    private boolean checkVersion(String strVersionID, String strVersion) 
+    {
         String strVersionInFile;
         
         strVersionInFile = getConfig(strVersionID);
-        if (strVersionInFile == null) {
-        	return false;
+        if (strVersionInFile == null) 
+        {
+            return false;
         }
-        else {
-            if (strVersion.compareTo(strVersionInFile) != 0) {
+        else 
+        {
+            if (strVersion.compareTo(strVersionInFile) != 0) 
+            {
                 return false;
             }
         }
@@ -52,7 +70,9 @@ public class Config {
         return true;
     }
     
-	private Config() {
+    private CVConfigFile() 
+    {
+        return;
     }
 
     /**
@@ -62,10 +82,12 @@ public class Config {
      *                   &uuml;berein, dann wird der Inhalt ignoriert und 
      *                   die Datei mit einer neuen &uuml;berschrieben. 
      */
-    public Config(String strName, String strVersion) {
+    public CVConfigFile(String strName, String strVersion) 
+    {
         strConfigFileName = strName + ".cfg";
         
-        try {
+        try 
+        {
             FileReader fileConfig = 
                 new FileReader(System.getProperty("java.io.tmpdir",".")
                                + strConfigFileName);
@@ -76,28 +98,35 @@ public class Config {
             
             String strVersionInFile;
 
-            while ( (i = fileConfig.read()) > 0 ) {
+            while ( (i = fileConfig.read()) > 0 ) 
+            {
                 c = (char)i;
-                if (c == '|') {
+                if (c == '|') 
+                {
                     strID = inBuf.toString();
                     inBuf = new StringBuffer();
                 }
-                else if (c == '\n') {
+                else if (c == '\n') 
+                {
                     Config_Element cfgElement = 
                         new Config_Element(strID, inBuf.toString());
                     list.add(cfgElement);
                     inBuf = new StringBuffer();
                 }
-                else {
-                	inBuf.append(c);
+                else 
+                {
+                    inBuf.append(c);
                 }
             }
             
             fileConfig.close();
         }
-        catch (FileNotFoundException ex) {
+        catch (FileNotFoundException ex) 
+        {
+            
         }
-        catch (IOException ex) {
+        catch (IOException ex) 
+        {
             writeError("I/O error while trying to read from file" + 
                        strConfigFileName);
         }
@@ -105,11 +134,14 @@ public class Config {
         // Wenn Versionen nicht uebereinstimmen, eingelesene Daten 
         // wegwerfen und mit Defaultwerten ueberschreiben
         if (!checkVersion(strName, strVersion) || 
-            !checkVersion(strConfigVersionID, strConfigVersion)    ) {
+            !checkVersion(strConfigVersionID, strConfigVersion)    ) 
+        {
             list = Collections.synchronizedList(new LinkedList());
             setConfig(strName, strVersion);
             setConfig(strConfigVersionID, strConfigVersion);
-        }        
+        }
+        
+        return;
     }    
     
     /**
@@ -118,11 +150,14 @@ public class Config {
      * @return <code>null</code> falls die ID noch nicht in der Datei 
      *         gefunden wurde, sonst den Wert als String
      */
-    public String getConfig(String strID) {     
+    public String getConfig(String strID) 
+    {     
         Object objElement[] = list.toArray();
-        for (int i=0; i<list.size(); i++) {
-        	Config_Element cfgElement = (Config_Element)objElement[i];
-            if (strID.compareTo(cfgElement.strID) == 0) {
+        for (int i=0; i<list.size(); i++) 
+        {
+            Config_Element cfgElement = (Config_Element)objElement[i];
+            if (strID.compareTo(cfgElement.strID) == 0) 
+            {
                 return cfgElement.strValue;
             }
         }
@@ -138,10 +173,12 @@ public class Config {
     public boolean setConfig(String strID, String strValue)
     {
         Object objElement[] = list.toArray();
-        for (int i=0; i<list.size(); i++) {
+        for (int i=0; i<list.size(); i++) 
+        {
             Config_Element cfgElement = (Config_Element)objElement[i];
-            if (strID.compareTo(cfgElement.strID) == 0) {
-            	cfgElement.strValue = strValue;
+            if (strID.compareTo(cfgElement.strID) == 0) 
+            {
+                cfgElement.strValue = strValue;
                 writeConfig();
                 return true;
             }
@@ -154,22 +191,28 @@ public class Config {
         return true;
     }
     
-    private void writeConfig() {       
-        try {     
-        	FileWriter fileConfig = 
-        		new FileWriter(System.getProperty("java.io.tmpdir",".")
-        				       + strConfigFileName);
+    private void writeConfig() 
+    {       
+        try 
+        {     
+            FileWriter fileConfig = 
+                new FileWriter(System.getProperty("java.io.tmpdir",".")
+                               + strConfigFileName);
             Object objElement[] = list.toArray();
-            for (int i=0; i<list.size(); i++) {
+            for (int i=0; i<list.size(); i++) 
+            {
                 Config_Element cfgElement = (Config_Element)objElement[i];
                 fileConfig.write(cfgElement.strID + "|" + 
                                  cfgElement.strValue + "\n");
             }            
-        	fileConfig.close();
+            fileConfig.close();
         }
-        catch (IOException ex) {
+        catch (IOException ex) 
+        {
             writeError("I/O error while trying to write to file" + 
                     strConfigFileName);
         }
+        
+        return;
     }
 }

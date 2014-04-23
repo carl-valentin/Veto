@@ -1,22 +1,102 @@
- d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\carlvalentin.pj (1.4) build-subsandbox 1.4     
-   d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\ValentinConsole.pj (1.4) build-subsandbox 1.4     
-     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\comm.jar archived 1.1     
-     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\Config.java archived 1.1     
-     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\Console.java archived 1.1     
-     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\CVPLnet.java archived 1.3     
-     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\CVPLrecvThread.java archived 1.2     
-     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\CVPLsendThread.java archived 1.2     
-     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\CVPLserial.java archived 1.2     
-     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\javax.comm.properties archived 1.1     
-     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\manifest.mf archived 1.1     
-     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\SohEtb.java archived 1.3     
-     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\ValentinConsole.java archived 1.4     
- d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\pnuts\pnuts.pj (1.4) build-subsandbox 1.4     
-   d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\pnuts\tools\tools.pj (1.4) build-subsandbox 1.4     
+ d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\bsh\bsh.pj (1.2) build-subsandbox 1.2     
+   d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\bsh\bsh-2.0b2.jar archived 1.1     
+ d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\com\com.pj (1.2) build-subsandbox 1.2     
+   d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\com\sharkysoft\sharkysoft.pj (1.2) build-subsandbox 1.2     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\com\sharkysoft\lava3-core.jar archived 1.1     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\com\sharkysoft\lava3-printf.jar archived 1.1     
+ d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\carlvalentin.pj (1.5) build-subsandbox 1.5     
+   d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Common\Common.pj (1.2) build-subsandbox 1.2     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Common\Printf\Printf.pj (1.2) build-subsandbox 1.2     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Common\Printf\CVPrintf.java archived 1.1     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Common\UI\UI.pj (1.2) build-subsandbox 1.2     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Common\UI\CVErrorMessage.java archived 1.4     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Common\UI\CVFileTransmit.java archived 1.2     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Common\UI\CVStatusLine.java archived 1.1     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Common\UI\CVTextDisplay.java archived 1.2     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Common\CVBinarySemaphore.java archived 1.1     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Common\CVConfigFile.java archived 1.1     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Common\CVFileManagement.java archived 1.2     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Common\CVLogging.java archived 1.1     
+   d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Interface\Interface.pj (1.2) build-subsandbox 1.2     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Interface\UI\UI.pj (1.2) build-subsandbox 1.2     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Interface\UI\CVUINetwork.java archived 1.4     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Interface\UI\CVUIParallel.java archived 1.2     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Interface\UI\CVUISerial.java archived 1.4     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Interface\CVInterface.java archived 1.4     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Interface\CVInterfaceSettings.java archived 1.2     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Interface\CVNetworkProtocol.java archived 1.1     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Interface\CVNetworkSettings.java archived 1.4     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Interface\CVNetworkTCP.java archived 1.7     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Interface\CVNetworkUDP.java archived 1.1     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Interface\CVParallel.java archived 1.5     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Interface\CVParallelModes.java archived 1.1     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Interface\CVParallelOutputStream.java archived 1.1     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Interface\CVParallelSettings.java archived 1.1     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Interface\CVSerial.java archived 1.7     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Interface\CVSerialBaudrate.java archived 1.1     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Interface\CVSerialDatabits.java archived 1.1     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Interface\CVSerialHandshake.java archived 1.1     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Interface\CVSerialParity.java archived 1.1     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Interface\CVSerialSettings.java archived 1.4     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Interface\CVSerialStopbits.java archived 1.1     
+   d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Protocol\Protocol.pj (1.2) build-subsandbox 1.2     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Protocol\UI\UI.pj (1.2) build-subsandbox 1.2     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Protocol\UI\CVUISohEtb.java archived 1.1     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Protocol\CVConnectionManager.java archived 1.6     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Protocol\CVProtocolRecvThread.java archived 1.6     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Protocol\CVProtocolSendThread.java archived 1.5     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Protocol\CVProtocolThread.java archived 1.5     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Protocol\CVSohEtb.java archived 1.1     
+   d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\Scripting.pj (1.2) build-subsandbox 1.2     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\Examples\Examples.pj (1.2) build-subsandbox 1.2     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\Examples\CRCComTest.bsh archived 1.1     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\Examples\CRCComTestFkt.bsh archived 1.1     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\Examples\CRCComTestInFile.bsh archived 1.1     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\Examples\DoCRCTstOnAllItfs.bsh archived 1.1     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\Examples\DrawGraph.bsh archived 1.1     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\Examples\MemoryCard.bsh archived 1.1     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\Examples\RemoteConsole.bsh archived 1.1     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\Examples\SimpleSend.bsh archived 1.1     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\Examples\SimpleStatus.bsh archived 1.1     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\Examples\SysNumTest.bsh archived 1.1     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\Examples\SysNumTest.prn archived 1.1     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\Examples\TestCommands.bsh archived 1.1     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\Examples\WebBrowser.bsh archived 1.1     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\UI\UI.pj (1.2) build-subsandbox 1.2     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\UI\CVUIBeanShell.java archived 1.7     
+       d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\UI\CVUIBeanShellEditor.java archived 1.2     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\chk4StpScr.bsh archived 1.1     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\close.bsh archived 1.5     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\CVBeanShell.java archived 1.9     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\error.bsh archived 1.3     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\MsgBox.bsh archived 1.1     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\open.bsh archived 1.7     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\openFile.bsh archived 1.2     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\openParallel.bsh archived 1.2     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\openSerial.bsh archived 1.2     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\openTCP.bsh archived 1.2     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\openUDP.bsh archived 1.2     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\printf.bsh archived 1.3     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\read.bsh archived 1.6     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\sleep.bsh archived 1.2     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\sprintf.bsh archived 1.1     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\Scripting\write.bsh archived 1.6     
+   d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\ValentinConsole.pj (1.5) build-subsandbox 1.5     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\CVConsole.java archived 1.1     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\manifest.mf archived 1.4     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\ValentinConsole.java archived 1.14     
+ d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\javax.comm\javax.comm.pj (1.2) build-subsandbox 1.2     
+   d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\javax.comm\Win32.V2.0\Win32.V2.0.pj (1.2) build-subsandbox 1.2     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\javax.comm\Win32.V2.0\comm.jar archived 1.1     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\javax.comm\Win32.V2.0\javax.comm.properties archived 1.1     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\javax.comm\Win32.V2.0\win32com.dll archived 1.1     
+ d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\pnuts\pnuts.pj (1.5) build-subsandbox 1.5     
+   d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\pnuts\tools\tools.pj (1.5) build-subsandbox 1.5     
      d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\pnuts\tools\Console.java archived 1.2     
  d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\ant.bat archived 1.1     
- d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\build.xml archived 1.1     
+ d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\build.xml archived 1.8     
  d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\make.bat archived 1.1     
  d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\project\doxcfg.dxc archived 1.1     
  d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\project\lcp.bat archived 1.1     
  d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\project\overview.html archived 1.1     
+ d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\Veto.doc archived 1.4     

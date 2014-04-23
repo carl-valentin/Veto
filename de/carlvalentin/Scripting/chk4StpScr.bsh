@@ -1,0 +1,7 @@
+void chk4StpScr()
+{
+    if (bStopScript)
+    {
+        throw new bsh.InterpreterError("Script Stopped");
+    }
+}

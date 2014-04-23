@@ -1,0 +1,127 @@
+// BeanShell-Skriptdatei
+// -----------------------------------------------------------------------------
+// Implementierte Kommandos
+// -> boolean close( File );
+// -> boolean close( CVNetworkTCP );
+// -> boolean close( CVNetworkUDP );
+// -> boolean close( CVParallel );
+// -> boolean close( CVSerial );
+// -----------------------------------------------------------------------------
+// 
+// -----------------------------------------------------------------------------
+import de.carlvalentin.Interface.*;
+
+import java.io.*;
+
+// -----------------------------------------------------------------------------
+// -> boolean close( File );
+// Schliesst die Datei cFile.
+boolean close( File cFile )
+{
+    chk4StpScr();
+    
+    if( null == cFile )
+    {
+    	return false;
+    }
+    
+    chk4StpScr();
+	return true;
+}
+
+// -----------------------------------------------------------------------------
+// -> boolean close( CVNetworkTCP );
+// Schliesst die interne TCP-Netzwerkschnittstelle.
+boolean close( CVNetworkTCP cTCPNetworkInterface )
+{
+    chk4StpScr();
+	if( false == cConnectionManager.isConnected() )
+	{
+		printf("\n<-------------------------------------->\n");
+        printf("Scripting: close->could not close network interface\n");
+        printf("<-------------------------------------->\n");
+        error("Scripting: close->could not close netwrok interface");
+		return false;
+	}
+
+	if( true == cConnectionManager.disconnect( cTCPNetworkInterface ) )
+    {
+        ValentinConsole.setButtonsOnDisconnect();
+		return true;
+    }
+    
+    chk4StpScr();
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+// -> boolean close( CVNetworkUDP );
+// Schliesst die interne UDP-Netzwerkschnittstelle
+boolean close( CVNetworkUDP cUDPNetworkInterface)
+{
+    chk4StpScr();    
+	if( false == cConnectionManager.isConnected() )
+	{
+		printf("\n<-------------------------------------->\n");
+        printf("Scripting: close->could not close network interface\n");
+        printf("<-------------------------------------->\n");
+        error("Scripting: close->could not close netwrok interface");
+		return false;
+	}
+
+	if( true == cConnectionManager.disconnect( cUDPNetworkInterface ) )
+    {
+        ValentinConsole.setButtonsOnDisconnect();
+        return true;
+    }
+    chk4StpScr();
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+// -> boolean close( CVParallel );
+// Schliesst die Parallelschnittstelle.
+boolean close( CVParallel cParallelInterface )
+{
+    chk4StpScr();
+	if( false == cConnectionManager.isConnected() )
+	{
+		printf("\n<-------------------------------------->\n");
+        printf("Scripting: close->could not close parallel port interface\n");
+        printf("<-------------------------------------->\n");
+        error("Scripting: close->could not close parallel port interface");
+		return false;
+	}
+
+	if( true == cConnectionManager.disconnect( cParallelInterface ) )
+    {
+        ValentinConsole.setButtonsOnDisconnect();
+        return true;
+    }
+    chk4StpScr();
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+// -> boolean close( CVSerial );
+// Schliesst die serielle Schnittstelle.
+boolean close( CVSerial cSerialInterface )
+{
+    chk4StpScr();
+	if( false == cConnectionManager.isConnected() )
+	{
+		printf("\n<-------------------------------------->\n");
+        printf("Scripting: close->could not close serial port interface\n");
+        printf("<-------------------------------------->\n");
+        error("Scripting: close->could not close serial port interface");
+		return false;
+	}
+
+	if( true == cConnectionManager.disconnect( cSerialInterface ) )
+    {
+        ValentinConsole.setButtonsOnDisconnect();
+        return true;
+    }
+    chk4StpScr();
+    return false;
+}
