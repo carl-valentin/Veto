@@ -1,0 +1,111 @@
+// Analog zu printf
+
+String sprintf( String sOutput )
+{
+    chk4StpScr();
+    return sOutput;
+}
+
+String sprintf( String sTemplate, Object[] cParam )
+{
+    chk4StpScr();
+    return cPrintf.printf( sTemplate, cParam );
+}
+
+//1
+String sprintf( String sTemplate, int cParam1 )
+{    
+    Object[] cParam = new Object[]{cParam1};
+    chk4StpScr();
+    return cPrintf.printf( sTemplate, cParam );
+}
+
+// 2
+String sprintf( String sTemplate, Object cParam1, Object cParam2 )
+{
+    Object[] cParam = new Object[]{cParam1, cParam2};
+    chk4StpScr();
+    return cPrintf.printf( sTemplate, cParam );
+}
+
+// 3
+String sprintf( String sTemplate, Object cParam1, Object cParam2, Object cParam3 )
+{
+    Object[] cParam = new Object[]{cParam1, cParam2, cParam3};
+    chk4StpScr();
+    return cPrintf.printf( sTemplate, cParam );
+}
+
+// 4
+String sprintf( String sTemplate, Object cParam1, Object cParam2, Object cParam3, 
+             Object cParam4 )
+{
+    Object[] cParam = new Object[]{cParam1, cParam2, cParam3, cParam4};
+    chk4StpScr();
+    return cPrintf.printf( sTemplate, cParam );
+}
+
+// 5
+String sprintf( String sTemplate, Object cParam1, Object cParam2, Object cParam3,
+             Object cParam4, Object cParam5 )
+{
+    Object[] cParam = new Object[]{cParam1, cParam2, cParam3, cParam4, 
+                                   cParam5};
+    chk4StpScr();
+    return cPrintf.printf( sTemplate, cParam );
+}
+
+// 6
+String sprintf( String sTemplate, Object cParam1, Object cParam2, Object cParam3,
+             Object cParam4, Object cParam5, Object cParam6 )
+{
+    Object[] cParam = new Object[]{cParam1, cParam2, cParam3, cParam4, 
+                                   cParam5, cParam6};
+    chk4StpScr();
+    return cPrintf.printf( sTemplate, cParam );
+}
+
+// 7
+String sprintf( String sTemplate, Object cParam1, Object cParam2, Object cParam3,
+             Object cParam4, Object cParam5, Object cParam6, Object cParam7 )
+{
+    Object[] cParam = new Object[]{cParam1, cParam2, cParam3, cParam4, 
+                                   cParam5, cParam6, cParam7};
+    chk4StpScr();
+    return cPrintf.printf( sTemplate, cParam );
+}
+
+// 8
+String sprintf( String sTemplate, Object cParam1, Object cParam2, Object cParam3,
+             Object cParam4, Object cParam5, Object cParam6, Object cParam7,
+             Object cParam8 )
+{
+    Object[] cParam = new Object[]{cParam1, cParam2, cParam3, cParam4, 
+                                   cParam5, cParam6, cParam7, cParam8};
+    chk4StpScr();
+    return cPrintf.printf( sTemplate, cParam );
+}
+
+// 9
+String sprintf( String sTemplate, Object cParam1, Object cParam2, Object cParam3,
+             Object cParam4, Object cParam5, Object cParam6, Object cParam7, 
+             Object cParam8, Object cParam9)
+{
+    Object[] cParam = new Object[]{cParam1, cParam2, cParam3, cParam4, 
+                                   cParam5, cParam6, cParam7, cParam8,
+                                   cParam9};
+    chk4StpScr();
+    return cPrintf.printf( sTemplate, cParam );
+}
+
+// 10
+String sprintf( String sTemplate, Object cParam1, Object cParam2, Object cParam3,
+             Object cParam4, Object cParam5, Object cParam6, Object cParam7, 
+             Object cParam8, Object cParam9, Object cParam10)
+{
+    Object[] cParam = new Object[]{cParam1, cParam2, cParam3, cParam4, 
+                                   cParam5, cParam6, cParam7, cParam8,
+                                   cParam9, cParam10};
+    chk4StpScr();
+    return cPrintf.printf( sTemplate, cParam );
+}

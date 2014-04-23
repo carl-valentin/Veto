@@ -1,0 +1,104 @@
+// BeanShell-Skriptdatei
+// -----------------------------------------------------------------------------
+// Implementierte Kommandos
+// -> String read( );
+// -> String read( CVInterface );
+// -> String read( File );
+// -----------------------------------------------------------------------------
+// Kommandos werden intern auf cInterfaceReader.read(); umgesetzt und aus 
+// BufferedReader lk_cBufferedReaderInput in CVBeanShell ausgelesen.
+// -----------------------------------------------------------------------------
+import de.carlvalentin.Common.*;
+import de.carlvalentin.Interface.*;
+
+import java.io.*;
+
+// -----------------------------------------------------------------------------
+// -> String read( );
+// Liest von der Default-Schnittstelle (zuletzt geoeffnete) und gibt gewonnene 
+// Daten als String zurueck.
+String read( )
+{
+    long         lMilliSeconds = 10000;
+    long         lMilliSecondsCounter = 0;
+	StringBuffer returnValue = new StringBuffer();
+    char         readValue   = 0;
+
+	InputStreamReader inputStreamReader;
+	CVNetworkSettings settings;		
+
+    chk4StpScr();
+    
+    try
+    {
+        inputStreamReader = 
+        	cConnectionManager.getConnectedInterface().getInterfaceReader();        	
+
+		while (true)
+        {
+            if (inputStreamReader.ready())
+            {
+                readValue = (char)inputStreamReader.read();
+
+                if (readValue == cConnectionManager.getSohEtb().gl_iSOH)
+                {
+                    break;
+                }
+                lMilliSecondsCounter = 0;
+            }
+
+            if (lMilliSeconds > 0)
+            {
+                sleep(1);
+                lMilliSecondsCounter++;
+                if (lMilliSecondsCounter >= lMilliSeconds)
+                {
+                    chk4StpScr();
+                    return "";
+                }
+            }
+        }
+        
+        while (true)
+        {
+            readValue = (char)inputStreamReader.read();
+
+            if(readValue == cConnectionManager.getSohEtb().gl_iETB)
+            {
+                break;
+            }
+            returnValue.append(readValue);
+        }       
+    }
+    catch(IOException ex)
+    {
+    	printf("\n<-------------------------------------->\n");
+        printf("Scripting: read->IOException: " + ex.getMessage() + "\n");
+        printf("<-------------------------------------->\n");
+        error("Scritping: read->IOException");
+        return "";
+    }
+    
+    chk4StpScr();
+    return returnValue.toString();
+}
+
+// -----------------------------------------------------------------------------
+// -> String read( CVInterface );
+// Liest von der Schnittstelle cInterface und gibt gewonnene Daten als String 
+// zurueck.
+String read( CVInterface cInterface )
+{  
+    return read();
+}
+
+// -----------------------------------------------------------------------------
+// -> String read( File );
+// Liest den Inhalt der Datei cFile und gibt ihn als String zurueck.
+String read( File cFile )
+{
+	CVFileManagement cFileManager = new CVFileManagement( 
+            cErrorMessage, cErrorFile, cStatusMessage );
+    chk4StpScr();
+    return cFileManager.readStringFromFile( cFile );
+}

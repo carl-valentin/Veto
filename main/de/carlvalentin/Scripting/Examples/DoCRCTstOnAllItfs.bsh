@@ -1,0 +1,34 @@
+//Fuehrt den CRCComTest auf allen Schnittstellen aus
+
+IPAddr="10.102.1.94";
+
+file = openFile("ExampleScripts\\CRCComTest.bsh");
+script = read(file);
+
+printf("TCP ...\n");
+itf = openTCP(IPAddr);
+eval(script);
+close(itf);
+sleep(20000);
+
+printf("UDP ...\n");
+itf = openUDP(IPAddr);
+eval(script);
+close(itf);
+sleep(20000);
+
+file = openFile("ExampleScripts\\CRCComTestFkt.bsh");
+script = read(file);
+eval(script);
+
+printf("Parallel ...\n");
+itf = openParallel("LPT1");
+CRCComTest("LPT:1K", 1024, 10000);
+close(itf);
+sleep(20000);
+
+printf("Serial ...\n");
+itf = openSerial("COM1");
+CRCComTest("COM:1K", 1024, 10000);
+close(itf);
+sleep(20000);

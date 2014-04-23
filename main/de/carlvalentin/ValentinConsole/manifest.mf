@@ -1,0 +1,3 @@
+Main-Class: de.carlvalentin.ValentinConsole.ValentinConsole
+Class-Path: comm.jar bsh-2.0b2.jar lava3-core.jar lava3-printf.jar
+

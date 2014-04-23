@@ -1,0 +1,155 @@
+// BeanShell-Skriptdatei
+// -----------------------------------------------------------------------------
+// Implementierte Kommandos
+// -> void printf( String );
+// -> void printf( String, Object[] );
+// -----------------------------------------------------------------------------
+// Kommandos werden intern auf cTextArea.append( String ); umgesetzt und auf
+// der JTextArea jTextAreaScriptOutput in CVUIBeanShell ausgegeben.
+// -----------------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// -> void printf( String )
+// Beispiel: printf( "Hallo Welt" );
+void printf( String sOutput )
+{   
+    chk4StpScr();    
+	cTextArea.append( sOutput );
+    chk4StpScr();
+	return;
+}
+
+// -----------------------------------------------------------------------------
+// -> void printf( String, Object[] )
+// printf im C-Stil: in sTemplate wird der Text mit allen Formatierungen ueber-
+// geben, cParam enthaelt die Variablenwerte.
+// Beispiel: printf( "%d + %i = %s\n", new Object[]{ 2, 3, "fuenf"} );
+void printf( String sTemplate, Object[] cParam )
+{
+    cTextArea.append( cPrintf.printf( sTemplate, cParam ) );
+    
+	return;
+}
+
+//-----------------------------------------------------------------------------
+//-> void printf( String, ... )
+// Wie C. Beispiel: printf( "%d + %i = %s\n", 2, 3, "fuenf" );
+
+// 1
+void printf( String sTemplate, int cParam1 )
+{    
+    Object[] cParam = new Object[]{cParam1};
+    chk4StpScr();
+    cTextArea.append( cPrintf.printf( sTemplate, cParam ) );
+    chk4StpScr();
+    return;
+}
+
+// 2
+void printf( String sTemplate, Object cParam1, Object cParam2 )
+{
+    Object[] cParam = new Object[]{cParam1, cParam2};
+    chk4StpScr();
+    cTextArea.append( cPrintf.printf( sTemplate, cParam ) );
+    chk4StpScr();
+    return;
+}
+
+// 3
+void printf( String sTemplate, Object cParam1, Object cParam2, Object cParam3 )
+{
+    Object[] cParam = new Object[]{cParam1, cParam2, cParam3};
+    chk4StpScr();
+    cTextArea.append( cPrintf.printf( sTemplate, cParam ) );
+    chk4StpScr();
+    return;
+}
+
+// 4
+void printf( String sTemplate, Object cParam1, Object cParam2, Object cParam3, 
+             Object cParam4 )
+{
+    Object[] cParam = new Object[]{cParam1, cParam2, cParam3, cParam4};
+    chk4StpScr();
+    cTextArea.append( cPrintf.printf( sTemplate, cParam ) );
+    chk4StpScr();
+    return;
+}
+
+// 5
+void printf( String sTemplate, Object cParam1, Object cParam2, Object cParam3,
+             Object cParam4, Object cParam5 )
+{
+    Object[] cParam = new Object[]{cParam1, cParam2, cParam3, cParam4, 
+                                   cParam5};
+    chk4StpScr();
+    cTextArea.append( cPrintf.printf( sTemplate, cParam ) );
+    chk4StpScr();
+    return;
+}
+
+// 6
+void printf( String sTemplate, Object cParam1, Object cParam2, Object cParam3,
+             Object cParam4, Object cParam5, Object cParam6 )
+{
+    Object[] cParam = new Object[]{cParam1, cParam2, cParam3, cParam4, 
+                                   cParam5, cParam6};
+    chk4StpScr();
+    cTextArea.append( cPrintf.printf( sTemplate, cParam ) );
+    chk4StpScr();
+    return;
+}
+
+// 7
+void printf( String sTemplate, Object cParam1, Object cParam2, Object cParam3,
+             Object cParam4, Object cParam5, Object cParam6, Object cParam7 )
+{
+    Object[] cParam = new Object[]{cParam1, cParam2, cParam3, cParam4, 
+                                   cParam5, cParam6, cParam7};
+    chk4StpScr();
+    cTextArea.append( cPrintf.printf( sTemplate, cParam ) );
+    chk4StpScr();
+    return;
+}
+
+// 8
+void printf( String sTemplate, Object cParam1, Object cParam2, Object cParam3,
+             Object cParam4, Object cParam5, Object cParam6, Object cParam7,
+             Object cParam8 )
+{
+    Object[] cParam = new Object[]{cParam1, cParam2, cParam3, cParam4, 
+                                   cParam5, cParam6, cParam7, cParam8};
+    chk4StpScr();
+    cTextArea.append( cPrintf.printf( sTemplate, cParam ) );
+    chk4StpScr();
+    return;
+}
+
+// 9
+void printf( String sTemplate, Object cParam1, Object cParam2, Object cParam3,
+             Object cParam4, Object cParam5, Object cParam6, Object cParam7, 
+             Object cParam8, Object cParam9)
+{
+    Object[] cParam = new Object[]{cParam1, cParam2, cParam3, cParam4, 
+                                   cParam5, cParam6, cParam7, cParam8,
+                                   cParam9};
+    chk4StpScr();
+    cTextArea.append( cPrintf.printf( sTemplate, cParam ) );
+    chk4StpScr();
+    return;
+}
+
+// 10
+void printf( String sTemplate, Object cParam1, Object cParam2, Object cParam3,
+             Object cParam4, Object cParam5, Object cParam6, Object cParam7, 
+             Object cParam8, Object cParam9, Object cParam10)
+{
+    Object[] cParam = new Object[]{cParam1, cParam2, cParam3, cParam4, 
+                                   cParam5, cParam6, cParam7, cParam8,
+                                   cParam9, cParam10};
+    chk4StpScr();
+    cTextArea.append( cPrintf.printf( sTemplate, cParam ) );
+    chk4StpScr();
+    return;
+}

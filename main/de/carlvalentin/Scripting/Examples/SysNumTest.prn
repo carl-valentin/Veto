@@ -1,0 +1,39 @@
+// Labelstar PLUS V3.60 (Build 1010)
+// 84D-9152415
+// Von Hand nachbearbeitet!
+// 
+// Startzeichen: 0x01
+// Stoppzeichen: 0x17
+// 
+// JOB NAME:
+FBE---rETIKETT1
+// LABEL TYPE: Endlosetiketten
+// WIDTH: 52.50 mm
+// HEIGHT: 35.00 mm
+// GAP LENGTH: 2.00 mm
+// COLUMNS: 1
+FCDA--r1-------
+FCCL--r0003500-
+FCCM--r00000---
+FCCO--r0005250-
+FCCHA-r1-------
+// X OFFSET: 0.00 mm
+FCCE--r+000----
+// MIRROR LABEL: Nein
+FCDO--r0-------
+// ROTATE LABEL: Nein
+FCDN--r0-------
+// TEXT (1/100 mm)
+AM[1]2712;294;0;4;2;7;400;400;0
+BM[1]Variable Data Test
+AC[1]NAME="ID_01"
+// BARCODE (1/100 mm)
+AM[2]383;548;0;30;2;2000;9;3;1;1
+BM[2]SYSNUM
+AC[2]NAME="ID_02"
+// LINES: 2
+FBAA--r2
+// COPIES: 1
+FBBA--r00001---
+// PRINT
+FBC---r--------

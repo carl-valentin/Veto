@@ -1,0 +1,281 @@
+// BeanShell-Skriptdatei
+// -----------------------------------------------------------------------------
+// Implementierte Kommandos
+// -> boolean write( String );
+// -> boolean write( byte[] );
+
+// -> boolean write( String, Object[] );
+// -> boolean write( CVInterface, String );
+// -> boolean write( CVInterface, String, Object[] );
+// -> boolean write( CVInterface, File );
+// -> boolean write( CVInterface, File );
+// -> boolean write( File, String );
+// -> boolean write( File, String, Object[] );
+// -----------------------------------------------------------------------------
+// Kommandos werden intern auf cInterfaceWriter.write(char[] cbuf, int off, 
+// int len); umgesetzt und auf BufferedWriter lk_cBufferedWriterOutput in
+// CVBeanShell ausgegeben.
+// -----------------------------------------------------------------------------
+import de.carlvalentin.Common.*;
+import de.carlvalentin.Common.UI.*;
+import de.carlvalentin.Interface.*;
+
+import java.io.*;
+
+// -----------------------------------------------------------------------------
+// -> boolean write( String );
+// Gibt den Text aus sOutput auf die Default-Schnittstelle (die zuletzt 
+// geoeffnete) (evtl. mit Start/Stop-Zeichen) aus.
+// Beispiel: result = write( "Hallo Welt" );
+boolean write( String sOutput )
+{
+	OutputStreamWriter outputStreamWriter;
+	
+    chk4StpScr();
+    
+	if( false == cConnectionManager.isConnected() )
+	{
+		printf("\n<-------------------------------------->\n");
+        printf("Scripting: write->interface not connected\n");
+        printf("<-------------------------------------->\n");
+		error("Scripting: write->interface not connected");
+		return false;
+	}
+	
+	try
+    {
+        outputStreamWriter = 
+            cConnectionManager.getConnectedInterface().getInterfaceWriter();
+        outputStreamWriter.write(cConnectionManager.getSohEtb().gl_iSOH);
+        outputStreamWriter.write(sOutput, 0, sOutput.length());
+        outputStreamWriter.write(cConnectionManager.getSohEtb().gl_iETB);
+        outputStreamWriter.flush();
+    }
+    catch(IOException ex)
+    {
+    	printf("\n<-------------------------------------->\n");
+        printf("Scripting: write->IOException: " + ex.getMessage() + "\n");
+        printf("<-------------------------------------->\n");
+        error("Scripting: write->IOException: " + ex.getMessage());
+        return false;
+    }
+
+    chk4StpScr();
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+// -> boolean write( byte[] );
+// Gibt den Text aus sOutput auf die Default-Schnittstelle (die zuletzt 
+// geoeffnete) als binaerer Datenstrom (kein Start/Stop-Zeichen) aus.
+boolean write( byte[] bOutput )
+{
+	OutputStream outputStream;
+	
+    chk4StpScr();
+	if( false == cConnectionManager.isConnected() )
+	{
+		printf("\n<-------------------------------------->\n");
+        printf("Scripting: write->interface not connected\n");
+        printf("<-------------------------------------->\n");
+		error("Scripting: write->interface not connected");
+		return false;
+	}
+	
+	try
+    {
+        outputStream = 
+        	cConnectionManager.getConnectedInterface().getInterfaceBinaryOutput();
+        outputStream.write(bOutput);
+        outputStream.flush();
+    }
+    catch(IOException ex)
+    {
+    	printf("\n<-------------------------------------->\n");
+        printf("Scripting: write->IOException: " + ex.getMessage() + "\n");
+        printf("<-------------------------------------->\n");
+        error("Scripting: write->IOException: " + ex.getMessage());
+        return false;
+    }
+
+    chk4StpScr();
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+// -> boolean write( String, Object[] );
+// Gibt einen formatierten Text auf die Default-Schnittstelle (die zuletzt  
+// geoeffnete) (evtl. mit Start/Stop-Zeichen) aus. In sTemplate wird der 
+// Text mit allen Formatierungen (wie printf) ueber geben, cParam enthaelt 
+// die Variablenwerte.
+boolean write( String sTemplate, Object[] cParam )
+{
+	return write( cPrintf.printf( sTemplate, cParam ) );
+}
+
+// -----------------------------------------------------------------------------
+// -> boolean write( CVInterface, String );
+// Gibt den Text aus sOutput auf die Schnittstelle cInterface aus.
+// Beispiel: result = write( NetworkInterface, "Hallo Welt" );
+boolean write( CVInterface cInterface, String sOutput )
+{
+    return write(sOutput);
+}
+
+// -----------------------------------------------------------------------------
+// -> boolean write( CVInterface, String, Object[] );
+// Gibt einen formatierten Text auf die mit cInterface gewaehlte Schnittstelle 
+// aus. In sTemplate wird der Text mit allen Formatierungen (wie printf) 
+// uebergeben, cParam enthaelt die Variablenwerte.
+boolean write( CVInterface cInterface, String sTemplate, Object[] cParam )
+{
+	return write( cPrintf.printf( sTemplate, cParam ) );
+}
+
+//-----------------------------------------------------------------------------
+//-> boolean write( File );
+//Gibt den Inhalt der Datei cFile auf der Schnittstelle aus.
+boolean write( File cFile )
+{   
+    chk4StpScr();
+    if( false == cConnectionManager.isConnected() )
+    {
+        printf("\n<-------------------------------------->\n");
+        printf("Error: write " + cFile.getName() + "to interface");
+        printf("<-------------------------------------->\n");
+        error("Scripting: write->interface not connected");
+        return false;
+    }
+    
+    // Verbindung nicht ueber Skriptbefehl hergestellt
+    cInterface = cConnectionManager.getConnectedInterface();
+    
+    CVFileTransmit cFileTransmit = new CVFileTransmit( 
+       cErrorMessage, cErrorFile, cStatusMessage );
+    cFileTransmit.setFile( cFile );
+    cFileTransmit.setOutputStream( cInterface.getInterfaceBinaryOutput() );
+
+    if( true == cFileTransmit.startFileTransfer() )
+    {
+        chk4StpScr();
+        return true;
+    }
+
+    printf("\n<-------------------------------------->\n");
+    printf("Error: write " + cFile.getName() + "to interface\n");
+    printf("<-------------------------------------->\n");
+    error("Scripting: write->file transfer error");
+    
+    return false;
+}
+
+//-----------------------------------------------------------------------------
+//-> boolean write( CVInterface, File );
+//Gibt den Inhalt der Datei cFile auf der Schnittstelle cInterface aus.
+boolean write( CVInterface cInterface, File cFile )
+{	
+    chk4StpScr();
+	if( false == cConnectionManager.isConnected() )
+	{
+		printf("\n<-------------------------------------->\n");
+		printf("Error: write " + cFile.getName() + "to interface");
+		printf("<-------------------------------------->\n");
+		error("Scripting: write->interface not connected");
+		return false;
+	}
+	
+	if( cInterface == null )
+	{
+		// Verbindung nicht ueber Skriptbefehl hergestellt
+		cInterface = cConnectionManager.getConnectedInterface();
+	}
+	
+    CVFileTransmit cFileTransmit = new CVFileTransmit( 
+         cErrorMessage, cErrorFile, cStatusMessage );
+    cFileTransmit.setFile( cFile );
+    cFileTransmit.setOutputStream( cInterface.getInterfaceBinaryOutput() );
+ 
+    if( true == cFileTransmit.startFileTransfer() )
+    {
+        chk4StpScr();
+    	return true;
+    }
+ 
+    printf("\n<-------------------------------------->\n");
+    printf("Error: write " + cFile.getName() + "to interface\n");
+    printf("<-------------------------------------->\n");
+    error("Scripting: write->file transfer error");
+    return false;
+}
+
+//-----------------------------------------------------------------------------
+//-> boolean write( File, String );
+//Schreibt den Text aus sOutput in die Datei cFile.
+boolean write( File cFile, String sOutput )
+{
+    return write(cFile, (String)null, sOutput);
+}
+
+//-----------------------------------------------------------------------------
+//-> boolean write( File, String );
+//Schreibt den Text aus sOutput in die Datei cFile.
+boolean write( File cFile, boolean bStartStop, String sOutput )
+{
+    return write(cFile, cConnectionManager.getSohEtb().toString(), sOutput);
+}
+
+// -----------------------------------------------------------------------------
+// -> boolean write( File, String );
+// Schreibt den Text aus sOutput in die Datei cFile.
+boolean write( File cFile, String strStartStop, String sOutput )
+{
+    boolean bReturn;
+    CVSohEtb cvSohEtb;
+    
+    chk4StpScr();
+    
+    CVFileManagement cFileManager = new CVFileManagement( 
+            cErrorMessage, cErrorFile, cStatusMessage );
+    
+    cvSohEtb = CVSohEtb.fromString(strStartStop);
+    if (cvSohEtb == null) return false;
+    
+    if (strStartStop != null)
+    {       
+        bReturn = cFileManager.storeStringToFile( 
+                      cFile, cvSohEtb.gl_strSOH, true );
+        if (bReturn == false) return false;
+    }
+    bReturn = cFileManager.storeStringToFile( cFile, sOutput, true );
+    if (strStartStop != null)
+    {
+        if (bReturn == false) return false;
+        bReturn = cFileManager.storeStringToFile( 
+                      cFile, cvSohEtb.gl_strETB, true );    
+    }
+    
+    chk4StpScr();
+    return bReturn; 
+}
+
+//-----------------------------------------------------------------------------
+//-> boolean write( File, byte[] );
+//Schreibt Bytes in die Datei cFile.
+boolean write( File cFile, byte[] pOutput )
+{
+    CVFileManagement cFileManager = new CVFileManagement( 
+         cErrorMessage, cErrorFile, cStatusMessage );
+    chk4StpScr();
+    return cFileManager.storeBytesToFile( cFile, pOutput, true );
+}
+
+// -----------------------------------------------------------------------------
+// -> boolean write( File, String, Object[] )
+// Gibt einen formatierten Text auf die mit cFile gewaehlte Datei aus. In 
+// sTemplate wird der Text mit allen Formatierungen (wie printf) uebergeben, 
+// cParam enthaelt die Variablenwerte.
+boolean write( File cFile, String sTemplate, Object[] cParam )
+{
+    chk4StpScr();
+	return write( cFile, cPrintf.printf( sTemplate, cParam ) );
+}

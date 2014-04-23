@@ -1,0 +1,12 @@
+// Script ueberprueft ob Drucker im Idle-Zustand.
+// Es wird eine entsprechende Meldung ausgegeben.
+write("SE");
+msg = read();
+if ( msg.equals("#Idle") )
+{
+    MsgBox("Printer Idle\n");
+}
+else
+{
+    error("Printer not Idle: " + msg);
+}

@@ -1,0 +1,39 @@
+//Load a Label from MemoryCard
+write("FMB---rA:\\STANDARD\\Etikett1");
+
+// Start print job with 5 prints
+write("FCDC--r5-------"); // Mode: No of Pieces
+write("FBBA--r00005---"); // No of Pieces
+write("FBC---r1-------"); // Start Job
+
+// Wait till print job finished
+// by polling
+do {
+    write("SE"); // Get extended Status
+                 // Normal Status ("S") is also possible
+    msg = read();
+    sleep(500);
+    if ( msg.startsWith("#Error") )
+    {
+        // Do something when error
+        error("Printer Error:\n" + msg);
+    }
+} while ( !msg.equals("#Idle") );
+
+// Start continues print job
+write("FCDC--r6-------"); // Mode: Continous
+write("FBC---r1-------"); // Start Job
+
+// Wait till print job finished
+// by Autostatus
+// Autostatus: Printer does send a msg when it occurs
+//             You do not have to poll
+write("G" + (char)0x00 + (char)0x30); // Activate Autostatus (Send End of Printjob and Error)
+do {
+    msg = read();
+    if ( msg.equals("G" + (char)0x00 + (char)0x10) )
+    {
+        // Do something when error
+        error("Printer Error\n");
+    }
+} while ( !msg.equals("G" + (char)0x00 + (char)0x20) );

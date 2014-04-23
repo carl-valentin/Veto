@@ -1,0 +1,103 @@
+stx = (char)0x02;
+etx = (char)0x03;
+rand = new Random(1);
+
+jobName = "RemoTest";
+
+CV_ENTER_KEY=6;
+CV_QUANT_KEY=8;
+CV_FORMFEED_KEY=5;
+CV_ESC_KEY=1;
+CV_FUNCTION_KEY=4;
+CV_UP_KEY=3;
+
+// Gibt einen neuen Zufallswert zwischen lowBorder und
+// highBorder zurueck
+int getNewRand(int lowBorder, int highBorder) {
+    do {
+        wait = rand.nextInt(highBorder);
+    } while (wait < lowBorder);
+    return wait;
+}
+
+// Simuliert einen Tastendruck ueber die Remote-Konsole mit 
+// anschliessender zufaelliger Reaktionszeit
+void SimuKey(int key) {
+    write("TK1" + stx + "*" + key + etx );
+    sleep(getNewRand(0, 500));
+}
+
+// Pruefen ob im Grundmenue sonst ins Grundmenue gehen
+// Wann im Grundmenue: Wenn "*" ("* DPM 53 ... *") 
+// oder "Compa" (d.h. es tut z.B. noch nicht bei
+// "Nova" - da noch If-Code unten erweitern).
+void GoToMainWin() {
+    write("TD");
+    msg = read();
+    if ( (msg.startsWith("TD") && !msg.matches(".*\\*.*\n.*"))
+         && (msg.startsWith("TD") && !msg.matches(".*Compa.*\n.*"))
+       )
+    {
+        SimuKey(CV_ENTER_KEY);
+    }
+    write("TD");
+    msg = read();
+    while ( (msg.startsWith("TD") && !msg.matches(".*\\*.*\n.*"))
+            && (msg.startsWith("TD") && !msg.matches(".*Compa.*\n.*"))
+          ) 
+    {
+        if (msg.matches(".*" + jobName + ".*\n.*") 
+            || msg.matches(".*TEST.*\n.*")) {
+            SimuKey(CV_ENTER_KEY);
+        }
+        SimuKey(CV_ESC_KEY);
+        write("TD");
+        msg = read();
+    };
+}
+
+// ---------- Grundeinstellungen vornehmen ----------
+write("FCRA--r2-------"); // Remote Console: Port TCP/IP
+write("FCRB--r0000----"); // Remote Console: Sendeintervall nur auf Anforderung
+write("FCSDC-r000-----"); // Entprellung auf 0 ms (Ausschalten)
+
+//---------- Layout schicken ----------
+file = openFile(ScriptPath + "SysNumTest.prn");
+strFile = read(file);
+strFile = strFile.replaceAll("ETIKETT1", jobName); // Jobname aendern
+strFile = strFile.replaceAll("FBC---r--------", ""); // Ohne Druckstart
+write(strFile);
+
+// ---------- Test-/Druckschleife ----------
+GoToMainWin();
+
+// Testschleife
+for (mainI=0; mainI<2; mainI++) {
+    // Druck mit zufaelliger Stueckzahl starten (ueber Quant-Enter)
+    SimuKey(CV_QUANT_KEY);   
+    noOfPieces = getNewRand(1,9);
+    SimuKey(noOfPieces+20);
+    SimuKey(CV_ENTER_KEY);
+    sleep(getNewRand(500, 1500));
+    
+    // Anzahl der Drucke ueber Vorschubtaste ausloesen
+    for (i=0; i<noOfPieces; i++)
+    {
+         SimuKey(CV_FORMFEED_KEY);
+         sleep(getNewRand(500, 2000));
+    }
+    // Falls ein Tastendruck durch zu kurze Wartezeit verlorenging
+    // (im Drucker also noch der Druckauftrag aktiv ist)
+    // dann Druckauftrag abbrechen.
+    GoToMainWin();
+
+    // Zufaelliges aendern der Geschwindigkeiten
+    SimuKey(CV_FUNCTION_KEY);
+    SimuKey(CV_ENTER_KEY);
+    tip = getNewRand(1, 25);
+    for (i=0; i<tip; i++) {
+        SimuKey(CV_UP_KEY);
+    }
+    SimuKey(CV_ENTER_KEY);    
+    SimuKey(CV_ESC_KEY);
+}

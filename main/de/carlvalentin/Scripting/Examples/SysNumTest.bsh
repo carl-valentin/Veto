@@ -1,0 +1,9 @@
+file = openFile(ScriptPath + "SysNumTest.prn");
+strFile = read(file);
+
+for (i=10; i<13; i++)
+{
+    strNum = sprintf("%04u", i);
+    strFile2 = strFile.replaceAll("SYSNUM", strNum);
+    write(strFile2);
+}

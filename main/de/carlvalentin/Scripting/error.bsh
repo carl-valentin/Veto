@@ -1,0 +1,35 @@
+// BeanShell-Skriptdatei
+// -----------------------------------------------------------------------------
+// Implementierte Kommandos
+// -> void error( String );
+// -> void error( String, Object[] );
+// -----------------------------------------------------------------------------
+// Kommandos werden intern auf cErrorMessage.write( String )umgesetzt und auf 
+// CVErrorMessage lk_cErrorMessage in CVBeanShell ausgegeben.
+// -----------------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// -> void error( String );
+// Gibt einen Text in Fehlerdialogbox aus.
+void error( String msg )
+{
+	if (cErrorMessage.writeAskAbort( msg ))
+    {
+        throw new bsh.InterpreterError("Script Stopped");      
+    }
+
+	return;
+}
+
+// -----------------------------------------------------------------------------
+// -> void error( String, Object[] );
+// Gibt einen formatierten Text in Fehlerdialogbox aus. In sTemplate wird der 
+// Text mit allen Formatierungen (wie printf) übergeben, cParam enthält die
+// Variablenwerte.
+void error( String sTemplate, Object[] cParam )
+{
+    error( cPrintf.printf( sTemplate, cParam ) );
+    
+	return;
+}

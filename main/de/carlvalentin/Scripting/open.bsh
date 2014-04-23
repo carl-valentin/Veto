@@ -1,0 +1,100 @@
+import de.carlvalentin.Interface.*;
+import de.carlvalentin.Protocol.*;
+
+import java.io.*;
+
+// -----------------------------------------------------------------------------
+// -> File open( File, String );
+// Oeffnet die Datei cFile, welche durch sPath spezifiziert wird. Gibt cFile 
+// zurueck.
+// Beispiel: fileIn = open( fileIn, "C:\input.txt" );
+File open( File cFile, String sPath )
+{
+    cFile = openFile(sPath);
+    return cFile;
+}
+
+//-----------------------------------------------------------------------------
+//-> CVNetworkTCP open( CVNetworkTCP, String );
+CVNetworkTCP open(CVNetworkTCP cTCPNetworkInterface, String sIP)
+{
+    cTCPNetworkInterface = openTCP(sIP);
+    return cTCPNetworkInterface;
+}
+
+// -----------------------------------------------------------------------------
+// -> CVNetworkTCP open( CVNetworkTCP, String, int );
+CVNetworkTCP open(CVNetworkTCP cTCPNetworkInterface, String sIP, int iPort)
+{
+    cTCPNetworkInterface = openTCP(sIP, iPort);
+    return cTCPNetworkInterface;
+}
+
+//-----------------------------------------------------------------------------
+//-> CVNetworkUDP open( CVNetworkUDP, String );
+CVNetworkUDP open(CVNetworkUDP cUDPNetworkInterface, String sIP)
+{
+    cUDPNetworkInterface = openUDP(sIP);
+    return cUDPNetworkInterface;
+}
+
+//-----------------------------------------------------------------------------
+//-> CVNetworkUDP open( CVNetworkUDP, String, int);
+CVNetworkUDP open(CVNetworkUDP cUDPNetworkInterface, String sIP, int iPort)
+{
+	cUDPNetworkInterface = openUDP(sIP, iPort);
+    return cUDPNetworkInterface;
+}
+
+// -----------------------------------------------------------------------------
+// -> CVParallel open( CVParallel );
+CVParallel open(CVParallel cParallelInterface)
+{
+    cParallelInterface = openParallel(null);
+    return cParallelInterface;
+}
+
+//-----------------------------------------------------------------------------
+//-> CVParallel open( CVParallel, String );
+CVParallel open(CVParallel cParallelInterface, String sLPT)
+{
+    cParallelInterface = openParallel(sLPT);
+    return cParallelInterface;
+}
+
+// -----------------------------------------------------------------------------
+// -> CVSerial open( CVSerial )
+CVSerial open(CVSerial cSerialInterface)
+{
+	cSerialInterface = openSerial(null, null, null, null, null);
+    return cSerialInterface;
+}
+
+//-----------------------------------------------------------------------------
+//-> CVSerial open( CVSerial, String )
+CVSerial open(CVSerial cSerialInterface, String sPort)
+{
+    cSerialInterface = openSerial(sPort, null, null, null, null);
+    return cSerialInterface;
+}
+
+//-----------------------------------------------------------------------------
+//-> CVSerial open( CVSerial, String )
+CVSerial open(CVSerial cSerialInterface, String sPort, String sBaudrate)
+{
+	cSerialInterface = openSerial(sPort, sBaudrate, null, null, null);
+    return cSerialInterface;
+}
+
+//-----------------------------------------------------------------------------
+//-> CVSerial open( CVSerial, String, String, String, String, String )
+//Beispiele: openSerial("COM1", "9600", "none", "8", "2")
+//           openSerial("COM1", "9600", null, null, null)
+CVSerial open(CVSerial cSerialInterface, String sPort, 
+                    String sBaudrate, String sParity, String sDatabits, 
+                    String sStopbits )
+{
+    cSerialInterface = openSerial(sPort, sBaudrate, sParity, sDatabits, 
+                                  sStopbits);
+    return cSerialInterface;
+}
