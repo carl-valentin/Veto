@@ -46,9 +46,15 @@ boolean write( String sOutput )
     {
         outputStreamWriter = 
             cConnectionManager.getConnectedInterface().getInterfaceWriter();
-        outputStreamWriter.write(cConnectionManager.getSohEtb().gl_iSOH);
+        if (cConnectionManager.getSohEtb().gl_iSOH != 0x0)
+        {
+            outputStreamWriter.write(cConnectionManager.getSohEtb().gl_iSOH);
+        }
         outputStreamWriter.write(sOutput, 0, sOutput.length());
-        outputStreamWriter.write(cConnectionManager.getSohEtb().gl_iETB);
+        if (cConnectionManager.getSohEtb().gl_iSOH != 0x0)
+        {
+            outputStreamWriter.write(cConnectionManager.getSohEtb().gl_iETB);
+        }
         outputStreamWriter.flush();
     }
     catch(IOException ex)

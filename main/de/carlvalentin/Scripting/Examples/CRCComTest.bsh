@@ -17,7 +17,7 @@ rand.nextBytes(bytes);
 crc32.update(bytes);
 
                   // C-Style sprintf (bis zu 10 Argumente) 
-startCRCTestCmd = sprintf("FCYXCTr%x;%x", NoOfBytes, 10000);
+startCRCTestCmd = sprintf("FCYXCTr%x;%x", NoOfBytes, Timeout);
              // Java-Style printf (unbegrenzte Argumentanzahl)
 giveCRCCmd = sprintf("FCYXC-r%x;%x;%uK", 
                      new Object[]{bytes.length, crc32.getValue(), 
