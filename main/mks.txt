@@ -1,12 +1,1 @@
-MKS Version 1.4.1.1
-Veto/de/carlvalentin/ValentinConsole/manifest.mf 1.1-1.2
-    btisler 19.05.2005 08:20:45 1.2; V0_3 Fuer seriell: comm.jar in lokalen Classpath, damit diese auch optional mitgeliefert werden kann und man nicht unbedingt das javax.comm installieren muss.  
-    btisler 02.04.2005 17:45:51 1.1; V0_1,V0_2 Initial revision  
-Veto/build.xml 1.1-1.3
-    btisler 19.05.2005 08:17:51 1.3; V0_3 Fuer seriell: Neuer Target dist.win32 damit javax.comm auch optional mitgeliefert werden kann und man nicht unbedingt installieren sein muss.  
-    afrieser 28.04.2005 17:10:30 1.2;  Anpassung an neue Klassenstruktur  
-    btisler 02.04.2005 17:49:49 1.1; V0_1,V0_2 Initial revision  
-ADD: Veto/javax.comm/Win32.V2.0/comm.jar btisler 19.05.2005 08:16:42
-ADD: Veto/javax.comm/Win32.V2.0/javax.comm.properties btisler 19.05.2005 08:16:43
-ADD: Veto/javax.comm/Win32.V2.0/win32com.dll btisler 19.05.2005 08:16:42
-DROP: Veto/de/carlvalentin/ValentinConsole/javax.comm.properties
+MKS Version 1.4.1

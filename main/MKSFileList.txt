@@ -1,20 +1,23 @@
- d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\carlvalentin.pj (1.4.1.1) build-subsandbox 1.4.1.1     
-   d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\ValentinConsole.pj (1.4.1.1) build-subsandbox 1.4.1.1     
+ d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\carlvalentin.pj (P0.3) variant-subsandbox      
+   d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\ValentinConsole.pj (P0.3) variant-subsandbox      
      d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\comm.jar archived 1.1     
      d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\Config.java archived 1.1     
-     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\Console.java archived 1.1     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\Console.java archived 1.1    
+    New revision available: 1.2 
      d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\CVPLnet.java archived 1.3     
      d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\CVPLrecvThread.java archived 1.2     
      d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\CVPLsendThread.java archived 1.2     
      d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\CVPLserial.java archived 1.2.1.2     
-     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\manifest.mf archived 1.2     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\manifest.mf archived 1.2    
+    New revision available: 1.4 
      d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\SohEtb.java archived 1.3     
      d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\ValentinConsole.java archived 1.4.1.2     
- d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\pnuts\pnuts.pj (1.4.1.1) build-subsandbox 1.4.1.1     
-   d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\pnuts\tools\tools.pj (1.4.1.1) build-subsandbox 1.4.1.1     
+ d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\pnuts\pnuts.pj (P0.3) variant-subsandbox      
+   d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\pnuts\tools\tools.pj (P0.3) variant-subsandbox      
      d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\pnuts\tools\Console.java archived 1.2     
  d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\ant.bat archived 1.1     
- d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\build.xml archived 1.3     
+ d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\build.xml archived 1.3    
+    New revision available: 1.12 
  d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\javax.comm\Win32.V2.0\comm.jar archived 1.1     
  d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\javax.comm\Win32.V2.0\javax.comm.properties archived 1.1     
  d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\javax.comm\Win32.V2.0\win32com.dll archived 1.1     
