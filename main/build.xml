@@ -1,4 +1,4 @@
-<project name="Valentin Embedded Test Office V0.5" default="dist" basedir=".">
+<project name="Valentin Embedded Test Office V0.6" default="dist" basedir=".">
         <description>
             Ant build file for the Valentin Embedded Test Office
         </description>
