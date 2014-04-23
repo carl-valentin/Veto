@@ -2,11 +2,10 @@ package de.carlvalentin.ValentinConsole;
 
 import java.io.*;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
-import pnuts.tools.Console;
+import java.awt.BorderLayout;
+
 /**
  * Stellt eine Shell-&Auml;hnliche Konsole zur Verf&uuml;gung um im 
  * Carl Valentin Printer Language-Format (CVPL) mit einem Device 
@@ -14,6 +13,10 @@ import pnuts.tools.Console;
  */
 public class ValentinConsole extends JFrame {
 	
+    private final String strIPConfigID = "IP-Address";
+    private final String strSohEtbConfigID = "SOH/ETB";
+    private final String strFileLastOpenedID = "Last opened file";
+    
     private SendThread sendThread;
     private class SendThread extends Thread {
         public void run() {
@@ -73,7 +76,10 @@ public class ValentinConsole extends JFrame {
 	private CVPLnet cvplNet = new CVPLnet(writerStatus);
 	private String strLastLine = new String();
 	private SohEtb sohEtb = SohEtb.x0117;
-	private Console console = new Console();
+	private de.carlvalentin.ValentinConsole.Console console = 
+        new de.carlvalentin.ValentinConsole.Console();
+    private Config config = new Config("ValentinConsole", "0.1");
+    private File fileLastOpened = null;
 
 	private javax.swing.JPanel jPanelMain = null;
 	private javax.swing.JPanel jPanelTop = null;
@@ -87,7 +93,115 @@ public class ValentinConsole extends JFrame {
 	
 	private javax.swing.JLabel jLabelStatus = null;    
     
-	public static void main(String[] args) {
+	private JToolBar jToolBar = null;
+	private JMenuBar jJMenuBar = null;
+	private JMenu jMenuFile = null;
+	private JMenuItem jMenuItemOpen = null;
+	/**
+	 * This method initializes jToolBar	
+	 * 	
+	 * @return javax.swing.JToolBar	
+	 */    
+	private JToolBar getJToolBar() {
+		if (jToolBar == null) {
+			jToolBar = new JToolBar();
+			jToolBar.add(getJLabelIPAddr());
+			jToolBar.add(getJTextFieldIPAddr());
+			jToolBar.add(getJButton());
+			jToolBar.add(getJrb0117());
+			jToolBar.add(getJrb5E5F());
+		}
+		return jToolBar;
+	}
+	/**
+	 * This method initializes jJMenuBar	
+	 * 	
+	 * @return javax.swing.JMenuBar	
+	 */    
+	private JMenuBar getJJMenuBar() {
+		if (jJMenuBar == null) {
+			jJMenuBar = new JMenuBar();
+			jJMenuBar.setName("");
+			jJMenuBar.setPreferredSize(new java.awt.Dimension(0,30));
+			jJMenuBar.add(getJMenuFile());
+		}
+		return jJMenuBar;
+	}
+	/**
+	 * This method initializes jMenu	
+	 * 	
+	 * @return javax.swing.JMenu	
+	 */    
+	private JMenu getJMenuFile() {
+		if (jMenuFile == null) {
+			jMenuFile = new JMenu();
+			jMenuFile.setName("");
+			jMenuFile.setText("File");
+			jMenuFile.setMnemonic(java.awt.event.KeyEvent.VK_F);
+			jMenuFile.add(getJMenuItemOpen());
+		}
+		return jMenuFile;
+	}
+	/**
+	 * This method initializes jMenuItem	
+	 * 	
+	 * @return javax.swing.JMenuItem	
+	 */    
+	private JMenuItem getJMenuItemOpen() {
+		if (jMenuItemOpen == null) {
+			jMenuItemOpen = new JMenuItem();
+			jMenuItemOpen.setText("Open");
+			jMenuItemOpen.setMnemonic(java.awt.event.KeyEvent.VK_O);
+			jMenuItemOpen.setEnabled(false);
+			jMenuItemOpen.addActionListener(new java.awt.event.ActionListener() { 
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+                    final JFileChooser fc = new JFileChooser();
+                    int returnVal;
+                    
+                    if (fileLastOpened != null) {
+                    	fc.setCurrentDirectory(fileLastOpened);
+                    }
+                    returnVal = fc.showOpenDialog(ValentinConsole.this);
+
+                    if (returnVal == JFileChooser.APPROVE_OPTION) {                        
+                        fileLastOpened = fc.getSelectedFile();
+                        config.setConfig(strFileLastOpenedID, 
+                                         fileLastOpened.getAbsolutePath());
+                                               
+                        try {
+                            final int iBufSize = 1500;
+                            byte[] bData = new byte[iBufSize];
+                            FileInputStream fileInputStream = 
+                                new FileInputStream(fileLastOpened);
+                            DataInputStream fileOpened = 
+                                new DataInputStream( fileInputStream ); 
+                           
+                            int iDataRead = 0;
+                                                        
+                            do {                              
+                                iDataRead = 
+                                    fileOpened.read(bData, 0, iBufSize);
+                                if (iDataRead != -1) {
+                                	cvplNet.writeRaw(bData, iDataRead);
+                                }
+                            } while (iDataRead != -1);
+
+                            fileOpened.close();
+                            fileInputStream.close();
+                        }
+                        catch (FileNotFoundException ex) {
+                        }
+                        catch (IOException ex) {
+                            writeError("I/O error while trying to read from file" + 
+                                       fileLastOpened.getName());
+                        }
+                    }
+				}
+			});
+		}
+		return jMenuItemOpen;
+	}
+    	public static void main(String[] args) {
 		ValentinConsole rc = new ValentinConsole();
 		rc.show();
 	}
@@ -107,7 +221,20 @@ public class ValentinConsole extends JFrame {
 	 */
 	private void initialize() {
         String strIPAddr;
+        SohEtb sohEtb;
+        String strFileLastOpened;
+
+        sohEtb = SohEtb.fromString(config.getConfig(strSohEtbConfigID));
+        if (sohEtb != null) {
+        	this.sohEtb = sohEtb;
+        }
         
+        strFileLastOpened = config.getConfig(strFileLastOpenedID);
+        if (strFileLastOpened != null) {
+        	fileLastOpened = new File(strFileLastOpened);
+        }
+        
+		this.setJMenuBar(getJJMenuBar());
 		this.setContentPane(getJPanelMain());
 		this.setSize(600, 600);
 		this.setTitle("ValentinConsole");
@@ -116,6 +243,13 @@ public class ValentinConsole extends JFrame {
 		javax.swing.ButtonGroup group = new javax.swing.ButtonGroup();
 		group.add(jrb0117);
 		group.add(jrb5E5F);
+
+		strIPAddr = config.getConfig(strIPConfigID);
+        if (strIPAddr != null) {
+        	jTextFieldIPAddr.setText(strIPAddr);
+        }
+        
+        console.restoreHistory(config);
         
         sendThread = new SendThread();
         sendThread.start();
@@ -143,12 +277,9 @@ public class ValentinConsole extends JFrame {
 	private javax.swing.JPanel getJPanelTop() {
 		if(jPanelTop == null) {
 			jPanelTop = new javax.swing.JPanel();
-			jPanelTop.add(getJLabelIPAddr(), null);
-			jPanelTop.add(getJTextFieldIPAddr(), null);
-			jPanelTop.add(getJButton(), null);
-			jPanelTop.add(getJrb0117(), null);
-			jPanelTop.add(getJrb5E5F(), null);
+			jPanelTop.setLayout(new BorderLayout());
 			jPanelTop.setPreferredSize(new java.awt.Dimension(20,36));
+			jPanelTop.add(getJToolBar(), java.awt.BorderLayout.NORTH);
 		}
 		return jPanelTop;
 	}
@@ -217,11 +348,17 @@ public class ValentinConsole extends JFrame {
                                 jButton.setText("Disconnect");
                                 jrb0117.setEnabled(false);
                                 jrb5E5F.setEnabled(false);
+                                jMenuItemOpen.setEnabled(true);
                                 console.getTextArea().setEnabled(true);
                             }
                         });
                         recvThread = new RecvThread();
                         recvThread.start();
+                        
+                        config.setConfig(strIPConfigID, 
+                                         jTextFieldIPAddr.getText());
+                        config.setConfig(strSohEtbConfigID,
+                                         sohEtb.toString());
                     }
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
@@ -234,11 +371,13 @@ public class ValentinConsole extends JFrame {
         else {
             recvThread = null;
             cvplNet.closeConnect();
+            console.saveHistory(config);
             console.getTextArea().setEnabled(false);
+            jMenuItemOpen.setEnabled(false);
             jrb0117.setEnabled(true);
             jrb5E5F.setEnabled(true);
             jButton.setText("Connect");
-            jTextFieldIPAddr.setEnabled(true);                                                                      
+            jTextFieldIPAddr.setEnabled(true);            
         }
     }
     
@@ -283,7 +422,8 @@ public class ValentinConsole extends JFrame {
 			jrb0117 = new javax.swing.JRadioButton();
 			jrb0117.setText("01/17");
 			jrb0117.setRolloverEnabled(false);
-			jrb0117.setSelected(true);
+            if (sohEtb == SohEtb.x0117) jrb0117.setSelected(true);
+            else                        jrb0117.setSelected(false);
 			jrb0117.addActionListener(new java.awt.event.ActionListener() { 
 				public void actionPerformed(java.awt.event.ActionEvent e) {    
 					sohEtb = SohEtb.x0117;
@@ -301,6 +441,8 @@ public class ValentinConsole extends JFrame {
 		if(jrb5E5F == null) {
 			jrb5E5F = new javax.swing.JRadioButton();
 			jrb5E5F.setText("5E/5F");
+            if (sohEtb == SohEtb.x5E5F) jrb5E5F.setSelected(true);
+            else                        jrb5E5F.setSelected(false);            
 			jrb5E5F.addActionListener(new java.awt.event.ActionListener() { 
 				public void actionPerformed(java.awt.event.ActionEvent e) {    
 					sohEtb = SohEtb.x5E5F;

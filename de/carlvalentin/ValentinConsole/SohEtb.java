@@ -59,6 +59,7 @@ public final class SohEtb {
 	  	}
 	  	last = this;
 	}
+    
 	public static Enumeration elements() {
 		return new Enumeration() {
 			private SohEtb curr = first;
@@ -72,7 +73,38 @@ public final class SohEtb {
 			}
 	 	};
 	}
+    
 	public String toString() {return this.id; }
+    
+    /**
+     * Liefert den Wert &uuml;ber die von toString zur&uuml;ckgegebene
+     * Stringrepresentation:
+     * <pre>
+     *     SohEtb sohEtb = SohEtb.x0117;           // sohEtb hat jetzt
+     *                                             // den Wert 01/17
+     *     String str5E5F = SohEtb.x5E5F.toString;
+     *     sohEtb = SohEtb.fromString(str5E5F);    // sohEtb hat jetzt 
+     *                                             // den Wert 5E/5F
+     *     }
+     * </pre>
+     */
+    public static SohEtb fromString(String str)
+    {
+        if (str == null) return null;
+        
+        if (str.compareTo(SohEtb.x0117.toString()) == 0)
+        {            
+        	return SohEtb.x0117;
+        }
+
+        if (str.compareTo(SohEtb.x5E5F.toString()) == 0)
+        {           
+            return SohEtb.x5E5F;
+        }        
+        
+        return null;
+    }
+    
 	public static int size() { return upperBound; }
 	public static SohEtb first() { return first; }
 	public static SohEtb last()  { return last;  }

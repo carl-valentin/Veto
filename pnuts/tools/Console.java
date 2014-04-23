@@ -45,8 +45,8 @@ public class Console {
 
     private ConsoleBuffer out;
     private PipedReader in;
-    private Vector history;
-    private int historyIndex = -1;
+    protected Vector history;
+    protected int historyIndex = -1;
     private int mark = 0;
     private PipedWriter pipe;
     private EventHandler handler;

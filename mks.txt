@@ -1,12 +1,16 @@
-MKS Version 1.2
-ADD: Veto/de/carlvalentin/ValentinConsole/CVPLnet.java btisler 02.04.2005 17:45:36
-ADD: Veto/de/carlvalentin/ValentinConsole/manifest.mf btisler 02.04.2005 17:45:51
-ADD: Veto/de/carlvalentin/ValentinConsole/SohEtb.java btisler 02.04.2005 17:46:12
-ADD: Veto/de/carlvalentin/ValentinConsole/ValentinConsole.java btisler 02.04.2005 17:44:11
-ADD: Veto/pnuts/tools/Console.java btisler 02.04.2005 17:43:03
-ADD: Veto/ant.bat btisler 02.04.2005 17:49:35
-ADD: Veto/build.xml btisler 02.04.2005 17:49:49
-ADD: Veto/make.bat btisler 02.04.2005 17:49:18
-ADD: Veto/project/doxcfg.dxc btisler 02.04.2005 17:50:21
-ADD: Veto/project/lcp.bat btisler 02.04.2005 17:51:01
-ADD: Veto/project/overview.html btisler 02.04.2005 17:50:51
+MKS Version 1.3
+ADD: Veto/de/carlvalentin/ValentinConsole/Config.java btisler 13.04.2005 10:51:45
+ADD: Veto/de/carlvalentin/ValentinConsole/Console.java btisler 13.04.2005 10:53:42
+Veto/de/carlvalentin/ValentinConsole/CVPLnet.java 1.1-1.2
+    btisler 13.04.2005 10:55:50 1.2; V0_2 Um eine Funktion writeRaw erweitert um Daten die bereits in CVPL sind sichicken zu koennen.  
+        Ist allerdings nicht durchdacht und Quick'n'Dirty
+    btisler 02.04.2005 17:45:36 1.1; V0_1 Initial revision  
+Veto/de/carlvalentin/ValentinConsole/SohEtb.java 1.1-1.2
+    btisler 13.04.2005 10:56:50 1.2; V0_2 Neue Funktion fromString: Setzt SOH/ETB aufgrund einer Stringreprsentation  
+    btisler 02.04.2005 17:46:12 1.1; V0_1 Initial revision  
+Veto/de/carlvalentin/ValentinConsole/ValentinConsole.java 1.1-1.2
+    btisler 13.04.2005 11:00:27 1.2; V0_2 Um Config-Speichern und File-Open-Dialog erweitert.  
+    btisler 02.04.2005 17:44:11 1.1; V0_1 Initial revision  
+Veto/pnuts/tools/Console.java 1.1-1.2
+    btisler 13.04.2005 10:54:36 1.2; V0_2,V0_3,V0_4_0,V0_5_0 Aus 2 private-Member protected gemacht, damit man sinnvoll von dieser Klasse erben kann.  
+    btisler 02.04.2005 17:43:03 1.1; V0_1 Initial revision  
