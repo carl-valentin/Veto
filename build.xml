@@ -1,22 +1,22 @@
-<project name="Valentin Embedded Test Office V0.4" default="dist" basedir=".">
+<project name="Valentin Embedded Test Office V0.7" default="dist.win32" basedir=".">
         <description>
             Ant build file for the Valentin Embedded Test Office
         </description>
     <!-- set global properties for this build -->
-    <property environment="env"/>   
+    <property environment="env"/>
     <property name="OUTPUTDIR" location="O"/>
     <property name="ODIR_CLASSES" location="${OUTPUTDIR}\classes"/>
     <property name="ODIR_PACKAGE" location="${OUTPUTDIR}\package"/>
     <property name="DOCS_ODIR" location="docs"/>
-    <property name="SCRIPTDIR" location="de/carlvalentin/Scripting"/>   
-	
+    <property name="SCRIPTDIR" location="de/carlvalentin/Scripting"/>
+
     <target name="init">
         <!-- Create the time stamp -->
         <tstamp/>
         <!-- Create the build directory structure used by compile -->
         <mkdir dir="${OUTPUTDIR}"/>
         <mkdir dir="${ODIR_CLASSES}"/>
-        <mkdir dir="${ODIR_PACKAGE}"/>   
+        <mkdir dir="${ODIR_PACKAGE}"/>
     </target>
 
     <target name="compile" depends="init"
@@ -30,84 +30,85 @@
     <target name="compile.win32" depends="init"
             description="compile the source Win32-specific" >
         <!-- Compile the java code from ${src} into ${outputdir} -->
-        <javac srcdir="." destdir="${ODIR_CLASSES}" 
+        <javac srcdir="." destdir="${ODIR_CLASSES}"
                classpath="javax.comm/Win32.V2.0/comm.jar;bsh/bsh-2.0b2.jar;
                 com/sharkysoft/lava3-core.jar;com/sharkysoft/lava3-printf.jar"/>
     </target>
-    
+
     <target name="dist" depends="compile"
             description="generate the distribution" >
 
         <!-- Put everything in into the jar file -->
-        <jar jarfile="${ODIR_PACKAGE}/Veto.jar" 
-        	 basedir="${ODIR_CLASSES}" 
+        <jar jarfile="${ODIR_PACKAGE}/Veto.jar"
+        	 basedir="${ODIR_CLASSES}"
         	 manifest="de/carlvalentin/ValentinConsole/manifest.mf"/>
         <!-- Copy the rest needed for dist in package dir -->
         <copy todir="${ODIR_PACKAGE}">
             <fileset dir="bsh" excludes="**/*.pj"/>
-            <fileset dir="com/sharkysoft" excludes="**/*.pj"/>   
+            <fileset dir="com/sharkysoft" excludes="**/*.pj"/>
         </copy>
         <!-- Copy BeanShell script files in package dir -->
-        <mkdir dir="${ODIR_PACKAGE}\bshscripts"/>   
+        <mkdir dir="${ODIR_PACKAGE}\bshscripts"/>
         <copy todir="${ODIR_PACKAGE}\bshscripts">
             <fileset dir="${SCRIPTDIR}" includes="**/*.bsh" />
         </copy>
         <!-- Copy VETO documentation files in package dir -->
         <copy todir="${ODIR_PACKAGE}">
-            <fileset dir="." includes="*.doc"/> 
-        </copy>   
+            <fileset dir="." includes="*.doc"/>            
+        </copy>
     </target>
 
     <target name="dist.win32" depends="compile.win32"
             description="generate the distribution" >
 
         <!-- Put everything in into the jar file -->
-        <jar jarfile="${ODIR_PACKAGE}/Veto.jar" 
-             basedir="${ODIR_CLASSES}" 
+        <jar jarfile="${ODIR_PACKAGE}/Veto.jar"
+             basedir="${ODIR_CLASSES}"
              manifest="de/carlvalentin/ValentinConsole/manifest.mf"/>
         <!-- Copy the rest needed for dist in package dir -->
         <copy todir="${ODIR_PACKAGE}">
-            <fileset dir="javax.comm/Win32.V2.0" excludes="**/*.pj"/>   
+            <fileset dir="javax.comm/Win32.V2.0" excludes="**/*.pj"/>
             <fileset dir="bsh" excludes="**/*.pj"/>
-            <fileset dir="com/sharkysoft" excludes="**/*.pj"/>   
+            <fileset dir="com/sharkysoft" excludes="**/*.pj"/>
         </copy>
         <!-- Copy BeanShell script files in package dir -->
-        <mkdir dir="${ODIR_PACKAGE}\bshscripts"/>   
+        <mkdir dir="${ODIR_PACKAGE}\bshscripts"/>
         <copy todir="${ODIR_PACKAGE}\bshscripts">
             <fileset dir="${SCRIPTDIR}" includes="**/*.bsh" />
         </copy>
-        <mkdir dir="${ODIR_PACKAGE}\ExampleScripts"/>   
+        <mkdir dir="${ODIR_PACKAGE}\ExampleScripts"/>
         <copy todir="${ODIR_PACKAGE}\ExampleScripts">
             <fileset dir="${SCRIPTDIR}\Examples" includes="**/*.bsh,**/*.prn" />
-        </copy>   
+        </copy>
         <!-- Copy VETO documentation files in package dir -->
         <copy todir="${ODIR_PACKAGE}">
-            <fileset dir="." includes="*.doc"/> 
-        </copy>   
+            <fileset dir="." includes="*.doc"/>
+            <fileset dir="." includes="VetoStart.bat"/>
+        </copy>
     </target>
-    
+
     <target name="docs"
             description="generate documentation" >
         <!-- Run Javadoc -->
-        <javadoc sourcepath="." 
+        <javadoc sourcepath="."
         	     packagenames="de.carlvalentin.ValentinConsole.*,
                                de.carlvalentin.Common.*,
                                de.carlvalentin.Interface.*,
                                de.carlvalentin.Protocol.*,
-                               de.carlvalentin.Scripting.*,   
+                               de.carlvalentin.Scripting.*,
         	                   pnuts.tools.*"
 		         destdir="${DOCS_ODIR}/javadoc"
                  overview="project/overview.html"/>
-    	<!-- Run Doxygen --> 
+    	<!-- Run Doxygen -->
         <exec executable="${env.DOXYGEN_PATH}doxygen">
             <arg line="project/doxcfg.dxc"/>
-            <env key="PROJECT_NAME" value="Veto"/>   
+            <env key="PROJECT_NAME" value="Veto"/>
             <env key="INPUT" value="."/>
             <env key="OUTPUT_DIRECTORY" value="${DOCS_ODIR}/doxygen"/>
         </exec>
 
     </target>
-	
+
     <target name="clean"
             description="clean up" >
         <!-- Delete the ${outputdir} directory trees -->
