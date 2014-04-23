@@ -100,7 +100,12 @@ public final class SohEtb {
         if (str.compareTo(SohEtb.x5E5F.toString()) == 0)
         {           
             return SohEtb.x5E5F;
-        }        
+        }
+        
+        if (str.compareTo(SohEtb.none.toString()) == 0)
+        {
+            return SohEtb.none;
+        }
         
         return null;
     }
@@ -115,4 +120,6 @@ public final class SohEtb {
 		new SohEtb((byte)0x01, (byte)0x17);
 	public static final SohEtb x5E5F = 
 		new SohEtb((byte)0x5E, (byte)0x5F);
+    public static final SohEtb none =
+        new SohEtb((byte)0xFF, (byte)0xFF);
 }

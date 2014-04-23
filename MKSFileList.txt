@@ -1,13 +1,18 @@
- d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\carlvalentin.pj (1.3) build-subsandbox 1.3     
-   d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\ValentinConsole.pj (1.3) build-subsandbox 1.3     
+ d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\carlvalentin.pj (1.4) build-subsandbox 1.4     
+   d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\ValentinConsole.pj (1.4) build-subsandbox 1.4     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\comm.jar archived 1.1     
      d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\Config.java archived 1.1     
      d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\Console.java archived 1.1     
-     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\CVPLnet.java archived 1.2     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\CVPLnet.java archived 1.3     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\CVPLrecvThread.java archived 1.2     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\CVPLsendThread.java archived 1.2     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\CVPLserial.java archived 1.2     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\javax.comm.properties archived 1.1     
      d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\manifest.mf archived 1.1     
-     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\SohEtb.java archived 1.2     
-     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\ValentinConsole.java archived 1.2     
- d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\pnuts\pnuts.pj (1.3) build-subsandbox 1.3     
-   d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\pnuts\tools\tools.pj (1.3) build-subsandbox 1.3     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\SohEtb.java archived 1.3     
+     d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\de\carlvalentin\ValentinConsole\ValentinConsole.java archived 1.4     
+ d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\pnuts\pnuts.pj (1.4) build-subsandbox 1.4     
+   d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\pnuts\tools\tools.pj (1.4) build-subsandbox 1.4     
      d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\pnuts\tools\Console.java archived 1.2     
  d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\ant.bat archived 1.1     
  d:\BTisler\softdevl_Kepler\de.cv.mks2svn\O\Veto\build.xml archived 1.1     

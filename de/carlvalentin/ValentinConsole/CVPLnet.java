@@ -92,11 +92,21 @@ public class CVPLnet {
 	}
 	
     /**
+     * 
      * @return Reader mit einem Stream vom Drucker
      */
-	public Reader getReader() {
+	public Reader getNetworkReader() {
 		return lk_cStreamFromPrinter;
 	}
+    
+    /**
+     * 
+     * @return
+     */
+    public Writer getNetworkWriter()
+    {
+        return lk_cStream2Printer;
+    }
 	
 	public void write(String string2Write, SohEtb sohEtb) {
 		try {

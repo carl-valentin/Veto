@@ -2,10 +2,18 @@ package de.carlvalentin.ValentinConsole;
 
 import java.io.*;
 
+import javax.comm.CommPortIdentifier;
 import javax.swing.*;
 
 import java.awt.BorderLayout;
 
+import javax.swing.JPanel;
+import javax.swing.JToolBar;
+import javax.swing.JLabel;
+import javax.swing.JComboBox;
+import javax.swing.JButton;
+import javax.swing.JRadioButton;
+import javax.swing.JCheckBox;
 /**
  * Stellt eine Shell-&Auml;hnliche Konsole zur Verf&uuml;gung um im 
  * Carl Valentin Printer Language-Format (CVPL) mit einem Device 
@@ -13,83 +21,36 @@ import java.awt.BorderLayout;
  */
 public class ValentinConsole extends JFrame {
 	
-    private final String strIPConfigID = "IP-Address";
-    private final String strSohEtbConfigID = "SOH/ETB";
+    private final String strNetworkIPConfigID = "IP-Address";
+    private final String strNetworkSohEtbConfigID = "SOH/ETBNetwork";
     private final String strFileLastOpenedID = "Last opened file";
+    private final String strRS232SohEtbConfigID = "SOH/ETBRS232";
     
-    private SendThread sendThread;
-    private class SendThread extends Thread {
-        public void run() {
-            char c;
-            Thread thisThread = Thread.currentThread();
-            Reader readerConsole = console.getReader();
-            while (sendThread == thisThread) {
-                try {               
-                    c = (char)readerConsole.read();                 
-                    switch (c) {
-                        case '\n':
-                            cvplNet.write(strLastLine, sohEtb);
-                            strLastLine = "";
-                            break;
-                            
-                        case '\b':
-                            strLastLine = 
-                                strLastLine.substring(
-                                    0, strLastLine.length()-1); 
-                            break;
-                            
-                        default:
-                            strLastLine += c;
-                            break;
-                    }                   
-                }
-                catch (IOException ex) {
-                    writeError("Console I/O Exception");
-                }
-            }
-        }
-    }    
+    private StatusWriter writerStatus = new StatusWriter();
     
-	private RecvThread recvThread;
-	private class RecvThread extends Thread {
-		public void run() {
-            String str;
-			Thread thisThread = Thread.currentThread();
-			java.io.Writer writerConsole = console.getWriter();
-			while (recvThread == thisThread) {
-				try {
-                    str = cvplNet.read(sohEtb);
-                    if (str != null)
-                    {
-                    	writerConsole.write(str + "\n");
-                    	writerConsole.flush();
-                    }
-				}
-				catch (IOException ex) {
-					writeError("Console I/O Exception");
-				}					                   
-			}
-		}
-	}	
-	
-    private StatusWriter writerStatus = new StatusWriter();    
-	private CVPLnet cvplNet = new CVPLnet(writerStatus);
-	private String strLastLine = new String();
-	private SohEtb sohEtb = SohEtb.x0117;
+	private CVPLnet    cvplNet    = new CVPLnet(writerStatus);
+    private CVPLsendThread sendDataThreadNetwork;
+    private CVPLrecvThread recvDataThreadNetwork;
+    private SohEtb sohEtbNetwork = SohEtb.x0117;
+    private CVPLserial cvplSerial = new CVPLserial(writerStatus);
+    private CVPLsendThread sendDataThreadRS232;
+    private CVPLrecvThread recvDataThreadRS232;
+    private SohEtb sohEtbRS232   = SohEtb.x0117;
+    
 	private de.carlvalentin.ValentinConsole.Console console = 
         new de.carlvalentin.ValentinConsole.Console();
     private Config config = new Config("ValentinConsole", "0.1");
     private File fileLastOpened = null;
 
 	private javax.swing.JPanel jPanelMain = null;
-	private javax.swing.JPanel jPanelTop = null;
+	private javax.swing.JPanel jPanelToolbarNetwork = null;
 	private javax.swing.JScrollPane jScrollPaneConsole = null;
 	private javax.swing.JPanel jPanelBottom = null;	
 	private javax.swing.JTextField jTextFieldIPAddr = null;
-	private javax.swing.JButton jButton = null;
+	private javax.swing.JButton jButtonNetworkConnect = null;
 	private javax.swing.JLabel jLabelIPAddr = null;
-	private javax.swing.JRadioButton jrb0117 = null;
-	private javax.swing.JRadioButton jrb5E5F = null;
+	private javax.swing.JRadioButton jrb0117Network = null;
+	private javax.swing.JRadioButton jrb5E5FNetwork = null;
 	
 	private javax.swing.JLabel jLabelStatus = null;    
     
@@ -97,6 +58,32 @@ public class ValentinConsole extends JFrame {
 	private JMenuBar jJMenuBar = null;
 	private JMenu jMenuFile = null;
 	private JMenuItem jMenuItemOpen = null;
+	private JPanel jPanelToolbar = null;
+	private JPanel jPanelToolbarRS232 = null;
+	private JToolBar jToolBarRS232A = null;
+	private JLabel jLabelRS232Port = null;
+	private JComboBox jComboBoxRS232PortList = null;
+	private JLabel jLabelRS232Baudrate = null;
+	private JComboBox jComboBoxRS232BaudrateList = null;
+	private JLabel jLabelRS232DataBits = null;
+	private JComboBox jComboBoxRS232DatabitsList = null;
+	private JLabel jLabelRS232Stopbits = null;
+	private JComboBox jComboBoxRS232StopbitsList = null;
+	private JLabel jLabelRS232Parity = null;
+	private JComboBox jComboBoxRS232ParityList = null;
+	private JToolBar jToolBarRS232B = null;
+	private JButton jButtonRS232Open = null;
+	private JButton jButtonRS232Close = null;
+	private JRadioButton jRadioButtonEncoding5E5FRS232 = null;
+	private JRadioButton jRadioButtonEncoding0117RS232 = null;
+	private JRadioButton jRadioButtonEncodingNoneRS232 = null;
+	private JCheckBox jCheckBoxRS232CD = null;
+	private JCheckBox jCheckBoxRS232CTS = null;
+	private JCheckBox jCheckBoxRS232DSR = null;
+	private JCheckBox jCheckBoxRS232DA = null;
+	private JLabel jLabelUARTBits = null;
+	private JCheckBox jCheckBoxRS232DTR = null;
+	private JCheckBox jCheckBoxRS232RTS = null;
 	/**
 	 * This method initializes jToolBar	
 	 * 	
@@ -107,9 +94,9 @@ public class ValentinConsole extends JFrame {
 			jToolBar = new JToolBar();
 			jToolBar.add(getJLabelIPAddr());
 			jToolBar.add(getJTextFieldIPAddr());
-			jToolBar.add(getJButton());
-			jToolBar.add(getJrb0117());
-			jToolBar.add(getJrb5E5F());
+			jToolBar.add(getJButtonNetworkConnect());
+			jToolBar.add(getJrb0117Network());
+			jToolBar.add(getJrb5E5FNetwork());
 		}
 		return jToolBar;
 	}
@@ -201,7 +188,558 @@ public class ValentinConsole extends JFrame {
 		}
 		return jMenuItemOpen;
 	}
-    	public static void main(String[] args) {
+	/**
+	 * This method initializes jPanel	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */    
+	private JPanel getJPanelToolbar() {
+		if (jPanelToolbar == null) {
+			jPanelToolbar = new JPanel();
+			jPanelToolbar.setLayout(new BorderLayout());
+			jPanelToolbar.add(getJPanelToolbarNetwork(), java.awt.BorderLayout.NORTH);
+			jPanelToolbar.add(getJPanelToolbarRS232(), java.awt.BorderLayout.SOUTH);
+		}
+		return jPanelToolbar;
+	}
+	/**
+	 * This method initializes jPanel	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */    
+	private JPanel getJPanelToolbarRS232() {
+		if (jPanelToolbarRS232 == null) {
+			jPanelToolbarRS232 = new JPanel();
+			jPanelToolbarRS232.setLayout(new BorderLayout());
+			jPanelToolbarRS232.setPreferredSize(new java.awt.Dimension(20,72));
+			jPanelToolbarRS232.add(getJToolBarRS232A(), java.awt.BorderLayout.NORTH);
+			jPanelToolbarRS232.add(getJToolBarRS232B(), java.awt.BorderLayout.SOUTH);
+		}
+		return jPanelToolbarRS232;
+	}
+	/**
+	 * This method initializes jToolBar1	
+	 * 	
+	 * @return javax.swing.JToolBar	
+	 */    
+	private JToolBar getJToolBarRS232A() {
+		if (jToolBarRS232A == null) {
+			jLabelRS232Baudrate = new JLabel();
+			jLabelRS232DataBits = new JLabel();
+			jLabelRS232Stopbits = new JLabel();
+			jLabelRS232Parity = new JLabel();
+			jLabelRS232Port = new JLabel();
+			jToolBarRS232A = new JToolBar();
+			jLabelRS232Port.setText("Serial port:");
+			jToolBarRS232A.setPreferredSize(new java.awt.Dimension(402,36));
+			jToolBarRS232A.setBackground(new java.awt.Color(214,204,204));
+			jLabelRS232Baudrate.setText("Baudrate:");
+			jLabelRS232DataBits.setText("Databits:");
+			jLabelRS232Stopbits.setText("Stopbits");
+			jLabelRS232Parity.setText("Parity:");
+			jToolBarRS232A.add(jLabelRS232Port);
+			jToolBarRS232A.add(getJComboBoxRS232PortList());
+			jToolBarRS232A.add(jLabelRS232Baudrate);
+			jToolBarRS232A.add(getJComboBoxRS232BaudrateList());
+			jToolBarRS232A.add(jLabelRS232DataBits);
+			jToolBarRS232A.add(getJComboBoxRS232DatabitsList());
+			jToolBarRS232A.add(jLabelRS232Stopbits);
+			jToolBarRS232A.add(getJComboBoxRS232StopbitsList());
+			jToolBarRS232A.add(jLabelRS232Parity);
+			jToolBarRS232A.add(getJComboBoxRS232ParityList());
+		}
+		return jToolBarRS232A;
+	}
+	/**
+	 * This method initializes jComboBox	
+	 * 	
+	 * @return javax.swing.JComboBox	
+	 */    
+	private JComboBox getJComboBoxRS232PortList() {
+		if (jComboBoxRS232PortList == null) {
+			jComboBoxRS232PortList = new JComboBox();
+			jComboBoxRS232PortList.setBackground(java.awt.Color.white);
+			jComboBoxRS232PortList.addItemListener(new java.awt.event.ItemListener() { 
+				public void itemStateChanged(java.awt.event.ItemEvent e) {    
+                    cvplSerial.setPort((String)jComboBoxRS232PortList.getSelectedItem());
+				}
+			});
+            for(java.util.Enumeration sPortList = cvplSerial.getCommPortList(); sPortList.hasMoreElements(); )
+            {
+            	String szPortName = ((CommPortIdentifier)sPortList.nextElement()).getName();
+                jComboBoxRS232PortList.addItem(szPortName);
+            }
+            if(jComboBoxRS232PortList.getItemCount() > 0)
+            {
+                jComboBoxRS232PortList.setSelectedIndex(0);
+                cvplSerial.setPort((String)jComboBoxRS232PortList.getSelectedItem());
+            }
+		}
+		return jComboBoxRS232PortList;
+	}
+	/**
+	 * This method initializes jComboBox	
+	 * 	
+	 * @return javax.swing.JComboBox	
+	 */    
+	private JComboBox getJComboBoxRS232BaudrateList() {
+		if (jComboBoxRS232BaudrateList == null) {
+			jComboBoxRS232BaudrateList = new JComboBox();
+			jComboBoxRS232BaudrateList.setBackground(java.awt.Color.white);
+			jComboBoxRS232BaudrateList.addItemListener(new java.awt.event.ItemListener() { 
+				public void itemStateChanged(java.awt.event.ItemEvent e) {    
+					cvplSerial.setBaudRate((String)jComboBoxRS232BaudrateList.getSelectedItem());
+				}
+			});
+            jComboBoxRS232BaudrateList.addItem("57600 Bits/Sec");
+            jComboBoxRS232BaudrateList.addItem("38400 Bits/Sec");
+            jComboBoxRS232BaudrateList.addItem("19200 Bits/Sec");
+            jComboBoxRS232BaudrateList.addItem("9600 Bits/Sec");
+            jComboBoxRS232BaudrateList.addItem("4800 Bits/Sec");
+            jComboBoxRS232BaudrateList.addItem("2400 Bits/Sec");
+            if(jComboBoxRS232BaudrateList.getItemCount() > 0)
+            {
+                jComboBoxRS232BaudrateList.setSelectedIndex(0);
+                cvplSerial.setBaudRate((String)jComboBoxRS232BaudrateList.getSelectedItem());
+            }
+		}
+		return jComboBoxRS232BaudrateList;
+	}
+	/**
+	 * This method initializes jComboBox	
+	 * 	
+	 * @return javax.swing.JComboBox	
+	 */    
+	private JComboBox getJComboBoxRS232DatabitsList() {
+		if (jComboBoxRS232DatabitsList == null) {
+			jComboBoxRS232DatabitsList = new JComboBox();
+			jComboBoxRS232DatabitsList.setBackground(java.awt.Color.white);
+			jComboBoxRS232DatabitsList.addItemListener(new java.awt.event.ItemListener() { 
+				public void itemStateChanged(java.awt.event.ItemEvent e) {    
+					cvplSerial.setDataBits((String)jComboBoxRS232DatabitsList.getSelectedItem());
+				}
+			});
+            jComboBoxRS232DatabitsList.addItem("8");
+            jComboBoxRS232DatabitsList.addItem("7");
+            if(jComboBoxRS232DatabitsList.getItemCount() > 0)
+            {
+                jComboBoxRS232DatabitsList.setSelectedIndex(0);
+                cvplSerial.setDataBits((String)jComboBoxRS232DatabitsList.getSelectedItem());
+            }
+		}
+		return jComboBoxRS232DatabitsList;
+	}
+	/**
+	 * This method initializes jComboBox	
+	 * 	
+	 * @return javax.swing.JComboBox	
+	 */    
+	private JComboBox getJComboBoxRS232StopbitsList() {
+		if (jComboBoxRS232StopbitsList == null) {
+			jComboBoxRS232StopbitsList = new JComboBox();
+			jComboBoxRS232StopbitsList.setBackground(java.awt.Color.white);
+			jComboBoxRS232StopbitsList.addItemListener(new java.awt.event.ItemListener() { 
+				public void itemStateChanged(java.awt.event.ItemEvent e) {    
+					cvplSerial.setStopBits((String)jComboBoxRS232StopbitsList.getSelectedItem());
+				}
+			});
+            jComboBoxRS232StopbitsList.addItem("1");
+            jComboBoxRS232StopbitsList.addItem("2");
+            if(jComboBoxRS232StopbitsList.getItemCount() > 0)
+            {
+                jComboBoxRS232StopbitsList.setSelectedIndex(0);
+                cvplSerial.setStopBits((String)jComboBoxRS232StopbitsList.getSelectedItem());
+            }
+		}
+		return jComboBoxRS232StopbitsList;
+	}
+	/**
+	 * This method initializes jComboBox	
+	 * 	
+	 * @return javax.swing.JComboBox	
+	 */    
+	private JComboBox getJComboBoxRS232ParityList() {
+		if (jComboBoxRS232ParityList == null) {
+			jComboBoxRS232ParityList = new JComboBox();
+			jComboBoxRS232ParityList.setBackground(java.awt.Color.white);
+			jComboBoxRS232ParityList.addItemListener(new java.awt.event.ItemListener() { 
+				public void itemStateChanged(java.awt.event.ItemEvent e) {    
+					cvplSerial.setParity((String)jComboBoxRS232ParityList.getSelectedItem());
+				}
+			});
+            jComboBoxRS232ParityList.addItem("none");
+            jComboBoxRS232ParityList.addItem("odd");
+            jComboBoxRS232ParityList.addItem("even");
+            if(jComboBoxRS232ParityList.getItemCount() > 0)
+            {
+                jComboBoxRS232ParityList.setSelectedIndex(0);
+                cvplSerial.setParity((String)jComboBoxRS232ParityList.getSelectedItem());
+            }
+		}
+		return jComboBoxRS232ParityList;
+	}
+	/**
+	 * This method initializes jToolBar1	
+	 * 	
+	 * @return javax.swing.JToolBar	
+	 */    
+	private JToolBar getJToolBarRS232B() {
+		if (jToolBarRS232B == null) {
+			jLabelUARTBits = new JLabel();
+			jToolBarRS232B = new JToolBar();
+			jToolBarRS232B.setBackground(new java.awt.Color(214,204,204));
+			jToolBarRS232B.setPreferredSize(new java.awt.Dimension(402,36));
+			jLabelUARTBits.setText("UART Bits:");
+			jLabelUARTBits.setBackground(new java.awt.Color(214,204,204));
+			jToolBarRS232B.add(getJRadioButtonEncodingNoneRS232());
+			jToolBarRS232B.add(getJRadioButtonEncoding0117RS232());
+			jToolBarRS232B.add(getJRadioButtonEncoding5E5FRS232());
+			jToolBarRS232B.add(jLabelUARTBits);
+			jToolBarRS232B.add(getJCheckBoxRS232RTS());
+			jToolBarRS232B.add(getJCheckBoxRS232DTR());
+			jToolBarRS232B.add(getJCheckBoxRS232DSR());
+			jToolBarRS232B.add(getJCheckBoxRS232DA());
+			jToolBarRS232B.add(getJCheckBoxRS232CTS());
+			jToolBarRS232B.add(getJCheckBoxRS232CD());
+			jToolBarRS232B.add(getJButtonRS232Open());
+			jToolBarRS232B.add(getJButtonRS232Close());
+		}
+		return jToolBarRS232B;
+	}
+	/**
+	 * This method initializes jButton1	
+	 * 	
+	 * @return javax.swing.JButton	
+	 */    
+	private JButton getJButtonRS232Open() {
+		if (jButtonRS232Open == null) {
+			jButtonRS232Open = new JButton();
+			jButtonRS232Open.setPreferredSize(new java.awt.Dimension(40,36));
+			jButtonRS232Open.setText("Open serial port");
+			jButtonRS232Open.addActionListener(new java.awt.event.ActionListener() { 
+				public void actionPerformed(java.awt.event.ActionEvent e) {    
+                    if(cvplSerial.openSerialPort() == true)
+                    {
+                        jButtonRS232Open.setEnabled(false);
+                        jButtonRS232Close.setEnabled(true);
+                    
+                        jComboBoxRS232PortList.setEnabled(false);
+                        jComboBoxRS232BaudrateList.setEnabled(false);
+                        jComboBoxRS232DatabitsList.setEnabled(false);
+                        jComboBoxRS232StopbitsList.setEnabled(false);
+                        jComboBoxRS232ParityList.setEnabled(false);
+                        jRadioButtonEncoding0117RS232.setEnabled(false);
+                        jRadioButtonEncoding5E5FRS232.setEnabled(false);
+                        jRadioButtonEncodingNoneRS232.setEnabled(false);
+                        
+                        sendDataThreadRS232 = new CVPLsendThread(writerStatus);
+                        sendDataThreadRS232.setInputReader(console.getReader());
+                        sendDataThreadRS232.setOutputWriter(cvplSerial.getPortWriter());
+                        sendDataThreadRS232.setSohEtb(sohEtbRS232);
+                        sendDataThreadRS232.start();
+                        recvDataThreadRS232 = new CVPLrecvThread(writerStatus);
+                        recvDataThreadRS232.setInputReader(cvplSerial.getPortReader());
+                        recvDataThreadRS232.setOutputWriter(console.getWriter());
+                        recvDataThreadRS232.setSohEtb(sohEtbRS232);
+                        recvDataThreadRS232.start();
+                        console.getTextArea().setEnabled(true);
+                    }
+				}
+			});
+		}
+		return jButtonRS232Open;
+	}
+	/**
+	 * This method initializes jButton1	
+	 * 	
+	 * @return javax.swing.JButton	
+	 */    
+	private JButton getJButtonRS232Close() {
+		if (jButtonRS232Close == null) {
+			jButtonRS232Close = new JButton();
+			jButtonRS232Close.setPreferredSize(new java.awt.Dimension(40,36));
+			jButtonRS232Close.setText("Close serial port");
+			jButtonRS232Close.setEnabled(false);
+			jButtonRS232Close.addActionListener(new java.awt.event.ActionListener() { 
+				public void actionPerformed(java.awt.event.ActionEvent e) {    
+                    if(cvplSerial.closeSerialPort() == true)
+                    {
+                        jButtonRS232Close.setEnabled(false);
+                        jButtonRS232Open.setEnabled(true);
+                    
+                        jComboBoxRS232PortList.setEnabled(true);
+                        jComboBoxRS232BaudrateList.setEnabled(true);
+                        jComboBoxRS232DatabitsList.setEnabled(true);
+                        jComboBoxRS232StopbitsList.setEnabled(true);
+                        jComboBoxRS232ParityList.setEnabled(true);
+                        jRadioButtonEncoding0117RS232.setEnabled(true);
+                        jRadioButtonEncoding5E5FRS232.setEnabled(true);
+                        jRadioButtonEncodingNoneRS232.setEnabled(true);
+                        
+                        sendDataThreadRS232.stop();
+                        recvDataThreadRS232.stop();
+                        console.getTextArea().setEnabled(false);
+                    }
+				}
+			});
+		}
+		return jButtonRS232Close;
+	}
+	/**
+	 * This method initializes jrbEncoding5E5FRS232	
+	 * 	
+	 * @return javax.swing.JRadioButton	
+	 */    
+	private JRadioButton getJRadioButtonEncoding5E5FRS232() {
+		if (jRadioButtonEncoding5E5FRS232 == null) {
+			jRadioButtonEncoding5E5FRS232 = new JRadioButton();
+			jRadioButtonEncoding5E5FRS232.setText("5E/5F");
+			jRadioButtonEncoding5E5FRS232.setBackground(new java.awt.Color(214,204,204));
+			jRadioButtonEncoding5E5FRS232.setSelected(true);
+			jRadioButtonEncoding5E5FRS232.setToolTipText("use 0x5E and 0x5F to encode start and stop according to the CVPL");
+            if (sohEtbRS232 == SohEtb.x5E5F)
+            {
+                jRadioButtonEncoding5E5FRS232.setSelected(true);
+            }
+            else
+            {
+                jRadioButtonEncoding5E5FRS232.setSelected(false);
+            }
+			jRadioButtonEncoding5E5FRS232.addActionListener(new java.awt.event.ActionListener() { 
+				public void actionPerformed(java.awt.event.ActionEvent e) {    
+                    sohEtbRS232 = SohEtb.x5E5F;
+                    jRadioButtonEncoding5E5FRS232.setSelected(true);
+                    jRadioButtonEncoding0117RS232.setSelected(false);
+                    jRadioButtonEncodingNoneRS232.setSelected(false);
+				}
+			});
+		}
+		return jRadioButtonEncoding5E5FRS232;
+	}
+	/**
+	 * This method initializes jRadioButton2	
+	 * 	
+	 * @return javax.swing.JRadioButton	
+	 */    
+	private JRadioButton getJRadioButtonEncoding0117RS232() {
+		if (jRadioButtonEncoding0117RS232 == null) {
+			jRadioButtonEncoding0117RS232 = new JRadioButton();
+			jRadioButtonEncoding0117RS232.setText("01/17");
+			jRadioButtonEncoding0117RS232.setSelected(true);
+			jRadioButtonEncoding0117RS232.setBackground(new java.awt.Color(214,204,204));
+			jRadioButtonEncoding0117RS232.setToolTipText("use 0x01 and 0x17 to encode start and stop according to the CVPL");
+            if (sohEtbRS232 == SohEtb.x0117)
+            {
+                jRadioButtonEncoding0117RS232.setSelected(true);
+            }
+            else
+            {
+                jRadioButtonEncoding0117RS232.setSelected(false);
+            }
+			jRadioButtonEncoding0117RS232.addActionListener(new java.awt.event.ActionListener() { 
+				public void actionPerformed(java.awt.event.ActionEvent e) {    
+                    sohEtbRS232 = SohEtb.x0117;
+                    jRadioButtonEncoding0117RS232.setSelected(true);
+                    jRadioButtonEncoding5E5FRS232.setSelected(false);
+                    jRadioButtonEncodingNoneRS232.setSelected(false);
+				}
+			});
+		}
+		return jRadioButtonEncoding0117RS232;
+	}
+	/**
+	 * This method initializes jRadioButton1	
+	 * 	
+	 * @return javax.swing.JRadioButton	
+	 */    
+	private JRadioButton getJRadioButtonEncodingNoneRS232() {
+		if (jRadioButtonEncodingNoneRS232 == null) {
+			jRadioButtonEncodingNoneRS232 = new JRadioButton();
+			jRadioButtonEncodingNoneRS232.setBackground(new java.awt.Color(214,204,204));
+			jRadioButtonEncodingNoneRS232.setSelected(true);
+			jRadioButtonEncodingNoneRS232.setText("none");
+			jRadioButtonEncodingNoneRS232.setToolTipText("no start and stop sign");
+            if (sohEtbRS232 == null)
+            {
+                jRadioButtonEncodingNoneRS232.setSelected(true);
+            }
+            else
+            {
+                jRadioButtonEncodingNoneRS232.setSelected(false);
+            }
+			jRadioButtonEncodingNoneRS232.addActionListener(new java.awt.event.ActionListener() { 
+				public void actionPerformed(java.awt.event.ActionEvent e) {    
+                    sohEtbRS232 = SohEtb.none;
+                    jRadioButtonEncoding0117RS232.setSelected(false);
+                    jRadioButtonEncoding5E5FRS232.setSelected(false);
+                    jRadioButtonEncodingNoneRS232.setSelected(true);
+				}
+			});
+		}
+		return jRadioButtonEncodingNoneRS232;
+	}
+    
+	/**
+	 * This method initializes jCheckBox	
+	 * 	
+	 * @return javax.swing.JCheckBox	
+	 */    
+	private JCheckBox getJCheckBoxRS232CD() {
+		if (jCheckBoxRS232CD == null) {
+			jCheckBoxRS232CD = new JCheckBox();
+			jCheckBoxRS232CD.setText("CD");
+			jCheckBoxRS232CD.setToolTipText("carrier detect");
+			jCheckBoxRS232CD.setBackground(new java.awt.Color(214,204,204));
+			jCheckBoxRS232CD.setEnabled(true);
+			jCheckBoxRS232CD.addActionListener(new java.awt.event.ActionListener() { 
+				public void actionPerformed(java.awt.event.ActionEvent e) {    
+                    jCheckBoxRS232CD.setSelected(!jCheckBoxRS232CD.isSelected());
+				}
+			});
+            cvplSerial.registerCheckboxCarrierDetect(jCheckBoxRS232CD);
+		}
+		return jCheckBoxRS232CD;
+	}
+	/**
+	 * This method initializes jCheckBox	
+	 * 	
+	 * @return javax.swing.JCheckBox	
+	 */    
+	private JCheckBox getJCheckBoxRS232CTS() {
+		if (jCheckBoxRS232CTS == null) {
+			jCheckBoxRS232CTS = new JCheckBox();
+			jCheckBoxRS232CTS.setBackground(new java.awt.Color(214,204,204));
+			jCheckBoxRS232CTS.setText("CTS");
+			jCheckBoxRS232CTS.setToolTipText("clear to send");
+			jCheckBoxRS232CTS.addActionListener(new java.awt.event.ActionListener() { 
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+                    jCheckBoxRS232CTS.setSelected(!jCheckBoxRS232CTS.isSelected());
+				}
+			});
+            cvplSerial.registerCheckboxClearToSend(jCheckBoxRS232CTS);
+		}
+		return jCheckBoxRS232CTS;
+	}
+	/**
+	 * This method initializes jCheckBox	
+	 * 	
+	 * @return javax.swing.JCheckBox	
+	 */    
+	private JCheckBox getJCheckBoxRS232DSR() {
+		if (jCheckBoxRS232DSR == null) {
+			jCheckBoxRS232DSR = new JCheckBox();
+			jCheckBoxRS232DSR.setBackground(new java.awt.Color(214,204,204));
+			jCheckBoxRS232DSR.setText("DSR");
+			jCheckBoxRS232DSR.setToolTipText("data set ready");
+			jCheckBoxRS232DSR.addActionListener(new java.awt.event.ActionListener() { 
+				public void actionPerformed(java.awt.event.ActionEvent e) {    
+                    jCheckBoxRS232DSR.setSelected(!jCheckBoxRS232DSR.isSelected());
+				}
+			});
+            cvplSerial.registerCheckboxDataSetReady(jCheckBoxRS232DSR);
+		}
+		return jCheckBoxRS232DSR;
+	}
+	/**
+	 * This method initializes jCheckBox	
+	 * 	
+	 * @return javax.swing.JCheckBox	
+	 */    
+	private JCheckBox getJCheckBoxRS232DA() {
+		if (jCheckBoxRS232DA == null) {
+			jCheckBoxRS232DA = new JCheckBox();
+			jCheckBoxRS232DA.setBackground(new java.awt.Color(214,204,204));
+			jCheckBoxRS232DA.setText("DA");
+			jCheckBoxRS232DA.setToolTipText("data available");
+			jCheckBoxRS232DA.addActionListener(new java.awt.event.ActionListener() { 
+				public void actionPerformed(java.awt.event.ActionEvent e) {    
+                    jCheckBoxRS232DA.setSelected(!jCheckBoxRS232DA.isSelected());
+				}
+			});
+            cvplSerial.registerCheckboxDataAvailable(jCheckBoxRS232DA);
+		}
+		return jCheckBoxRS232DA;
+	}
+	/**
+	 * This method initializes jCheckBox	
+	 * 	
+	 * @return javax.swing.JCheckBox	
+	 */    
+	private JCheckBox getJCheckBoxRS232DTR() {
+		if (jCheckBoxRS232DTR == null) {
+			jCheckBoxRS232DTR = new JCheckBox();
+			jCheckBoxRS232DTR.setBackground(new java.awt.Color(214,204,204));
+			jCheckBoxRS232DTR.setText("DTR");
+			jCheckBoxRS232DTR.setToolTipText("data terminal ready");
+            new Thread( new Runnable()
+                    {
+                        public void run()
+                        {
+                            while(true)
+                            {
+                                jCheckBoxRS232DTR.setSelected(cvplSerial.getRequestToSend());
+                                try
+                                {
+                                    Thread.sleep(1000);
+                                }
+                                catch(InterruptedException ex)
+                                {
+                                    System.err.println("jCheckBoxRS232DTR Interrupted Exception: " + ex.getMessage());
+                                    writeError(        "jCheckBoxRS232DTR Interrupted Exception: " + ex.getMessage());
+                                }
+                            }
+                        }
+                    }
+                    ).start();
+			jCheckBoxRS232DTR.addActionListener(new java.awt.event.ActionListener() { 
+				public void actionPerformed(java.awt.event.ActionEvent e) {    
+                    cvplSerial.setDataTerminalReady(jCheckBoxRS232DTR.isSelected());
+				}
+			});
+		}
+		return jCheckBoxRS232DTR;
+	}
+	/**
+	 * This method initializes jCheckBox	
+	 * 	
+	 * @return javax.swing.JCheckBox	
+	 */    
+	private JCheckBox getJCheckBoxRS232RTS() {
+		if (jCheckBoxRS232RTS == null) {
+			jCheckBoxRS232RTS = new JCheckBox();
+			jCheckBoxRS232RTS.setBackground(new java.awt.Color(214,204,204));
+			jCheckBoxRS232RTS.setText("RTS");
+			jCheckBoxRS232RTS.setToolTipText("request to send");
+            new Thread( new Runnable()
+            {
+                public void run()
+                {
+                    while(true)
+                    {
+                        jCheckBoxRS232RTS.setSelected(cvplSerial.getRequestToSend());
+                        try
+                        {
+                            Thread.sleep(1000);
+                        }
+                        catch(InterruptedException ex)
+                        {
+                            System.err.println("jCheckBoxRS232RTS Interrupted Exception: " + ex.getMessage());
+                            writeError(        "jCheckBoxRS232RTS Interrupted Exception: " + ex.getMessage());
+                        }
+                    }
+                }
+            }
+            ).start();
+			jCheckBoxRS232RTS.addActionListener(new java.awt.event.ActionListener() { 
+				public void actionPerformed(java.awt.event.ActionEvent e) {    
+                    cvplSerial.setRequestToSend(jCheckBoxRS232RTS.isSelected());
+				}
+			});
+		}
+		return jCheckBoxRS232RTS;
+	}
+          public static void main(String[] args) 
+    {
 		ValentinConsole rc = new ValentinConsole();
 		rc.show();
 	}
@@ -224,36 +762,41 @@ public class ValentinConsole extends JFrame {
         SohEtb sohEtb;
         String strFileLastOpened;
 
-        sohEtb = SohEtb.fromString(config.getConfig(strSohEtbConfigID));
-        if (sohEtb != null) {
-        	this.sohEtb = sohEtb;
+        sohEtb = SohEtb.fromString(config.getConfig(strNetworkSohEtbConfigID));
+        if (sohEtb != null) 
+        {
+        	this.sohEtbNetwork = sohEtb;
+        }
+        
+        sohEtb = SohEtb.fromString(config.getConfig(strRS232SohEtbConfigID));
+        if (sohEtb != null)
+        {
+            this.sohEtbRS232 = sohEtb;
         }
         
         strFileLastOpened = config.getConfig(strFileLastOpenedID);
-        if (strFileLastOpened != null) {
+        if (strFileLastOpened != null) 
+        {
         	fileLastOpened = new File(strFileLastOpened);
         }
         
+		this.setBounds(0, 0, 800, 600);
 		this.setJMenuBar(getJJMenuBar());
 		this.setContentPane(getJPanelMain());
-		this.setSize(600, 600);
 		this.setTitle("ValentinConsole");
 		this.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
 		
 		javax.swing.ButtonGroup group = new javax.swing.ButtonGroup();
-		group.add(jrb0117);
-		group.add(jrb5E5F);
-
-		strIPAddr = config.getConfig(strIPConfigID);
+		group.add(jrb0117Network);
+		group.add(jrb5E5FNetwork);
+        
+        strIPAddr = config.getConfig(strNetworkIPConfigID);
         if (strIPAddr != null) {
-        	jTextFieldIPAddr.setText(strIPAddr);
+            jTextFieldIPAddr.setText(strIPAddr);
         }
         
         console.restoreHistory(config);
-        
-        sendThread = new SendThread();
-        sendThread.start();
-	}
+    }
 	/**
 	 * This method initializes jPanelMain
 	 * 
@@ -263,7 +806,7 @@ public class ValentinConsole extends JFrame {
 		if(jPanelMain == null) {
 			jPanelMain = new javax.swing.JPanel();
 			jPanelMain.setLayout(new java.awt.BorderLayout());
-			jPanelMain.add(getJPanelTop(), java.awt.BorderLayout.NORTH);
+			jPanelMain.add(getJPanelToolbar(), java.awt.BorderLayout.NORTH);
 			jPanelMain.add(getJScrollPaneConsole(), java.awt.BorderLayout.CENTER);
 			jPanelMain.add(getJPanelBottom(), java.awt.BorderLayout.SOUTH);
 		}
@@ -274,14 +817,14 @@ public class ValentinConsole extends JFrame {
 	 * 
 	 * @return javax.swing.JPanel
 	 */
-	private javax.swing.JPanel getJPanelTop() {
-		if(jPanelTop == null) {
-			jPanelTop = new javax.swing.JPanel();
-			jPanelTop.setLayout(new BorderLayout());
-			jPanelTop.setPreferredSize(new java.awt.Dimension(20,36));
-			jPanelTop.add(getJToolBar(), java.awt.BorderLayout.NORTH);
+	private javax.swing.JPanel getJPanelToolbarNetwork() {
+		if(jPanelToolbarNetwork == null) {
+			jPanelToolbarNetwork = new javax.swing.JPanel();
+			jPanelToolbarNetwork.setLayout(new BorderLayout());
+			jPanelToolbarNetwork.setPreferredSize(new java.awt.Dimension(20,36));
+			jPanelToolbarNetwork.add(getJToolBar(), java.awt.BorderLayout.NORTH);
 		}
-		return jPanelTop;
+		return jPanelToolbarNetwork;
 	}
 	/**
 	 * This method initializes jScrollPaneConsole
@@ -326,80 +869,90 @@ public class ValentinConsole extends JFrame {
 		}
 		return jTextFieldIPAddr;
 	}
+
+   /**
+	 * This method initializes jButtonNetworkConnect
+	 * 
+	 * @return javax.swing.JButtonNetworkConnect
+	 */
+	private javax.swing.JButton getJButtonNetworkConnect() {
+		if(jButtonNetworkConnect == null) {
+			jButtonNetworkConnect = new javax.swing.JButton();
+			jButtonNetworkConnect.setText("Connect");
+			jButtonNetworkConnect.setPreferredSize(new java.awt.Dimension(99,27));
+			jButtonNetworkConnect.setActionCommand("Connect");
+			jButtonNetworkConnect.addActionListener(new java.awt.event.ActionListener() { 
+				public void actionPerformed(java.awt.event.ActionEvent e) 
+                {
+                    doNetworkConnect();
+				}
+			});
+		}
+		return jButtonNetworkConnect;
+	}
     
-    private void doConnect() {
-        if (jTextFieldIPAddr.isEnabled()) {
-            jButton.setEnabled(false);
-            new Thread(new Runnable() {
-                public void run(){
-                	String[] strIPTok = jTextFieldIPAddr.getText().split(":");
-                	String strIP = strIPTok[0];
-                	int iPort;
-                	if (strIPTok.length > 1) { 
-                		iPort = Integer.parseInt(strIPTok[1]);
-                	}
-                	else {
-                		iPort = 9100;
-                	}
-                    if (cvplNet.openConnect(strIP, iPort)) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {   
-                                jTextFieldIPAddr.setEnabled(false);
-                                jButton.setText("Disconnect");
-                                jrb0117.setEnabled(false);
-                                jrb5E5F.setEnabled(false);
-                                jMenuItemOpen.setEnabled(true);
-                                console.getTextArea().setEnabled(true);
-                            }
-                        });
-                        recvThread = new RecvThread();
-                        recvThread.start();
-                        
-                        config.setConfig(strIPConfigID, 
-                                         jTextFieldIPAddr.getText());
-                        config.setConfig(strSohEtbConfigID,
-                                         sohEtb.toString());
-                    }
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            jButton.setEnabled(true);
-                        }
-                    });
-                }
-            }).start();
+    private void doNetworkConnect()
+    {
+        if (jTextFieldIPAddr.isEnabled()) 
+        {
+            jButtonNetworkConnect.setEnabled(false);
+            String[] strIPTok = jTextFieldIPAddr.getText().split(":");
+            String strIP = strIPTok[0];
+            int iPort;
+            if (strIPTok.length > 1) 
+            { 
+                iPort = Integer.parseInt(strIPTok[1]);
+            }
+            else 
+            {
+                iPort = 9100;
+            }
+            if (cvplNet.openConnect(strIP, iPort)) 
+            {
+                jTextFieldIPAddr.setEnabled(false);
+                jButtonNetworkConnect.setText("Disconnect");
+                jrb0117Network.setEnabled(false);
+                jrb5E5FNetwork.setEnabled(false);
+                jMenuItemOpen.setEnabled(true);
+                console.getTextArea().setEnabled(true);
+            }
+            
+            // Threads zum Senden/Empfangen starten
+            sendDataThreadNetwork = new CVPLsendThread(writerStatus);
+            sendDataThreadNetwork.setInputReader(console.getReader());
+            sendDataThreadNetwork.setOutputWriter(cvplNet.getNetworkWriter());
+            sendDataThreadNetwork.setSohEtb(sohEtbNetwork);
+            sendDataThreadNetwork.start();
+            recvDataThreadNetwork = new CVPLrecvThread(writerStatus);
+            recvDataThreadNetwork.setInputReader(cvplNet.getNetworkReader());
+            recvDataThreadNetwork.setOutputWriter(console.getWriter());
+            recvDataThreadNetwork.setSohEtb(sohEtbNetwork);
+            recvDataThreadNetwork.start();
+            console.getTextArea().setEnabled(true);
+            
+            config.setConfig(strNetworkIPConfigID, jTextFieldIPAddr.getText());
+            config.setConfig(strNetworkSohEtbConfigID, sohEtbNetwork.toString());
+            
+            jButtonNetworkConnect.setEnabled(true);
         }
-        else {
-            recvThread = null;
+        else
+        {
+            // Threads zum Senden/Empfangen beenden
+            sendDataThreadNetwork.stop();
+            recvDataThreadNetwork.stop();
+            console.getTextArea().setEnabled(false);
+            
             cvplNet.closeConnect();
             console.saveHistory(config);
             console.getTextArea().setEnabled(false);
             jMenuItemOpen.setEnabled(false);
-            jrb0117.setEnabled(true);
-            jrb5E5F.setEnabled(true);
-            jButton.setText("Connect");
-            jTextFieldIPAddr.setEnabled(true);            
+            jrb0117Network.setEnabled(true);
+            jrb5E5FNetwork.setEnabled(true);
+            jButtonNetworkConnect.setText("Connect");
+            jTextFieldIPAddr.setEnabled(true);
         }
     }
     
-	/**
-	 * This method initializes jButton
-	 * 
-	 * @return javax.swing.JButton
-	 */
-	private javax.swing.JButton getJButton() {
-		if(jButton == null) {
-			jButton = new javax.swing.JButton();
-			jButton.setText("Connect");
-			jButton.setPreferredSize(new java.awt.Dimension(99,27));
-			jButton.setActionCommand("Connect");
-			jButton.addActionListener(new java.awt.event.ActionListener() { 
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					doConnect();
-				}
-			});
-		}
-		return jButton;
-	}
 	/**
 	 * This method initializes jLabelIPAddr
 	 * 
@@ -417,61 +970,86 @@ public class ValentinConsole extends JFrame {
 	 * 
 	 * @return javax.swing.JRadioButton
 	 */
-	private javax.swing.JRadioButton getJrb0117() {
-		if(jrb0117 == null) {
-			jrb0117 = new javax.swing.JRadioButton();
-			jrb0117.setText("01/17");
-			jrb0117.setRolloverEnabled(false);
-            if (sohEtb == SohEtb.x0117) jrb0117.setSelected(true);
-            else                        jrb0117.setSelected(false);
-			jrb0117.addActionListener(new java.awt.event.ActionListener() { 
-				public void actionPerformed(java.awt.event.ActionEvent e) {    
-					sohEtb = SohEtb.x0117;
+	private javax.swing.JRadioButton getJrb0117Network() {
+		if(jrb0117Network == null) {
+			jrb0117Network = new javax.swing.JRadioButton();
+			jrb0117Network.setText("01/17");
+			jrb0117Network.setRolloverEnabled(false);
+            if (sohEtbNetwork == SohEtb.x0117)
+            {
+                jrb0117Network.setSelected(true);
+            }
+            else
+            {
+                jrb0117Network.setSelected(false);
+            }
+			jrb0117Network.addActionListener(new java.awt.event.ActionListener() { 
+				public void actionPerformed(java.awt.event.ActionEvent e) 
+                {
+                    sohEtbNetwork = SohEtb.x0117;
 				}
 			});
 		}
-		return jrb0117;
+		return jrb0117Network;
 	}
 	/**
 	 * This method initializes jrb5E5F
 	 * 
 	 * @return javax.swing.JRadioButton
 	 */
-	private javax.swing.JRadioButton getJrb5E5F() {
-		if(jrb5E5F == null) {
-			jrb5E5F = new javax.swing.JRadioButton();
-			jrb5E5F.setText("5E/5F");
-            if (sohEtb == SohEtb.x5E5F) jrb5E5F.setSelected(true);
-            else                        jrb5E5F.setSelected(false);            
-			jrb5E5F.addActionListener(new java.awt.event.ActionListener() { 
-				public void actionPerformed(java.awt.event.ActionEvent e) {    
-					sohEtb = SohEtb.x5E5F;
+	private javax.swing.JRadioButton getJrb5E5FNetwork() {
+		if(jrb5E5FNetwork == null) 
+        {
+			jrb5E5FNetwork = new javax.swing.JRadioButton();
+			jrb5E5FNetwork.setText("5E/5F");
+            if (sohEtbNetwork == SohEtb.x5E5F)
+            {
+                jrb5E5FNetwork.setSelected(true);
+            }
+            else
+            {
+                jrb5E5FNetwork.setSelected(false);
+            }
+			jrb5E5FNetwork.addActionListener(new java.awt.event.ActionListener() { 
+				public void actionPerformed(java.awt.event.ActionEvent e) 
+                {
+                    sohEtbNetwork = SohEtb.x5E5F;
 				}
 			});
 		}
-		return jrb5E5F;
+		return jrb5E5FNetwork;
 	}
+    
 	/**
 	 * This method initializes jLabelStatus
 	 * 
 	 * @return javax.swing.JLabel
 	 */
-	private javax.swing.JLabel getJLabelStatus() {
-		if(jLabelStatus == null) {
+	private javax.swing.JLabel getJLabelStatus() 
+    {
+		if(jLabelStatus == null) 
+        {
 			jLabelStatus = new javax.swing.JLabel();
 			jLabelStatus.setText("Status");
 		}
 		return jLabelStatus;
 	}
 
-    private void writeError(String s) {
-        try {
+    /**
+     * Gibt eine Fehlermeldung als Dialogbox aus.
+     * 
+     * @param s Inhalt der Fehlermeldung
+     */
+    private void writeError(String s) 
+    {
+        try 
+        {
             writerStatus.write(s);
             JOptionPane.showMessageDialog(null, s, "Error",
                                           JOptionPane.ERROR_MESSAGE);
         }
         catch (IOException ex) {
-            System.err.println("I/O Excexption while write to StatusWriter");
+            System.err.println("I/O Excexption writeError: "  + ex.getMessage());
         }
     }
     
@@ -495,12 +1073,18 @@ public class ValentinConsole extends JFrame {
             flush();
         }
         
-        private void flushBuffer() {
+        private void flushBuffer()
+        {
             final String str = buf.toString();
             buf.setLength(0);
-            SwingUtilities.invokeLater(new Runnable(){
-                public void run(){
-                	jLabelStatus.setText(str);
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    if(jLabelStatus != null)
+                    {
+                        jLabelStatus.setText(str);
+                    }
                 }
             });
         }
