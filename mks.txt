@@ -1,115 +1,38 @@
-MKS Version 1.5
-ADD: Veto/bsh/bsh-2.0b2.jar afrieser 21.06.2005 09:16:03
-ADD: Veto/com/sharkysoft/lava3-core.jar afrieser 23.06.2005 09:11:14
-ADD: Veto/com/sharkysoft/lava3-printf.jar afrieser 23.06.2005 09:10:32
-ADD: Veto/de/carlvalentin/Common/Printf/CVPrintf.java afrieser 24.06.2005 10:56:05
-ADD: Veto/de/carlvalentin/Common/UI/CVErrorMessage.java BTisler 14.08.2007 11:57:23
-ADD: Veto/de/carlvalentin/Common/UI/CVFileTransmit.java afrieser 24.06.2005 10:57:06
-ADD: Veto/de/carlvalentin/Common/UI/CVStatusLine.java afrieser 28.04.2005 16:42:51
-ADD: Veto/de/carlvalentin/Common/UI/CVTextDisplay.java BTisler 17.07.2007 16:31:19
-ADD: Veto/de/carlvalentin/Common/CVBinarySemaphore.java afrieser 22.07.2005 12:36:46
-ADD: Veto/de/carlvalentin/Common/CVConfigFile.java afrieser 28.04.2005 16:48:12
-ADD: Veto/de/carlvalentin/Common/CVFileManagement.java BTisler 10.08.2007 15:38:47
-ADD: Veto/de/carlvalentin/Common/CVLogging.java afrieser 28.04.2005 16:47:17
-ADD: Veto/de/carlvalentin/Interface/UI/CVUINetwork.java BTisler 17.07.2007 16:25:34
-ADD: Veto/de/carlvalentin/Interface/UI/CVUIParallel.java afrieser 17.06.2005 12:43:32
-ADD: Veto/de/carlvalentin/Interface/UI/CVUISerial.java BTisler 10.08.2007 15:53:42
-ADD: Veto/de/carlvalentin/Interface/CVInterface.java afrieser 22.07.2005 12:38:39
-ADD: Veto/de/carlvalentin/Interface/CVInterfaceSettings.java afrieser 20.05.2005 11:41:37
-ADD: Veto/de/carlvalentin/Interface/CVNetworkProtocol.java afrieser 22.08.2005 14:09:47
-ADD: Veto/de/carlvalentin/Interface/CVNetworkSettings.java BTisler 17.07.2007 16:28:32
-ADD: Veto/de/carlvalentin/Interface/CVNetworkTCP.java afrieser 22.07.2005 12:39:49
-ADD: Veto/de/carlvalentin/Interface/CVNetworkUDP.java afrieser 22.07.2005 12:40:06
-ADD: Veto/de/carlvalentin/Interface/CVParallel.java BTisler 10.08.2007 15:51:56
-ADD: Veto/de/carlvalentin/Interface/CVParallelModes.java afrieser 20.05.2005 11:43:04
-ADD: Veto/de/carlvalentin/Interface/CVParallelOutputStream.java BTisler 10.08.2007 15:41:32
-ADD: Veto/de/carlvalentin/Interface/CVParallelSettings.java afrieser 20.05.2005 11:43:29
-ADD: Veto/de/carlvalentin/Interface/CVSerial.java BTisler 17.07.2007 16:28:13
-ADD: Veto/de/carlvalentin/Interface/CVSerialBaudrate.java afrieser 28.04.2005 16:52:44
-ADD: Veto/de/carlvalentin/Interface/CVSerialDatabits.java afrieser 28.04.2005 16:53:05
-ADD: Veto/de/carlvalentin/Interface/CVSerialHandshake.java BTisler 17.07.2007 16:28:48
-ADD: Veto/de/carlvalentin/Interface/CVSerialParity.java afrieser 28.04.2005 16:53:28
-ADD: Veto/de/carlvalentin/Interface/CVSerialSettings.java BTisler 10.08.2007 15:52:40
-ADD: Veto/de/carlvalentin/Interface/CVSerialStopbits.java afrieser 28.04.2005 16:50:12
-ADD: Veto/de/carlvalentin/Protocol/UI/CVUISohEtb.java afrieser 28.04.2005 16:55:21
-ADD: Veto/de/carlvalentin/Protocol/CVConnectionManager.java BTisler 17.07.2007 16:22:20
-ADD: Veto/de/carlvalentin/Protocol/CVProtocolRecvThread.java BTisler 17.07.2007 16:23:27
-ADD: Veto/de/carlvalentin/Protocol/CVProtocolSendThread.java afrieser 22.07.2005 12:42:37
-ADD: Veto/de/carlvalentin/Protocol/CVProtocolThread.java afrieser 22.07.2005 12:43:00
-ADD: Veto/de/carlvalentin/Protocol/CVSohEtb.java afrieser 28.04.2005 16:56:21
-ADD: Veto/de/carlvalentin/Scripting/Examples/CRCComTest.bsh BTisler 14.08.2007 12:00:05
-ADD: Veto/de/carlvalentin/Scripting/Examples/CRCComTestFkt.bsh BTisler 14.08.2007 12:00:05
-ADD: Veto/de/carlvalentin/Scripting/Examples/CRCComTestInFile.bsh BTisler 14.08.2007 12:00:05
-ADD: Veto/de/carlvalentin/Scripting/Examples/DoCRCTstOnAllItfs.bsh BTisler 14.08.2007 12:00:05
-ADD: Veto/de/carlvalentin/Scripting/Examples/DrawGraph.bsh BTisler 14.08.2007 12:00:05
-ADD: Veto/de/carlvalentin/Scripting/Examples/MemoryCard.bsh BTisler 14.08.2007 12:00:05
-ADD: Veto/de/carlvalentin/Scripting/Examples/RemoteConsole.bsh BTisler 14.08.2007 12:00:05
-ADD: Veto/de/carlvalentin/Scripting/Examples/SimpleSend.bsh BTisler 14.08.2007 12:00:06
-ADD: Veto/de/carlvalentin/Scripting/Examples/SimpleStatus.bsh BTisler 14.08.2007 12:00:06
-ADD: Veto/de/carlvalentin/Scripting/Examples/SysNumTest.bsh BTisler 14.08.2007 12:00:06
-ADD: Veto/de/carlvalentin/Scripting/Examples/SysNumTest.prn BTisler 14.08.2007 12:00:06
-ADD: Veto/de/carlvalentin/Scripting/Examples/TestCommands.bsh BTisler 14.08.2007 12:00:06
-ADD: Veto/de/carlvalentin/Scripting/Examples/WebBrowser.bsh BTisler 14.08.2007 12:00:06
-ADD: Veto/de/carlvalentin/Scripting/UI/CVUIBeanShell.java BTisler 14.08.2007 12:02:46
-ADD: Veto/de/carlvalentin/Scripting/UI/CVUIBeanShellEditor.java afrieser 24.06.2005 11:52:59
-ADD: Veto/de/carlvalentin/Scripting/chk4StpScr.bsh BTisler 10.08.2007 16:32:53
-ADD: Veto/de/carlvalentin/Scripting/close.bsh BTisler 10.08.2007 16:04:06
-ADD: Veto/de/carlvalentin/Scripting/CVBeanShell.java BTisler 14.08.2007 11:58:12
-ADD: Veto/de/carlvalentin/Scripting/error.bsh BTisler 10.08.2007 16:04:42
-ADD: Veto/de/carlvalentin/Scripting/MsgBox.bsh BTisler 14.08.2007 11:59:37
-ADD: Veto/de/carlvalentin/Scripting/open.bsh BTisler 14.08.2007 11:59:05
-ADD: Veto/de/carlvalentin/Scripting/openFile.bsh BTisler 14.08.2007 11:59:15
-ADD: Veto/de/carlvalentin/Scripting/openParallel.bsh BTisler 10.08.2007 16:05:57
-ADD: Veto/de/carlvalentin/Scripting/openSerial.bsh BTisler 10.08.2007 16:06:06
-ADD: Veto/de/carlvalentin/Scripting/openTCP.bsh BTisler 10.08.2007 16:06:17
-ADD: Veto/de/carlvalentin/Scripting/openUDP.bsh BTisler 10.08.2007 16:06:26
-ADD: Veto/de/carlvalentin/Scripting/printf.bsh BTisler 10.08.2007 16:06:58
-ADD: Veto/de/carlvalentin/Scripting/read.bsh BTisler 10.08.2007 16:07:08
-ADD: Veto/de/carlvalentin/Scripting/sleep.bsh BTisler 10.08.2007 16:07:14
-ADD: Veto/de/carlvalentin/Scripting/sprintf.bsh BTisler 10.08.2007 16:33:20
-ADD: Veto/de/carlvalentin/Scripting/write.bsh BTisler 10.08.2007 16:08:09
-ADD: Veto/de/carlvalentin/ValentinConsole/CVConsole.java afrieser 23.06.2005 09:41:02
-Veto/de/carlvalentin/ValentinConsole/manifest.mf 1.1-1.4
-    afrieser 24.06.2005 10:55:05 1.4; V0_4_0,V0_5_0 Bibliotheken (.jar-Files) fr die printf()-Ausgabe hinzugefgt: lava3-core.jar lava3-printf.jar  
-    BTisler 22.06.2005 10:51:16 1.3;  Classpath um jar fuer Skripting erweitert  
-    btisler 19.05.2005 08:20:45 1.2; V0_3 Fuer seriell: comm.jar in lokalen Classpath, damit diese auch optional mitgeliefert werden kann und man nicht unbedingt das javax.comm installieren muss.  
-    btisler 02.04.2005 17:45:51 1.1; V0_1,V0_2 Initial revision  
-Veto/de/carlvalentin/ValentinConsole/ValentinConsole.java 1.4-1.14
+MKS Version
+Veto/de/carlvalentin/Common/UI/CVErrorMessage.java 1.4-1.5
+    BTisler 21.01.2011 12:33:14 1.5;  Command Line Interface  
+    BTisler 14.08.2007 11:57:23 1.4; V0_4_0,V0_5_0 Erweiterung um normale Textausgabe  
+Veto/de/carlvalentin/Interface/UI/CVUINetwork.java 1.4-1.5
+    BTisler 21.01.2011 12:33:23 1.5;  Command Line Interface  
+    BTisler 17.07.2007 16:25:34 1.4; V0_4_0,V0_5_0 Keine Validierung der IP, damit man auch Namen eingeben kann.  
+Veto/de/carlvalentin/Scripting/Examples/CRCComTest.bsh 1.1-1.2
+    BTisler 21.01.2011 15:32:24 1.2; V0_5_0 Fehler behoben  
+    BTisler 14.08.2007 12:00:05 1.1; V0_4_0 Initial revision  
+Veto/de/carlvalentin/Scripting/UI/CVUIBeanShell.java 1.7-1.8
+    BTisler 21.01.2011 12:32:22 1.8;  Command Line Interface  
+    BTisler 14.08.2007 12:02:46 1.7; V0_4_0,V0_5_0 Setzen des ScriptPfad fuer die Verwendung in Scripten  
+Veto/de/carlvalentin/Scripting/CVBeanShell.java 1.9-1.10
+    BTisler 21.01.2011 12:31:58 1.10;  Command Line Interface  
+    BTisler 14.08.2007 11:58:12 1.9; V0_4_0,V0_5_0 Moeglichkeit den Scriptpfad herauszufinden  
+Veto/de/carlvalentin/Scripting/printf.bsh 1.3-1.4
+    BTisler 21.01.2011 15:33:04 1.4; V0_5_0 Fehler behoben  
+    BTisler 10.08.2007 16:06:58 1.3; V0_4_0 StopScript implementiert.  
+Veto/de/carlvalentin/Scripting/read.bsh 1.6-1.7
+    BTisler 21.01.2011 15:32:38 1.7; V0_5_0 Fehler behoben  
+    BTisler 10.08.2007 16:07:08 1.6; V0_4_0 StopScript implementiert.  
+Veto/de/carlvalentin/Scripting/sprintf.bsh 1.1-1.2
+    BTisler 21.01.2011 15:33:10 1.2; V0_5_0 Fehler behoben  
+    BTisler 10.08.2007 16:33:20 1.1; V0_4_0 Initial revision  
+Veto/de/carlvalentin/Scripting/write.bsh 1.6-1.7
+    BTisler 21.01.2011 15:32:17 1.7; V0_5_0 Fehler behoben  
+    BTisler 10.08.2007 16:08:09 1.6; V0_4_0 StopScript implementiert.  
+Veto/de/carlvalentin/ValentinConsole/ValentinConsole.java 1.14-1.15
+    BTisler 21.01.2011 12:32:49 1.15;  Command Line Interface  
     BTisler 10.08.2007 16:34:40 1.14; V0_4_0,V0_5_0 Tippfehler korrigiert.  
-    BTisler 17.07.2007 16:35:58 1.13;  Hex-Sachen rausgeworfen weil sie noch nicht tun.  
-      Funktion zum Zustandsetzen des Connect-Buttons von wegen Script und so.;    
-    afrieser 25.07.2005 14:42:00 1.12;  Anpassung Classpath hinzugefgt  
-    afrieser 22.07.2005 12:47:04 1.11;  UDP-Netzwerkschnittstelle und weitere Ausgaben fr Datenverkehr ber Schnittstelle hinzugefgt  
-    afrieser 24.06.2005 11:56:54 1.10;  An neue Klasse CVConsole angepasst und eingefgt  
-    afrieser 20.06.2005 16:27:47 1.9;  Funktionen zur Einbindung des Skriptinterpreters und zur Fehlererkennung angepasst  
-    afrieser 17.06.2005 12:48:21 1.8;  Anpassungen an den CVConnectionManager zur zentralen Verwaltung der Verbindungen  
-        zum Drucker und Integration der grafischen Oberflche fr den Skriptinterpreter BeanShell
-    afrieser 10.06.2005 13:14:00 1.7;  Innere Struktur verndert -> Vorbereitung fr sptere Erweiterungen  
-    afrieser 20.05.2005 11:44:12 1.6;  Integration der parallelen Schnittstelle und Umstellung auf eine einzelne programmweite   
-        Konfigurationsdatei
-    afrieser 28.04.2005 17:09:23 1.5;  Anpassung an neue Klasssenstruktur - kompletter Umbau der internen Struktur uind der grafischen Oberflche  
-    afrieser 19.04.2005 15:24:44 1.4;  Oberflchenelemente zum Zugriff auf die verschiedenen Bits des UART und die Events der seriellen  
-ADD: Veto/javax.comm/Win32.V2.0/comm.jar btisler 19.05.2005 08:16:42
-ADD: Veto/javax.comm/Win32.V2.0/javax.comm.properties btisler 19.05.2005 08:16:43
-ADD: Veto/javax.comm/Win32.V2.0/win32com.dll btisler 19.05.2005 08:16:42
-Veto/build.xml 1.1-1.8
+Veto/build.xml 1.8-1.12
+    BTisler 21.01.2011 16:14:16 1.12;  Fehler behoben  
+    BTisler 21.01.2011 16:10:29 1.11;  VetoStart.bat  
+    BTisler 21.01.2011 12:33:54 1.10;  Version 0.9  
+    BTisler 23.11.2009 09:53:15 1.9;  Default auf Win32  
     BTisler 14.08.2007 11:56:20 1.8; V0_4_0 Examples Scripts  
-    BTisler 17.07.2007 15:45:56 1.7;  Version in Namen mit eingefuegt damit man im Eclipse noch blickt welcher Pfad was ist.  
-    afrieser 24.06.2005 10:58:16 1.6;  Bibliotheken fr die Realisierung der printf()-Funkiton hinzugefgt - Dokumentationsdatei  
-        fr VETO hinzugefgt
-    BTisler 22.06.2005 10:51:47 1.5;  Classpath-Seperator korrigiert  
-    afrieser 22.06.2005 09:38:52 1.4;  Skriptintrepreter BeanShell integriert und Abschnitt zu javadoc an neue Paketstruktur  
-        angepasst
-    btisler 19.05.2005 08:17:51 1.3; V0_3 Fuer seriell: Neuer Target dist.win32 damit javax.comm auch optional mitgeliefert werden kann und man nicht unbedingt installieren sein muss.  
-    afrieser 28.04.2005 17:10:30 1.2;  Anpassung an neue Klassenstruktur  
-    btisler 02.04.2005 17:49:49 1.1; V0_1,V0_2 Initial revision  
-ADD: Veto/Veto.doc BTisler 14.08.2007 11:56:35
-DROP: Veto/de/carlvalentin/ValentinConsole/CVPLrecvThread.java
-DROP: Veto/de/carlvalentin/ValentinConsole/CVPLsendThread.java
-DROP: Veto/de/carlvalentin/ValentinConsole/CVPLserial.java
-DROP: Veto/de/carlvalentin/ValentinConsole/javax.comm.properties
-DROP: Veto/de/carlvalentin/ValentinConsole/SohEtb.java
-DROP: Veto/de/carlvalentin/ValentinConsole/comm.jar
-DROP: Veto/de/carlvalentin/ValentinConsole/Config.java
-DROP: Veto/de/carlvalentin/ValentinConsole/Console.java
-DROP: Veto/de/carlvalentin/ValentinConsole/CVPLnet.java
+ADD: Veto/VetoStart.bat BTisler 21.01.2011 16:10:07
