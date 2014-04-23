@@ -1,0 +1,58 @@
+<project name="Valentin Embedded Test Office" default="dist" basedir=".">
+        <description>
+            Ant build file for the Valentin Embedded Test Office
+        </description>
+    <!-- set global properties for this build -->
+    <property environment="env"/>   
+    <property name="OUTPUTDIR" location="O"/>
+    <property name="DOCS_ODIR" location="docs"/>
+	
+    <target name="init">
+        <!-- Create the time stamp -->
+        <tstamp/>
+        <!-- Create the build directory structure used by compile -->
+        <mkdir dir="${OUTPUTDIR}"/>
+    </target>
+
+    <target name="compile" depends="init"
+            description="compile the source " >
+        <!-- Compile the java code from ${src} into ${outputdir} -->
+        <javac srcdir="." destdir="${OUTPUTDIR}"/>
+    </target>
+
+    <target name="dist" depends="compile"
+            description="generate the distribution" >
+
+        <!-- Delete old jar file -->
+        <delete file="${OUTPUTDIR}/Veto.jar"/>
+        <!-- Put everything in into the jar file -->
+        <jar jarfile="${OUTPUTDIR}/Veto.jar" 
+        	 basedir="${OUTPUTDIR}" 
+        	 manifest="de/carlvalentin/ValentinConsole/manifest.mf"/>
+    </target>
+
+    <target name="docs"
+            description="generate documentation" >
+        <!-- Run Jacadoc -->
+        <javadoc sourcepath="." 
+        	     packagenames="de.carlvalentin.ValentinConsole.*,
+        	                   pnuts.tools.*"
+		         destdir="${DOCS_ODIR}/javadoc"
+                 overview="project/overview.html"/>
+    	<!-- Run Doxygen --> 
+        <exec executable="${env.DOXYGEN_PATH}doxygen">
+            <arg line="project/doxcfg.dxc"/>
+            <env key="PROJECT_NAME" value="Veto"/>   
+            <env key="INPUT" value="."/>
+            <env key="OUTPUT_DIRECTORY" value="${DOCS_ODIR}/doxygen"/>
+        </exec>
+
+    </target>
+	
+    <target name="clean"
+            description="clean up" >
+        <!-- Delete the ${outputdir} directory trees -->
+        <delete dir="${OUTPUTDIR}"/>
+    </target>
+</project>
+

@@ -1,1 +1,12 @@
-MKS Version 1.1
+MKS Version 1.2
+ADD: Veto/de/carlvalentin/ValentinConsole/CVPLnet.java btisler 02.04.2005 17:45:36
+ADD: Veto/de/carlvalentin/ValentinConsole/manifest.mf btisler 02.04.2005 17:45:51
+ADD: Veto/de/carlvalentin/ValentinConsole/SohEtb.java btisler 02.04.2005 17:46:12
+ADD: Veto/de/carlvalentin/ValentinConsole/ValentinConsole.java btisler 02.04.2005 17:44:11
+ADD: Veto/pnuts/tools/Console.java btisler 02.04.2005 17:43:03
+ADD: Veto/ant.bat btisler 02.04.2005 17:49:35
+ADD: Veto/build.xml btisler 02.04.2005 17:49:49
+ADD: Veto/make.bat btisler 02.04.2005 17:49:18
+ADD: Veto/project/doxcfg.dxc btisler 02.04.2005 17:50:21
+ADD: Veto/project/lcp.bat btisler 02.04.2005 17:51:01
+ADD: Veto/project/overview.html btisler 02.04.2005 17:50:51
