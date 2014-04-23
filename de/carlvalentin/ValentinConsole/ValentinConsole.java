@@ -3,6 +3,7 @@ package de.carlvalentin.ValentinConsole;
 import java.io.*;
 
 import javax.comm.CommPortIdentifier;
+import javax.comm.SerialPort;
 import javax.swing.*;
 
 import java.awt.BorderLayout;
@@ -21,9 +22,15 @@ import javax.swing.JCheckBox;
  */
 public class ValentinConsole extends JFrame {
 	
+    private final String strFileLastOpenedID = "Last opened file";
     private final String strNetworkIPConfigID = "IP-Address";
     private final String strNetworkSohEtbConfigID = "SOH/ETBNetwork";
-    private final String strFileLastOpenedID = "Last opened file";
+    
+    private final String strRS232PortID = "RS232-Port";
+    private final String strRS232BaudrateID = "RS232-Baudrate";
+    private final String strRS232DatabitsID = "RS232-Databits";
+    private final String strRS232StopbitsID = "RS232-Stopbits";
+    private final String strRS232ParityID = "RS232-Parity";
     private final String strRS232SohEtbConfigID = "SOH/ETBRS232";
     
     private StatusWriter writerStatus = new StatusWriter();
@@ -54,7 +61,7 @@ public class ValentinConsole extends JFrame {
 	
 	private javax.swing.JLabel jLabelStatus = null;    
     
-	private JToolBar jToolBar = null;
+	private JToolBar jToolBarNetwork = null;
 	private JMenuBar jJMenuBar = null;
 	private JMenu jMenuFile = null;
 	private JMenuItem jMenuItemOpen = null;
@@ -89,16 +96,16 @@ public class ValentinConsole extends JFrame {
 	 * 	
 	 * @return javax.swing.JToolBar	
 	 */    
-	private JToolBar getJToolBar() {
-		if (jToolBar == null) {
-			jToolBar = new JToolBar();
-			jToolBar.add(getJLabelIPAddr());
-			jToolBar.add(getJTextFieldIPAddr());
-			jToolBar.add(getJButtonNetworkConnect());
-			jToolBar.add(getJrb0117Network());
-			jToolBar.add(getJrb5E5FNetwork());
+	private JToolBar getJToolBarNetwork() {
+		if (jToolBarNetwork == null) {
+			jToolBarNetwork = new JToolBar();
+			jToolBarNetwork.add(getJLabelIPAddr());
+			jToolBarNetwork.add(getJTextFieldIPAddr());
+			jToolBarNetwork.add(getJButtonNetworkConnect());
+			jToolBarNetwork.add(getJrb0117Network());
+			jToolBarNetwork.add(getJrb5E5FNetwork());
 		}
-		return jToolBar;
+		return jToolBarNetwork;
 	}
 	/**
 	 * This method initializes jJMenuBar	
@@ -167,10 +174,16 @@ public class ValentinConsole extends JFrame {
                                                         
                             do {                              
                                 iDataRead = 
-                                    fileOpened.read(bData, 0, iBufSize);
-                                if (iDataRead != -1) {
-                                	cvplNet.writeRaw(bData, iDataRead);
-                                }
+                                    fileOpened.read(bData, 0, iBufSize);                                
+                                    if (iDataRead != -1) {
+                                        if (jButtonNetworkConnect.isEnabled()) {
+                                        	cvplNet.writeRaw(bData, iDataRead);
+                                        }
+                                        else
+                                        {
+                                            cvplSerial.writeRaw(bData, iDataRead);
+                                        }
+                                    }
                             } while (iDataRead != -1);
 
                             fileOpened.close();
@@ -256,23 +269,35 @@ public class ValentinConsole extends JFrame {
 	 * @return javax.swing.JComboBox	
 	 */    
 	private JComboBox getJComboBoxRS232PortList() {
+        String strPort;
+        
 		if (jComboBoxRS232PortList == null) {
 			jComboBoxRS232PortList = new JComboBox();
 			jComboBoxRS232PortList.setBackground(java.awt.Color.white);
-			jComboBoxRS232PortList.addItemListener(new java.awt.event.ItemListener() { 
-				public void itemStateChanged(java.awt.event.ItemEvent e) {    
-                    cvplSerial.setPort((String)jComboBoxRS232PortList.getSelectedItem());
-				}
-			});
-            for(java.util.Enumeration sPortList = cvplSerial.getCommPortList(); sPortList.hasMoreElements(); )
+            for (java.util.Enumeration sPortList = cvplSerial.getCommPortList(); sPortList.hasMoreElements(); )
             {
             	String szPortName = ((CommPortIdentifier)sPortList.nextElement()).getName();
                 jComboBoxRS232PortList.addItem(szPortName);
             }
-            if(jComboBoxRS232PortList.getItemCount() > 0)
+
+            if (jComboBoxRS232PortList.getItemCount() > 0)
             {
                 jComboBoxRS232PortList.setSelectedIndex(0);
                 cvplSerial.setPort((String)jComboBoxRS232PortList.getSelectedItem());
+            }
+            
+            strPort = config.getConfig(strRS232PortID);
+            if (strPort == null) 
+            {
+                strPort = "COM1";
+            }
+
+            for (int i=0; i<jComboBoxRS232PortList.getItemCount(); i++) {
+            	if ( ((String)jComboBoxRS232PortList.getItemAt(i)).
+                        equals(strPort) ) {
+                    jComboBoxRS232PortList.setSelectedIndex(i);
+                    cvplSerial.setPort((String)jComboBoxRS232PortList.getSelectedItem());            		
+                }
             }
 		}
 		return jComboBoxRS232PortList;
@@ -286,11 +311,6 @@ public class ValentinConsole extends JFrame {
 		if (jComboBoxRS232BaudrateList == null) {
 			jComboBoxRS232BaudrateList = new JComboBox();
 			jComboBoxRS232BaudrateList.setBackground(java.awt.Color.white);
-			jComboBoxRS232BaudrateList.addItemListener(new java.awt.event.ItemListener() { 
-				public void itemStateChanged(java.awt.event.ItemEvent e) {    
-					cvplSerial.setBaudRate((String)jComboBoxRS232BaudrateList.getSelectedItem());
-				}
-			});
             jComboBoxRS232BaudrateList.addItem("57600 Bits/Sec");
             jComboBoxRS232BaudrateList.addItem("38400 Bits/Sec");
             jComboBoxRS232BaudrateList.addItem("19200 Bits/Sec");
@@ -299,8 +319,44 @@ public class ValentinConsole extends JFrame {
             jComboBoxRS232BaudrateList.addItem("2400 Bits/Sec");
             if(jComboBoxRS232BaudrateList.getItemCount() > 0)
             {
-                jComboBoxRS232BaudrateList.setSelectedIndex(0);
-                cvplSerial.setBaudRate((String)jComboBoxRS232BaudrateList.getSelectedItem());
+                String strBaudRate;
+                
+                strBaudRate = config.getConfig(strRS232BaudrateID);
+                if (strBaudRate != null) 
+                {
+                    if(strBaudRate.equals((String)"2400 Bits/Sec"))
+                    {
+                        jComboBoxRS232BaudrateList.setSelectedIndex(5);
+                    }
+                    else if(strBaudRate.equals((String)"4800 Bits/Sec"))
+                    {
+                        jComboBoxRS232BaudrateList.setSelectedIndex(4);
+                    }
+                    else if(strBaudRate.equals((String)"9600 Bits/Sec"))
+                    {
+                        jComboBoxRS232BaudrateList.setSelectedIndex(3);
+                    }
+                    else if(strBaudRate.equals((String)"19200 Bits/Sec"))
+                    {
+                        jComboBoxRS232BaudrateList.setSelectedIndex(2);
+                    }
+                    else if(strBaudRate.equals((String)"38400 Bits/Sec"))
+                    {
+                        jComboBoxRS232BaudrateList.setSelectedIndex(1);
+                    }
+                    else // "57600 Bits/Sec"
+                    {
+                        jComboBoxRS232BaudrateList.setSelectedIndex(0);
+                    }                    
+                }
+                else
+                {
+                
+                	jComboBoxRS232BaudrateList.setSelectedIndex(3); // 9600
+                }
+                
+                cvplSerial.setBaudRate((String)jComboBoxRS232BaudrateList.
+                        getSelectedItem());
             }
 		}
 		return jComboBoxRS232BaudrateList;
@@ -314,17 +370,31 @@ public class ValentinConsole extends JFrame {
 		if (jComboBoxRS232DatabitsList == null) {
 			jComboBoxRS232DatabitsList = new JComboBox();
 			jComboBoxRS232DatabitsList.setBackground(java.awt.Color.white);
-			jComboBoxRS232DatabitsList.addItemListener(new java.awt.event.ItemListener() { 
-				public void itemStateChanged(java.awt.event.ItemEvent e) {    
-					cvplSerial.setDataBits((String)jComboBoxRS232DatabitsList.getSelectedItem());
-				}
-			});
             jComboBoxRS232DatabitsList.addItem("8");
             jComboBoxRS232DatabitsList.addItem("7");
             if(jComboBoxRS232DatabitsList.getItemCount() > 0)
             {
-                jComboBoxRS232DatabitsList.setSelectedIndex(0);
-                cvplSerial.setDataBits((String)jComboBoxRS232DatabitsList.getSelectedItem());
+                String strDatabits;
+                
+                strDatabits = config.getConfig(strRS232DatabitsID);
+                if (strDatabits != null) 
+                {
+                    if(strDatabits.equals((String)"7")) 
+                    {
+                        jComboBoxRS232DatabitsList.setSelectedIndex(1);
+                    }
+                    else // "8"
+                    {
+                        jComboBoxRS232DatabitsList.setSelectedIndex(0);
+                    }
+                }
+                else 
+                {
+                	jComboBoxRS232DatabitsList.setSelectedIndex(0);
+                }
+                
+                cvplSerial.setDataBits((String)jComboBoxRS232DatabitsList.
+                        getSelectedItem());                
             }
 		}
 		return jComboBoxRS232DatabitsList;
@@ -338,17 +408,31 @@ public class ValentinConsole extends JFrame {
 		if (jComboBoxRS232StopbitsList == null) {
 			jComboBoxRS232StopbitsList = new JComboBox();
 			jComboBoxRS232StopbitsList.setBackground(java.awt.Color.white);
-			jComboBoxRS232StopbitsList.addItemListener(new java.awt.event.ItemListener() { 
-				public void itemStateChanged(java.awt.event.ItemEvent e) {    
-					cvplSerial.setStopBits((String)jComboBoxRS232StopbitsList.getSelectedItem());
-				}
-			});
             jComboBoxRS232StopbitsList.addItem("1");
             jComboBoxRS232StopbitsList.addItem("2");
             if(jComboBoxRS232StopbitsList.getItemCount() > 0)
             {
-                jComboBoxRS232StopbitsList.setSelectedIndex(0);
-                cvplSerial.setStopBits((String)jComboBoxRS232StopbitsList.getSelectedItem());
+                String strStopbits;
+                
+                strStopbits = config.getConfig(strRS232StopbitsID);
+                if (strStopbits != null) 
+                {
+                    if(strStopbits.equals((String)"1"))
+                    {
+                        jComboBoxRS232StopbitsList.setSelectedIndex(0);
+                    }
+                    else // "2"
+                    {
+                        jComboBoxRS232StopbitsList.setSelectedIndex(1);
+                    }
+                }
+                else
+                {
+                	jComboBoxRS232StopbitsList.setSelectedIndex(1);
+                }
+                
+                cvplSerial.setStopBits((String)jComboBoxRS232StopbitsList.
+                        getSelectedItem());                
             }
 		}
 		return jComboBoxRS232StopbitsList;
@@ -362,18 +446,36 @@ public class ValentinConsole extends JFrame {
 		if (jComboBoxRS232ParityList == null) {
 			jComboBoxRS232ParityList = new JComboBox();
 			jComboBoxRS232ParityList.setBackground(java.awt.Color.white);
-			jComboBoxRS232ParityList.addItemListener(new java.awt.event.ItemListener() { 
-				public void itemStateChanged(java.awt.event.ItemEvent e) {    
-					cvplSerial.setParity((String)jComboBoxRS232ParityList.getSelectedItem());
-				}
-			});
             jComboBoxRS232ParityList.addItem("none");
             jComboBoxRS232ParityList.addItem("odd");
             jComboBoxRS232ParityList.addItem("even");
             if(jComboBoxRS232ParityList.getItemCount() > 0)
             {
-                jComboBoxRS232ParityList.setSelectedIndex(0);
-                cvplSerial.setParity((String)jComboBoxRS232ParityList.getSelectedItem());
+                String strParity;
+                
+                strParity = config.getConfig(strRS232ParityID);
+                if (strParity != null) 
+                {
+                    if(strParity.equals((String)"even"))
+                    {
+                        jComboBoxRS232ParityList.setSelectedIndex(2);
+                    }
+                    else if(strParity.equals((String)"odd"))
+                    {
+                        jComboBoxRS232ParityList.setSelectedIndex(1);
+                    }
+                    else // "none"
+                    {
+                        jComboBoxRS232ParityList.setSelectedIndex(0);
+                    }
+                }
+                else
+                {
+                	jComboBoxRS232ParityList.setSelectedIndex(0);
+                }
+                
+                cvplSerial.setParity((String)jComboBoxRS232ParityList.
+                        getSelectedItem());
             }
 		}
 		return jComboBoxRS232ParityList;
@@ -406,6 +508,45 @@ public class ValentinConsole extends JFrame {
 		}
 		return jToolBarRS232B;
 	}
+    
+    private void disableToolBarsRS232()
+    {        
+        jButtonRS232Open.setEnabled(false);
+        jComboBoxRS232PortList.setEnabled(false);
+        jComboBoxRS232BaudrateList.setEnabled(false);
+        jComboBoxRS232DatabitsList.setEnabled(false);
+        jComboBoxRS232StopbitsList.setEnabled(false);
+        jComboBoxRS232ParityList.setEnabled(false);
+        jRadioButtonEncoding0117RS232.setEnabled(false);
+        jRadioButtonEncoding5E5FRS232.setEnabled(false);
+        jRadioButtonEncodingNoneRS232.setEnabled(false);
+        jCheckBoxRS232CD.setEnabled(false);
+        jCheckBoxRS232CTS.setEnabled(false);
+        jCheckBoxRS232DA.setEnabled(false);
+        jCheckBoxRS232DSR.setEnabled(false);
+        jCheckBoxRS232DTR.setEnabled(false);
+        jCheckBoxRS232RTS.setEnabled(false);
+    }
+    
+    private void enableToolBarsRS232()
+    {
+        jButtonRS232Open.setEnabled(true);
+        jComboBoxRS232PortList.setEnabled(true);
+        jComboBoxRS232BaudrateList.setEnabled(true);
+        jComboBoxRS232DatabitsList.setEnabled(true);
+        jComboBoxRS232StopbitsList.setEnabled(true);
+        jComboBoxRS232ParityList.setEnabled(true);
+        jRadioButtonEncoding0117RS232.setEnabled(true);
+        jRadioButtonEncoding5E5FRS232.setEnabled(true);
+        jRadioButtonEncodingNoneRS232.setEnabled(true);
+        jCheckBoxRS232CD.setEnabled(true);
+        jCheckBoxRS232CTS.setEnabled(true);
+        jCheckBoxRS232DA.setEnabled(true);
+        jCheckBoxRS232DSR.setEnabled(true);
+        jCheckBoxRS232DTR.setEnabled(true);
+        jCheckBoxRS232RTS.setEnabled(true);        
+    }    
+    
 	/**
 	 * This method initializes jButton1	
 	 * 	
@@ -417,9 +558,22 @@ public class ValentinConsole extends JFrame {
 			jButtonRS232Open.setPreferredSize(new java.awt.Dimension(40,36));
 			jButtonRS232Open.setText("Open serial port");
 			jButtonRS232Open.addActionListener(new java.awt.event.ActionListener() { 
-				public void actionPerformed(java.awt.event.ActionEvent e) {    
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+                    cvplSerial.setBaudRate((String)jComboBoxRS232BaudrateList.
+                            getSelectedItem());
+                    cvplSerial.setDataBits((String)jComboBoxRS232DatabitsList.
+                            getSelectedItem());
+                    cvplSerial.setStopBits((String)jComboBoxRS232StopbitsList.
+                            getSelectedItem());
+                    cvplSerial.setParity((String)jComboBoxRS232ParityList.
+                            getSelectedItem());
+                    cvplSerial.setPort((String)jComboBoxRS232PortList.
+                            getSelectedItem());
+                    
                     if(cvplSerial.openSerialPort() == true)
                     {
+                        disableToolBarNetwork();
+                        
                         jButtonRS232Open.setEnabled(false);
                         jButtonRS232Close.setEnabled(true);
                     
@@ -443,6 +597,26 @@ public class ValentinConsole extends JFrame {
                         recvDataThreadRS232.setSohEtb(sohEtbRS232);
                         recvDataThreadRS232.start();
                         console.getTextArea().setEnabled(true);
+                        
+                        jMenuItemOpen.setEnabled(true);
+                        
+                        config.setConfig(strRS232PortID, 
+                                (String)jComboBoxRS232PortList.
+                                getSelectedItem());
+                        config.setConfig(strRS232BaudrateID, 
+                                (String)jComboBoxRS232BaudrateList.
+                                getSelectedItem());
+                        config.setConfig(strRS232DatabitsID, 
+                                (String)jComboBoxRS232DatabitsList.
+                                getSelectedItem());
+                        config.setConfig(strRS232StopbitsID, 
+                                (String)jComboBoxRS232StopbitsList.
+                                getSelectedItem());
+                        config.setConfig(strRS232ParityID, 
+                                (String)jComboBoxRS232ParityList.
+                                getSelectedItem());
+                        config.setConfig(strRS232SohEtbConfigID, 
+                                         sohEtbRS232.toString());
                     }
 				}
 			});
@@ -467,6 +641,8 @@ public class ValentinConsole extends JFrame {
                         jButtonRS232Close.setEnabled(false);
                         jButtonRS232Open.setEnabled(true);
                     
+                        console.saveHistory(config);
+                        
                         jComboBoxRS232PortList.setEnabled(true);
                         jComboBoxRS232BaudrateList.setEnabled(true);
                         jComboBoxRS232DatabitsList.setEnabled(true);
@@ -479,6 +655,10 @@ public class ValentinConsole extends JFrame {
                         sendDataThreadRS232.stop();
                         recvDataThreadRS232.stop();
                         console.getTextArea().setEnabled(false);
+                        
+                        jMenuItemOpen.setEnabled(false);
+                        
+                        enableToolBarNetwork();
                     }
 				}
 			});
@@ -558,7 +738,7 @@ public class ValentinConsole extends JFrame {
 			jRadioButtonEncodingNoneRS232.setBackground(new java.awt.Color(214,204,204));
 			jRadioButtonEncodingNoneRS232.setSelected(true);
 			jRadioButtonEncodingNoneRS232.setText("none");
-			jRadioButtonEncodingNoneRS232.setToolTipText("no start and stop sign");
+			jRadioButtonEncodingNoneRS232.setToolTipText("no start and stop sign");           
             if (sohEtbRS232 == null)
             {
                 jRadioButtonEncodingNoneRS232.setSelected(true);
@@ -567,6 +747,7 @@ public class ValentinConsole extends JFrame {
             {
                 jRadioButtonEncodingNoneRS232.setSelected(false);
             }
+
 			jRadioButtonEncodingNoneRS232.addActionListener(new java.awt.event.ActionListener() { 
 				public void actionPerformed(java.awt.event.ActionEvent e) {    
                     sohEtbRS232 = SohEtb.none;
@@ -738,8 +919,10 @@ public class ValentinConsole extends JFrame {
 		}
 		return jCheckBoxRS232RTS;
 	}
-          public static void main(String[] args) 
+    
+    public static void main(String[] args) 
     {
+        System.setProperty("java.class.path", "Veto.jar;.\\comm.jar");
 		ValentinConsole rc = new ValentinConsole();
 		rc.show();
 	}
@@ -822,7 +1005,7 @@ public class ValentinConsole extends JFrame {
 			jPanelToolbarNetwork = new javax.swing.JPanel();
 			jPanelToolbarNetwork.setLayout(new BorderLayout());
 			jPanelToolbarNetwork.setPreferredSize(new java.awt.Dimension(20,36));
-			jPanelToolbarNetwork.add(getJToolBar(), java.awt.BorderLayout.NORTH);
+			jPanelToolbarNetwork.add(getJToolBarNetwork(), java.awt.BorderLayout.NORTH);
 		}
 		return jPanelToolbarNetwork;
 	}
@@ -870,6 +1053,22 @@ public class ValentinConsole extends JFrame {
 		return jTextFieldIPAddr;
 	}
 
+    private void disableToolBarNetwork()
+    {        
+        jrb0117Network.setEnabled(false);
+        jrb5E5FNetwork.setEnabled(false);
+        jButtonNetworkConnect.setEnabled(false);
+        jTextFieldIPAddr.setEnabled(false);
+    }
+    
+    private void enableToolBarNetwork()
+    {
+        jrb0117Network.setEnabled(true);
+        jrb5E5FNetwork.setEnabled(true);
+        jButtonNetworkConnect.setEnabled(true);
+        jTextFieldIPAddr.setEnabled(true);
+    }
+    
    /**
 	 * This method initializes jButtonNetworkConnect
 	 * 
@@ -909,6 +1108,7 @@ public class ValentinConsole extends JFrame {
             }
             if (cvplNet.openConnect(strIP, iPort)) 
             {
+                disableToolBarsRS232();
                 jTextFieldIPAddr.setEnabled(false);
                 jButtonNetworkConnect.setText("Disconnect");
                 jrb0117Network.setEnabled(false);
@@ -950,6 +1150,7 @@ public class ValentinConsole extends JFrame {
             jrb5E5FNetwork.setEnabled(true);
             jButtonNetworkConnect.setText("Connect");
             jTextFieldIPAddr.setEnabled(true);
+            enableToolBarsRS232();
         }
     }
     
@@ -1052,6 +1253,7 @@ public class ValentinConsole extends JFrame {
             System.err.println("I/O Excexption writeError: "  + ex.getMessage());
         }
     }
+    
     
     private class StatusWriter extends Writer {
         private StringBuffer buf = new StringBuffer();

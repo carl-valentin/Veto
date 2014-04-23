@@ -1,18 +1,12 @@
-MKS Version 1.4
-ADD: Veto/de/carlvalentin/ValentinConsole/comm.jar afrieser 18.04.2005 16:18:35
-Veto/de/carlvalentin/ValentinConsole/CVPLnet.java 1.2-1.3
-    afrieser 18.04.2005 16:16:21 1.3; V0_3 Um Funktion zum Erhalten eines Ausgabestroms (Writer) erweitert.  
-    btisler 13.04.2005 10:55:50 1.2; V0_2 Um eine Funktion writeRaw erweitert um Daten die bereits in CVPL sind sichicken zu koennen.  
-ADD: Veto/de/carlvalentin/ValentinConsole/CVPLrecvThread.java afrieser 19.04.2005 15:21:41
-ADD: Veto/de/carlvalentin/ValentinConsole/CVPLsendThread.java afrieser 19.04.2005 15:22:24
-ADD: Veto/de/carlvalentin/ValentinConsole/CVPLserial.java afrieser 19.04.2005 15:23:45
-ADD: Veto/de/carlvalentin/ValentinConsole/javax.comm.properties afrieser 18.04.2005 16:19:34
-Veto/de/carlvalentin/ValentinConsole/SohEtb.java 1.2-1.3
-    afrieser 18.04.2005 16:17:13 1.3; V0_3 Um den Datentyp "none" erweitert - zeigt an, dass keine Steuerzeichen verwendet werden sollen.  
-    btisler 13.04.2005 10:56:50 1.2; V0_2 Neue Funktion fromString: Setzt SOH/ETB aufgrund einer Stringreprsentation  
-Veto/de/carlvalentin/ValentinConsole/ValentinConsole.java 1.2-1.4
-    afrieser 19.04.2005 15:24:44 1.4;  Oberflchenelemente zum Zugriff auf die verschiedenen Bits des UART und die Events der seriellen  
-      Schnittstelle hinzugefgt.;    
-    afrieser 18.04.2005 16:23:31 1.3;  Untersttzung fr die serielle Schnittstelle hinzugefgt und das Versenden und Empfangen der Daten auf  
-      universell nutzbare Threads umgestellt.;    
-    btisler 13.04.2005 11:00:27 1.2; V0_2 Um Config-Speichern und File-Open-Dialog erweitert.  
+MKS Version 1.4.1.1
+Veto/de/carlvalentin/ValentinConsole/manifest.mf 1.1-1.2
+    btisler 19.05.2005 08:20:45 1.2; V0_3 Fuer seriell: comm.jar in lokalen Classpath, damit diese auch optional mitgeliefert werden kann und man nicht unbedingt das javax.comm installieren muss.  
+    btisler 02.04.2005 17:45:51 1.1; V0_1,V0_2 Initial revision  
+Veto/build.xml 1.1-1.3
+    btisler 19.05.2005 08:17:51 1.3; V0_3 Fuer seriell: Neuer Target dist.win32 damit javax.comm auch optional mitgeliefert werden kann und man nicht unbedingt installieren sein muss.  
+    afrieser 28.04.2005 17:10:30 1.2;  Anpassung an neue Klassenstruktur  
+    btisler 02.04.2005 17:49:49 1.1; V0_1,V0_2 Initial revision  
+ADD: Veto/javax.comm/Win32.V2.0/comm.jar btisler 19.05.2005 08:16:42
+ADD: Veto/javax.comm/Win32.V2.0/javax.comm.properties btisler 19.05.2005 08:16:43
+ADD: Veto/javax.comm/Win32.V2.0/win32com.dll btisler 19.05.2005 08:16:42
+DROP: Veto/de/carlvalentin/ValentinConsole/javax.comm.properties

@@ -1,1 +1,3 @@
 Main-Class: de.carlvalentin.ValentinConsole.ValentinConsole
+Class-Path: comm.jar
+

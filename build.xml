@@ -5,6 +5,8 @@
     <!-- set global properties for this build -->
     <property environment="env"/>   
     <property name="OUTPUTDIR" location="O"/>
+    <property name="ODIR_CLASSES" location="${OUTPUTDIR}\classes"/>
+    <property name="ODIR_PACKAGE" location="${OUTPUTDIR}\package"/>
     <property name="DOCS_ODIR" location="docs"/>
 	
     <target name="init">
@@ -12,25 +14,45 @@
         <tstamp/>
         <!-- Create the build directory structure used by compile -->
         <mkdir dir="${OUTPUTDIR}"/>
+        <mkdir dir="${ODIR_CLASSES}"/>
+        <mkdir dir="${ODIR_PACKAGE}"/>   
     </target>
 
     <target name="compile" depends="init"
             description="compile the source " >
         <!-- Compile the java code from ${src} into ${outputdir} -->
-        <javac srcdir="." destdir="${OUTPUTDIR}"/>
+        <javac srcdir="." destdir="${ODIR_CLASSES}"/>
     </target>
 
+    <target name="compile.win32" depends="init"
+            description="compile the source Win32-specific" >
+        <!-- Compile the java code from ${src} into ${outputdir} -->
+        <javac srcdir="." destdir="${ODIR_CLASSES}" 
+               classpath="javax.comm/Win32.V2.0/comm.jar"/>
+    </target>
+    
     <target name="dist" depends="compile"
             description="generate the distribution" >
 
-        <!-- Delete old jar file -->
-        <delete file="${OUTPUTDIR}/Veto.jar"/>
         <!-- Put everything in into the jar file -->
-        <jar jarfile="${OUTPUTDIR}/Veto.jar" 
-        	 basedir="${OUTPUTDIR}" 
+        <jar jarfile="${ODIR_PACKAGE}/Veto.jar" 
+        	 basedir="${ODIR_CLASSES}" 
         	 manifest="de/carlvalentin/ValentinConsole/manifest.mf"/>
     </target>
 
+    <target name="dist.win32" depends="compile.win32"
+            description="generate the distribution" >
+
+        <!-- Put everything in into the jar file -->
+        <jar jarfile="${ODIR_PACKAGE}/Veto.jar" 
+             basedir="${ODIR_CLASSES}" 
+             manifest="de/carlvalentin/ValentinConsole/manifest.mf"/>
+        <!-- Copy the rest needed for dist in package dir -->
+        <copy todir="${ODIR_PACKAGE}">
+            <fileset dir="javax.comm/Win32.V2.0"/>
+        </copy>
+    </target>
+    
     <target name="docs"
             description="generate documentation" >
         <!-- Run Jacadoc -->

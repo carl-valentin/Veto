@@ -513,6 +513,28 @@ public class CVPLserial implements SerialPortEventListener
         }
         return null;
     }
+
+    /**
+     * Schreibt die Daten ohne CVPL, f&uuml;r Daten die schon in CVPL sind.
+     * (Ist jetzt eine Schnelll&ouml;sung und irgendwie nicht sauber,  
+     *  typischer Quck'n'Dirty-Kot.
+     *  Hier m&uuml;sste man sich mal generell ein anderes 
+     *  Klassendesign &uuml;berlegen.)
+     */
+    public void writeRaw(byte[] bData, int iDataLength) {
+        try {
+            BufferedOutputStream cStream2Printer = 
+                new BufferedOutputStream(
+                        lk_cSerialPort.getOutputStream());
+            
+            cStream2Printer.write(bData, 0, iDataLength);
+            cStream2Printer.flush();
+        }
+        catch (IOException ex) {
+            writeError("I/O Exception occured while trying to " + 
+                        "send data");
+        }
+    }     
     
     /**
      * Registriere JCheckBox fuer das Event SerialPortEvent.CD.
