@@ -125,10 +125,15 @@ public class ValentinConsole extends JFrame {
      */
     private JMenuBar jMenuBarMain = null;
     /**
+     * Info Men&uuml
+     */
+    private JMenu     jMenuInfo             = null;
+    /**
      * Men&uuml zur Arbeit mit Dateien
      */
     private JMenu     jMenuFile             = null;
     private JMenuItem jMenuItemTransmitFile = null;
+    private JMenuItem jMenuItemInfo         = null;
     /**
      * Men&uuml zur Konfiguration der verschiedenen Schnittstellen
      */
@@ -181,7 +186,7 @@ public class ValentinConsole extends JFrame {
             {
                 sIP = sArg.substring(2);
             }
-            
+
             if (sArg.startsWith("-p"))
             {
                 iPort = Integer.parseInt(sArg.substring(2));
@@ -211,9 +216,9 @@ public class ValentinConsole extends JFrame {
         {
             lk_cErrorMessage.setShowWindow(false, true);
             jTabbedPaneMain.setSelectedIndex(1);
-            lk_cBeanShellScriptingUI.loadScript(sScript);            
+            lk_cBeanShellScriptingUI.loadScript(sScript);
         }
-        
+
         if ( (sIP != null) || (iPort != 0) )
         {
             CVNetworkTCP      cInterfaceNetworkTCP;
@@ -239,10 +244,10 @@ public class ValentinConsole extends JFrame {
         }
 
         if (sScript != null)
-        {            
+        {
             lk_cBeanShellScriptingUI.processButtonRunScript(true);
         }
-        
+
         return;
     }
 
@@ -1052,9 +1057,48 @@ public class ValentinConsole extends JFrame {
             jMenuBarMain.add(getJMenuFile());
             jMenuBarMain.add(getJMenuInterface());
             jMenuBarMain.add(getJMenuConsole());
+            jMenuBarMain.add(getJMenuInfo());
         }
 
         return jMenuBarMain;
+    }
+    /**
+     * This method initializes jMenu
+     *
+     * @return javax.swing.JMenu
+     */
+    private JMenu getJMenuInfo() {
+        if (jMenuInfo == null) {
+            jMenuInfo = new JMenu();
+            jMenuInfo.setText("Info");
+            //jMenuInfo.setMnemonic(java.awt.event.KeyEvent.VK_C);
+            jMenuInfo.add(getJMenuItemInfo());
+        }
+        return jMenuInfo;
+    }
+    /**
+     * This method initializes jMenuItem
+     *
+     * @return javax.swing.JMenuItem
+     */
+    private JMenuItem getJMenuItemInfo() {
+        if (jMenuItemInfo == null) {
+            jMenuItemInfo = new JMenuItem();
+            jMenuItemInfo.setText("Info");
+            jMenuItemInfo.setEnabled(true);
+            jMenuItemInfo.addActionListener(
+                    new java.awt.event.ActionListener()
+            {
+                public void actionPerformed(java.awt.event.ActionEvent e)
+                {
+                    JOptionPane.showMessageDialog(null,
+                            "Valentin Embedded Test Office\nVersion 0.7",
+                            "Info",
+                            JOptionPane.OK_OPTION);
+                }
+            });
+        }
+        return jMenuItemInfo;
     }
     /**
      * This method initializes jMenu
@@ -1093,7 +1137,6 @@ public class ValentinConsole extends JFrame {
         }
         return jMenuItemTransmitFile;
     }
-
     /**
      * This method initializes jMenu
      *
