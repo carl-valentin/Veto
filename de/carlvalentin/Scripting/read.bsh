@@ -21,11 +21,11 @@ String read( )
 {
     long         lMilliSeconds = 10000;
     long         lMilliSecondsCounter = 0;
-    StringBuffer returnValue = new StringBuffer();
+	StringBuffer returnValue = new StringBuffer();
     char         readValue   = 0;
 
-    InputStreamReader inputStreamReader;
-    CVNetworkSettings settings;		
+	InputStreamReader inputStreamReader;
+	CVNetworkSettings settings;		
 
     chk4StpScr();
     
@@ -34,26 +34,15 @@ String read( )
         inputStreamReader = 
         	cConnectionManager.getConnectedInterface().getInterfaceReader();        	
 
-        while (true)
+		while (true)
         {
             if (inputStreamReader.ready())
             {
                 readValue = (char)inputStreamReader.read();
 
-                if (cConnectionManager.getSohEtb().gl_iSOH != 0x0)
+                if (readValue == cConnectionManager.getSohEtb().gl_iSOH)
                 {
-                    if(readValue == cConnectionManager.getSohEtb().gl_iSOH)
-                    {
-                        break;
-                    }
-                }
-                else
-                {
-                    returnValue.append(readValue);
-                    if(readValue == '\n')
-                    {                        
-                        break;
-                    }
+                    break;
                 }
                 lMilliSecondsCounter = 0;
             }
@@ -70,21 +59,16 @@ String read( )
             }
         }
         
-        if (cConnectionManager.getSohEtb().gl_iETB != 0x0)
+        while (true)
         {
-            while (true)
-            {
-                readValue = (char)inputStreamReader.read();
-    
-                if(readValue == cConnectionManager.getSohEtb().gl_iETB)
-                {
-                    returnValue.append(readValue);
-                    break;
-                }
+            readValue = (char)inputStreamReader.read();
 
-                returnValue.append(readValue);
+            if(readValue == cConnectionManager.getSohEtb().gl_iETB)
+            {
+                break;
             }
-        }
+            returnValue.append(readValue);
+        }       
     }
     catch(IOException ex)
     {
@@ -113,8 +97,8 @@ String read( CVInterface cInterface )
 // Liest den Inhalt der Datei cFile und gibt ihn als String zurueck.
 String read( File cFile )
 {
-    CVFileManagement cFileManager = new CVFileManagement( 
-                                        cErrorMessage, cErrorFile, cStatusMessage );
+	CVFileManagement cFileManager = new CVFileManagement( 
+            cErrorMessage, cErrorFile, cStatusMessage );
     chk4StpScr();
     return cFileManager.readStringFromFile( cFile );
 }

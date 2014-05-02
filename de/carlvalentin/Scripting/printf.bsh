@@ -37,7 +37,7 @@ void printf( String sTemplate, Object[] cParam )
 // Wie C. Beispiel: printf( "%d + %i = %s\n", 2, 3, "fuenf" );
 
 // 1
-void printf( String sTemplate, Object cParam1 )
+void printf( String sTemplate, int cParam1 )
 {    
     Object[] cParam = new Object[]{cParam1};
     chk4StpScr();
