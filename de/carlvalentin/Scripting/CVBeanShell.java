@@ -205,7 +205,8 @@ public class CVBeanShell
 
                                 if (lk_bExit)
                                 {
-                                    lk_cBeanShellInterpreter.eval("System.exit(0)");
+                                    lk_valentinConsole.disconnectPrinter();
+                                    lk_cBeanShellInterpreter.eval("System.exit(cErrorMessage.isError() ? 1 : 0)");
                                 }
 
                                 lk_sScript = null;
@@ -254,8 +255,8 @@ public class CVBeanShell
                                 lk_sScript = null;
                                 lk_bScriptIsRunning = false;
                             }
-                            
-                            if (lk_bExit) System.exit(0);
+
+                            if (lk_bExit) System.exit(lk_cErrorMessage.isError() ? 1 : 0);
                         }
                     }
                 }

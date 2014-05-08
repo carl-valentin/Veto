@@ -18,6 +18,7 @@ public class CVErrorMessage
      */
     private boolean   lk_bShowWindow = true;
     private boolean   lk_bConsole = false;
+    private boolean   lk_bError = false;
 
     /**
      * Konstruktor der Klasse CVErrorMessage.
@@ -32,7 +33,7 @@ public class CVErrorMessage
     }
 
     /**
-     * Anzeigen eines Dialoges mit Fhelermeldung.
+     * Anzeigen eines Dialoges mit Fehlermeldung.
      *
      * @param message Text der Fehlermeldung.
      * @param window Fenster, zu dem die Fehlermeldung gehoert.
@@ -41,6 +42,8 @@ public class CVErrorMessage
     private boolean showDialog(Component window, String message, boolean bAsk)
     {
         int iAnswer = JOptionPane.NO_OPTION;
+
+        lk_bError = true;
 
         if (bAsk)
         {
@@ -73,6 +76,8 @@ public class CVErrorMessage
      */
     public void write(String message)
     {
+        lk_bError = true;
+
         if(this.lk_bShowWindow == true)
         {
             this.showDialog(this.lk_cParentWindow, message, false);
@@ -82,7 +87,7 @@ public class CVErrorMessage
         {
             System.err.print(message);
         }
-        
+
         return;
     }
 
@@ -94,13 +99,15 @@ public class CVErrorMessage
      */
     public boolean writeAskAbort(String message)
     {
+        lk_bError = true;
+
         if(this.lk_bShowWindow == true)
         {
             return this.showDialog(this.lk_cParentWindow,
                             message + "\nDo you want to abort?",
                             true);
         }
-        
+
         if(lk_bConsole == true)
         {
             System.err.print(message);
@@ -116,6 +123,8 @@ public class CVErrorMessage
      */
     public void writeMsg(String message)
     {
+        lk_bError = true;
+
         if(this.lk_bShowWindow == true)
         {
             JOptionPane.showMessageDialog(
@@ -124,12 +133,12 @@ public class CVErrorMessage
                     "Message",
                     JOptionPane.PLAIN_MESSAGE);
         }
-        
+
         if(lk_bConsole == true)
         {
             System.err.print(message);
         }
-        
+
     }
 
     /**
@@ -140,6 +149,8 @@ public class CVErrorMessage
      */
     public void write(Component window, String message)
     {
+        lk_bError = true;
+
         if(this.lk_bShowWindow == true)
         {
             this.showDialog(window, message, false);
@@ -149,7 +160,7 @@ public class CVErrorMessage
         {
             System.err.print(message);
         }
-        
+
         return;
     }
 
@@ -164,5 +175,15 @@ public class CVErrorMessage
         this.lk_bConsole = bConsole;
 
         return;
+    }
+
+    public void setError(boolean bError)
+    {
+        lk_bError = bError;
+    }
+
+    public boolean isError()
+    {
+        return lk_bError;
     }
 }

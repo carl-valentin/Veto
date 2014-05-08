@@ -212,6 +212,8 @@ public class ValentinConsole extends JFrame {
         this.initVC();
         this.initialize();
 
+        boolean bConnect = false;
+
         if (sScript != null)
         {
             lk_cErrorMessage.setShowWindow(false, true);
@@ -241,6 +243,7 @@ public class ValentinConsole extends JFrame {
             }
 
             jButtonConnectBarConnect.doClick();
+            bConnect = true;
         }
 
         if (sScript != null)
@@ -456,7 +459,7 @@ public class ValentinConsole extends JFrame {
      *
      * @return true, wenn mit Drucker verbunden.
      */
-    private boolean connectPrinter()
+    public boolean connectPrinter()
     {
         if(this.lk_cConnectionManager.isConnected() == true)
         {
@@ -539,7 +542,7 @@ public class ValentinConsole extends JFrame {
      *
      * @return true, wenn Verbindung beendet.
      */
-    private boolean disconnectPrinter()
+    public boolean disconnectPrinter()
     {
         if(this.lk_cConnectionManager.isConnected() == false)
         {

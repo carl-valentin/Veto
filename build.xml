@@ -1,7 +1,7 @@
 <project name="Valentin Embedded Test Office V0.7" default="dist.win32" basedir=".">
-        <description>
-            Ant build file for the Valentin Embedded Test Office
-        </description>
+    <description>
+        Ant build file for the Valentin Embedded Test Office
+    </description>
     <!-- set global properties for this build -->
     <property environment="env"/>
     <property name="OUTPUTDIR" location="O"/>
@@ -9,6 +9,8 @@
     <property name="ODIR_PACKAGE" location="${OUTPUTDIR}\package"/>
     <property name="DOCS_ODIR" location="docs"/>
     <property name="SCRIPTDIR" location="de/carlvalentin/Scripting"/>
+
+    <echo message="Info: Java Version: ${ant.java.version}"/>
 
     <target name="init">
         <!-- Create the time stamp -->
@@ -40,8 +42,8 @@
 
         <!-- Put everything in into the jar file -->
         <jar jarfile="${ODIR_PACKAGE}/Veto.jar"
-        	 basedir="${ODIR_CLASSES}"
-        	 manifest="de/carlvalentin/ValentinConsole/manifest.mf"/>
+           basedir="${ODIR_CLASSES}"
+           manifest="de/carlvalentin/ValentinConsole/manifest.mf"/>
         <!-- Copy the rest needed for dist in package dir -->
         <copy todir="${ODIR_PACKAGE}">
             <fileset dir="bsh" excludes="**/*.pj"/>
@@ -54,7 +56,7 @@
         </copy>
         <!-- Copy VETO documentation files in package dir -->
         <copy todir="${ODIR_PACKAGE}">
-            <fileset dir="." includes="*.doc"/>            
+            <fileset dir="." includes="*.doc"/>
         </copy>
     </target>
 
@@ -91,15 +93,15 @@
             description="generate documentation" >
         <!-- Run Javadoc -->
         <javadoc sourcepath="."
-        	     packagenames="de.carlvalentin.ValentinConsole.*,
+               packagenames="de.carlvalentin.ValentinConsole.*,
                                de.carlvalentin.Common.*,
                                de.carlvalentin.Interface.*,
                                de.carlvalentin.Protocol.*,
                                de.carlvalentin.Scripting.*,
-        	                   pnuts.tools.*"
-		         destdir="${DOCS_ODIR}/javadoc"
+                             pnuts.tools.*"
+             destdir="${DOCS_ODIR}/javadoc"
                  overview="project/overview.html"/>
-    	<!-- Run Doxygen -->
+      <!-- Run Doxygen -->
         <exec executable="${env.DOXYGEN_PATH}doxygen">
             <arg line="project/doxcfg.dxc"/>
             <env key="PROJECT_NAME" value="Veto"/>
