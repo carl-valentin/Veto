@@ -1,4 +1,4 @@
-<project name="Valentin Embedded Test Office V0.7" default="dist.win32" basedir=".">
+<project name="Valentin Embedded Test Office V0.8" default="dist.win32" basedir=".">
     <description>
         Ant build file for the Valentin Embedded Test Office
     </description>
@@ -25,16 +25,21 @@
             description="compile the source" >
         <!-- Compile the java code from ${src} into ${outputdir} -->
         <javac srcdir="." destdir="${ODIR_CLASSES}"
-               classpath="bsh/bsh-2.0b2.jar;com/sharkysoft/lava3-core.jar;
-                          com/sharkysoft/lava3-printf.jar"/>
+               classpath="bsh/bsh-2.0b2.jar;
+        	              com/sharkysoft/lava3-core.jar;
+                          com/sharkysoft/lava3-printf.jar;
+        	              rsyntaxtextarea-2.5.6/rsyntaxtextarea-2.5.6.jar"/>
     </target>
 
     <target name="compile.win32" depends="init"
             description="compile the source Win32-specific" >
         <!-- Compile the java code from ${src} into ${outputdir} -->
         <javac srcdir="." destdir="${ODIR_CLASSES}"
-               classpath="javax.comm/Win32.V2.0/comm.jar;bsh/bsh-2.0b2.jar;
-                com/sharkysoft/lava3-core.jar;com/sharkysoft/lava3-printf.jar"/>
+               classpath="javax.comm/Win32.V2.0/comm.jar;
+        	              bsh/bsh-2.0b2.jar;
+                          com/sharkysoft/lava3-core.jar;
+        	              com/sharkysoft/lava3-printf.jar;
+    	                  rsyntaxtextarea-2.5.6/rsyntaxtextarea-2.5.6.jar"/>
     </target>
 
     <target name="dist" depends="compile"
@@ -48,6 +53,7 @@
         <copy todir="${ODIR_PACKAGE}">
             <fileset dir="bsh" excludes="**/*.pj"/>
             <fileset dir="com/sharkysoft" excludes="**/*.pj"/>
+        	<fileset dir="rsyntaxtextarea-2.5.6" includes="**/*.jar"/>
         </copy>
         <!-- Copy BeanShell script files in package dir -->
         <mkdir dir="${ODIR_PACKAGE}\bshscripts"/>
@@ -72,6 +78,7 @@
             <fileset dir="javax.comm/Win32.V2.0" excludes="**/*.pj"/>
             <fileset dir="bsh" excludes="**/*.pj"/>
             <fileset dir="com/sharkysoft" excludes="**/*.pj"/>
+        	<fileset dir="rsyntaxtextarea-2.5.6" includes="**/*.jar"/>
         </copy>
         <!-- Copy BeanShell script files in package dir -->
         <mkdir dir="${ODIR_PACKAGE}\bshscripts"/>

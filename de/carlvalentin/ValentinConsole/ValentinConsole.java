@@ -168,7 +168,8 @@ public class ValentinConsole extends JFrame {
                 ".\\comm.jar;" +
                 ".\\bsh-2.0b2.jar;" +
                 ".\\lava3-core.jar;" +
-                ".\\lava3-printf.jar");
+                ".\\lava3-printf.jar" +
+                ".\\rsyntaxtextarea-2.5.6.jar");
 
         while (i<args.length && args[i].startsWith("-"))
         {
@@ -1095,7 +1096,7 @@ public class ValentinConsole extends JFrame {
                 public void actionPerformed(java.awt.event.ActionEvent e)
                 {
                     JOptionPane.showMessageDialog(null,
-                            "Valentin Embedded Test Office\nVersion 0.7",
+                            "Valentin Embedded Test Office\nVersion 0.8",
                             "Info",
                             JOptionPane.OK_OPTION);
                 }

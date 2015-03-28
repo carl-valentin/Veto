@@ -8,8 +8,11 @@ import de.carlvalentin.ValentinConsole.ValentinConsole;
 
 import java.awt.*;
 import java.io.*;
+
 import javax.swing.*;
 import javax.swing.event.*;
+
+import org.fife.ui.rtextarea.RTextScrollPane;
 
 /**
  * Grafische Oberfläche zur Steuerung der Skriptumgebung BeanShell.
@@ -76,7 +79,7 @@ public class CVUIBeanShell extends JPanel
 
 
     private JTabbedPane jTabbedPaneScript       = null;
-    private JScrollPane jScrollPaneScriptEditor = null;
+    private RTextScrollPane jScrollPaneScriptEditor = null;
     private JScrollPane jScrollPaneScriptOutput = null;
     private JTextArea   jTextAreaScriptOutput   = null;
 
@@ -712,8 +715,8 @@ public class CVUIBeanShell extends JPanel
      */
     private JScrollPane getJScrollPaneScriptEditor() {
         if (jScrollPaneScriptEditor == null) {
-            jScrollPaneScriptEditor = new JScrollPane();
-            jScrollPaneScriptEditor.setViewportView(this.lk_cBeanShellEditor);
+            jScrollPaneScriptEditor = new RTextScrollPane(this.lk_cBeanShellEditor);
+            jScrollPaneScriptEditor.setFoldIndicatorEnabled(true);
         }
         return jScrollPaneScriptEditor;
     }

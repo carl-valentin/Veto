@@ -6,13 +6,15 @@ import de.carlvalentin.Common.CVFileManagement;
 import de.carlvalentin.Common.UI.CVErrorMessage;
 import de.carlvalentin.Common.UI.CVStatusLine;
 
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+
 import java.io.*;
-import javax.swing.*;
 
 /**
  * Textfeld zur Anzeige und Verarbeitung von Skripten
  */
-public class CVUIBeanShellEditor extends JTextArea
+public class CVUIBeanShellEditor extends RSyntaxTextArea
 {
 	/**
      * Ausgabe von Fehlermeldungen in Dialogform.
@@ -81,6 +83,9 @@ public class CVUIBeanShellEditor extends JTextArea
         this.lk_cFileScript = null;
         
         this.setFont(new java.awt.Font("DialogInput", java.awt.Font.PLAIN, 12));
+        this.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+        this.setCodeFoldingEnabled(true);
+        this.setAntiAliasingEnabled(true);
         
     	return;
     }
