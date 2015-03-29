@@ -393,8 +393,8 @@ public class ValentinConsole extends JFrame {
         if(this.lk_cConnectionManager.connect(connectionInterface) == true)
         {
             this.lk_cConsoleInput.getTextArea().setEnabled(true);
-
-              return true;
+            this.lk_cConsoleInput.setBinaryOutput(this.lk_cConnectionManager.getInterfaceBinaryOutput());
+            return true;
         }
         return false;
     }
@@ -524,12 +524,10 @@ public class ValentinConsole extends JFrame {
                         this.jTabbedPaneMain.indexOfTab(
                             this.lk_sConsoleInputTitle),
                         false);
-/*
                     this.jTabbedPaneMain.setEnabledAt(
                         this.jTabbedPaneMain.indexOfTab(
                             this.lk_sConsoleInputHEXTitle),
                         false);
-*/
                     return true;
                 }
             }
@@ -607,12 +605,10 @@ public class ValentinConsole extends JFrame {
                         this.jTabbedPaneMain.indexOfTab(
                             this.lk_sConsoleInputTitle),
                         true);
-/*
                     this.jTabbedPaneMain.setEnabledAt(
                         this.jTabbedPaneMain.indexOfTab(
                             this.lk_sConsoleInputHEXTitle),
                         true);
-*/
                     return true;
                 }
             }
@@ -707,10 +703,8 @@ public class ValentinConsole extends JFrame {
             jTabbedPaneMain = new JTabbedPane();
             jTabbedPaneMain.addTab(this.lk_sConsoleInputTitle,
                     null, getJScrollPaneConsole(), null);
-/*
             jTabbedPaneMain.addTab(this.lk_sConsoleInputHEXTitle,
                     null, this.lk_cConsoleInputHEX.getTextAreaPane(), null);
-*/
             jTabbedPaneMain.addTab(this.lk_sBeanShellScriptingTitle,
                     null, this.lk_cBeanShellScriptingUI, null);
         }
