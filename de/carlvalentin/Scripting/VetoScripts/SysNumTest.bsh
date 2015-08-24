@@ -1,0 +1,17 @@
+file = openFile(ScriptPath + "SysNumTest.prn");
+strFile = read(file);
+
+for (i=10; i<13; i++)
+{
+    strNum = sprintf("%04u", i);
+    printf("%i\n", i);
+    strFile2 = strFile.replaceAll("SYSNUM", strNum);
+    write(strFile2);
+    sleep(500);
+    do 
+    {
+        sleep(100);
+        write("SE");
+        msg = read();
+    } while (!(msg.equals("#Idle")));
+}

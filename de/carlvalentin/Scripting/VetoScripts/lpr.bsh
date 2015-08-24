@@ -1,0 +1,33 @@
+// LPR-Test: 
+// Ergebniss muss mit Sniffer kontrolliert werden. 
+// Soll den Fall testen wenn die Bestaetigung (0x00) nicht im gleichen
+// Packet wie die Daten verschickt wird.
+// Einstellungen: Ethernet-Port 515; Encoding: 0x0/0x0
+
+bytes0 = new byte[1];
+bytes0[0] = (byte)0;
+
+bytes = " lp0\n".getBytes();
+bytes[0] = (byte)0x02;
+write(bytes);
+sleep(10);
+
+bytes = " 06 cfa325EWSTEST\n".getBytes();
+bytes[0] = (byte)0x02;
+write(bytes);
+sleep(10);
+
+bytes = "HA\nPB\n".getBytes();
+write(bytes);
+sleep(1000);
+write(bytes0);
+sleep(10);
+
+bytes = " 3 dfA325EWSTEST\n".getBytes();
+bytes[0] = (byte)0x03;
+write(bytes);
+sleep(10);
+
+write("^S_".getBytes());
+sleep(1000);
+write(bytes0);

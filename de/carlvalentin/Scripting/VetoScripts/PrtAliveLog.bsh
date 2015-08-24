@@ -1,0 +1,23 @@
+// Script ueberprueft ob Drucker im Idle-Zustand.
+// Es wird eine entsprechende Meldung ausgegeben.
+
+Date date;
+java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd.MM.yyyy HH.mm.ss");
+
+while ( true )
+{
+    date = new Date();
+    write("SE");
+    msg = read();
+    if ( msg.length() > 0 )
+    {
+        printf("Printer OK: " + sdf.format(date) + "\n");
+    }
+    else
+    {
+        printf("Printer gone: " + sdf.format(date) + "\n");
+        error("Printer gone: " + sdf.format(date) + "\n");
+    }
+
+    sleep(5000);
+}

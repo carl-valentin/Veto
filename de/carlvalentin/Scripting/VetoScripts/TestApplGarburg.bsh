@@ -1,0 +1,59 @@
+char[] num = {'0', '0', '0', '0', '0', '0', '0', '0', '0', '0'};
+
+for (i=0; i<30; i++)
+{
+    // JOB NAME: "ETIKETT1"
+    write("FBE---rETIKETT1");
+    // LABEL TYPE: Endlosetiketten
+    // WIDTH: 53.00 mm
+    // HEIGHT: 20.00 mm
+    // GAP LENGTH: 2.00 mm
+    // COLUMNS: 1
+    write("FCDA--r1-------");
+    write("FCCL--r0002000-");
+    write("FCCM--r00000---");
+    write("FCCO--r0005300-");
+    write("FCCHA-r1-------");
+    // X OFFSET: 0.00 mm
+    write("FCCE--r+000----");
+    // CONTRAST: 100%
+    write("FCAB--r100-----");
+    // RIBBON CONTROL: Nein
+    // RIBBON SENSE: Schwach
+    write("FCDB--r00------");
+    // MATERIAL: Typ 1
+    write("FCDNA-r0-------");
+    write("FCDNB-r1-------");
+    write("FCDNC-r0000----");
+    // DPM MODE: Externe I/O (fortlaufend: 6) dynamisch
+    // DPM LABEL/CYCLE: 1
+    // DPM PRINT OFFSET: 0.00 mm
+    write("FCDC--r5-------");
+    write("FCADI-r01------");
+    write("FCADLAr00000--0");
+    // MIRROR LABEL: Nein
+    write("FCDO--r0-------");
+    // ROTATE LABEL: Nein
+    write("FCDN--r0-------");
+    // BARCODE (1/100 mm)
+    write("AM[1]1677;4989;0;30;0;1500;9;3;0;1");
+
+    n = Integer.toString(i).toCharArray();
+    for (j=n.length; j>0; j--)
+    {
+        num[num.length-j] = n[n.length-j];
+    }
+
+    write("BM[1]" + String.valueOf(num));
+    // MC SYMBOL (1/100 mm)
+    write("AM[2]2176;1448;0;3;0;1;1");
+    write("BM[2]A:\\Standard\\Symbol");
+    // LINES: 2
+    write("FBAA--r2");
+    // COPIES: 1
+    write("FBBA--r00001---");
+    // PRINT
+    write("FBC---r--------");
+
+    sleep(1000);
+}

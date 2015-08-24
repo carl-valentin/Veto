@@ -1,0 +1,139 @@
+import bsh.util.BshCanvas;   // BshCanvas simply buffers graphics
+
+graph(int width, int height, double scalewidth, double scaleheight) {
+    BshCanvas canvas;
+    Graphics  graphics;
+    int iNamePos = 30;
+
+    canvas=new BshCanvas(); 
+
+    canvas.setSize( (int)(scalewidth*(width+20)), (int)(scaleheight*(height+20)) );
+    frame=frame( canvas );
+    graphics=canvas.getBufferedGraphics();
+
+    // draw axis
+    graphics.setColor( Color.red );
+    graphics.drawLine( 0, (int)(scaleheight*(height+10)), (int)(scalewidth*(width+10)), 
+                       (int)(scaleheight*(height+10)) );
+    graphics.drawLine( (int)(scalewidth*10), (int)(scaleheight*10), (int)(scalewidth*10), 
+                       (int)(scaleheight*(height+20)) );
+    
+    graphics.setColor( Color.black );
+
+    setColor(Color c) {
+        graphics.setColor(c);
+    }
+
+    setTitle(String sName) {
+        graphics.drawString(sName, iNamePos, 20);
+        iNamePos += 100;
+    }
+
+    plot(int x, int y) {
+        if (scalewidth > scaleheight) scale = scalewidth;
+        else                          scale = scaleheight;
+        if (scale < 1) scale = 1;         
+        graphics.fillOval( (int)(scalewidth*(x+10)), (int)(scaleheight*(height+10-y)), 
+                           (int)(scale+1), (int)(scale+1));
+        canvas.repaint();
+    }
+
+    return this;
+}
+
+drawCurve(Color c, String sCVPLCmd) {
+    StringTokenizer st;
+    int i;
+    int x;
+    int y;
+    boolean bGData = false;
+
+    msg=null;
+    myGraph.setColor(c);
+
+    write(sCVPLCmd);
+
+    do {
+        prevMsg = msg;
+        msg = read();
+        msg = msg.substring(0, msg.length()-1);
+        printf(msg + "\n");
+        st = new StringTokenizer(msg);
+        if (msg.contains("------")) break;
+        if (msg.contains("i X  Y")) {
+            title = prevMsg;
+            bGData = true;
+            continue;
+        }
+        if (bGData) {
+            i=0;
+            while (st.hasMoreTokens()) {
+                if      (i==1) x=Integer.parseInt(st.nextToken());
+                else if (i==2) y=Integer.parseInt(st.nextToken());
+                else           st.nextToken();
+                i++;
+            }
+
+            printf("    %i:%i\n", x, y);
+            myGraph.plot( x, y );
+        }
+    } while(!msg.contains("------"));
+
+    myGraph.setTitle(title);
+}
+
+Object[] dialogItem = new Object[20];
+String[] cvplCmd = new String[20];
+dialogItemI = 0;
+
+getCurveList() {
+    do {
+        msg = read();
+        msg = msg.substring(0, msg.length()-1);
+        printf(msg + "\n");
+        st = new StringTokenizer(msg,";");
+        msg1 = st.nextToken();
+        if (msg1.startsWith("AFCYN")) {
+            msg2 = st.nextToken();
+            if (!msg2.contains("--------")) {
+                cvplCmd[dialogItemI] = msg1.substring(1);
+                dialogItem[dialogItemI++] = new JCheckBox(msg2);
+            }
+        }
+    } while(!msg.contains("--------"));
+}
+
+write("FCYNALwFCYNA");
+getCurveList();
+write("FCYNFLwFCYNF");
+getCurveList();
+
+JCheckBox incCheckBox = new JCheckBox("Show Increase", true);
+JCheckBox decCheckBox = new JCheckBox("Show Decrease");
+dialogItem[dialogItemI+1] = incCheckBox;
+dialogItem[dialogItemI+2] = decCheckBox;
+
+JOptionPane.showMessageDialog( null, dialogItem, "Curves Choice", JOptionPane.PLAIN_MESSAGE );
+
+//              breite, hoehe, breitenskalierung, hoehenskalierung
+myGraph = graph(500,    2000,  2,                 0.4);
+myGraph.frame.setTitle("Curves");
+
+JCheckBox curCheckBox;
+Color[] colors = {Color.black, Color.green, Color.red, Color.blue, Color.orange, Color.pink, Color.magenta, Color.cyan, Color.gray};
+c=0;
+for (i=0; i<dialogItemI; i++) {
+    curCheckBox = dialogItem[i];
+    if (curCheckBox.isSelected()) {
+        if (incCheckBox.isSelected()) {
+            printf(cvplCmd[i]+"Aw"+curCheckBox.getText()+"\n");
+            drawCurve(colors[c++], cvplCmd[i]+"Aw"+curCheckBox.getText());
+        }
+        if (decCheckBox.isSelected()) {
+            printf(cvplCmd[i]+"Bw"+curCheckBox.getText()+"\n");
+            drawCurve(colors[c++], cvplCmd[i]+"Bw"+curCheckBox.getText());
+        }
+    }
+}
+
+// drawCurve(Color.gray, "FCYNAAwRibMotNTFw");

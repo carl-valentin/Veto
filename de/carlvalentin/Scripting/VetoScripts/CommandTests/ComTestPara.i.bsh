@@ -1,0 +1,28 @@
+/* Zum Parametersaetze testen:
+   Beipiel: Zuerst Brennstaerke auf 150% setzen, Dann auslesen und schauen ob's stimmt:
+   "RCAB--r150-----", "RCAB--w12345678", "A150-----12345678",
+*/
+
+String[] testCases = {
+// 1st send string  |  2nd send string  |  Expected answer string
+   "FCADH-r1-------",  "RCADH-w00000100",  "A1-------00000100", // Betriebsart (Stueckzahl)
+   "FCADH-r2-------",  "RCADH-w00000101",  "A2-------00000101", // Betriebsart (Fortlaufend)
+   "FCADL-r3456----",  "RCADL-w00000102",  "A3456----00000102", // Druck-Offset
+
+};
+
+for (i=0; i<testCases.length; i+=3)
+{
+    write(testCases[i]);
+    write(testCases[i+1]);
+    msg = read();
+    if ( !msg.equals(testCases[i+2]) )
+    {
+        error("Test failed!");
+        printf("Send: " + testCases[i+1] + "\n"); 
+        printf("    Expected Answer: " + testCases[i+2] + "\n");
+        printf("    Return Value:    " + msg + "\n");
+        break;
+    }
+}
+

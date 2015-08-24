@@ -1,0 +1,15 @@
+printf("Speed in mm/s\n");
+for (speed=50; speed<=600; speed+=10)
+{
+    printf("%3u\n", speed);
+}
+printf("sa in mm\n");
+for (speed=50; speed<=600; speed+=10)
+{
+    
+    write("FCDRG-r%4d----", new Object[]{speed});
+    write("FCDRVAw12345678");
+    msga = read();
+    sa = Integer.parseInt(msga.substring(1,5));
+    printf("%u\n", sa);
+}

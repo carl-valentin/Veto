@@ -1,0 +1,116 @@
+char[] num = {'0', '0', '0', '0'};
+
+for (i=0; i<500; i++)
+{
+// JOB NAME: "KJR"
+
+    n = Integer.toString(i).toCharArray();
+    for (j=n.length; j>0; j--)
+    {
+        num[num.length-j] = n[n.length-j];
+    }
+
+write("FBE---rKJR" + String.valueOf(num));
+// LABEL TYPE: Endlosetiketten
+// WIDTH: 100.00 mm
+// HEIGHT: 60.00 mm
+// GAP LENGTH: 2.00 mm
+// COLUMNS: 1
+write("FCDA--r1-------");
+write("FCCL--r0006000-");
+write("FCCM--r00000---");
+write("FCCO--r0010000-");
+write("FCCHA-r1-------");
+// CUT OFFSET: 20.00 mm
+// DISPENSER OFFSET: 11.00 mm
+write("FCSCA-r+200----");
+write("FCSDA-r+110----");
+// Y OFFSET: 0.00 mm
+write("FCCD--r+000----");
+// X OFFSET: 0.00 mm
+write("FCCE--r+000----");
+// TEAR OFF: 0.00 mm
+write("FCCG--r+000----");
+// SPEED: 100 mm/s
+write("FCAA--r100-----");
+// CONTRAST: 100%
+write("FCAB--r100-----");
+// CUT MODE: Nicht verfügbar
+// CUT INTERVAL: 1
+// DOUBLE CUT: 0.00 mm
+// CUT WIDTH: 120.00 mm
+write("FCDD--r0-------");
+write("FBBD--r0001----");
+write("FCSCB-r+000----");
+write("FCSCC-r120-----");
+// DISPENSER MODE: Nicht verfügbar
+write("FCDC--r0-------");
+// DISPENSER LEVEL: 2500 mV
+write("FCCF--r+25-----");
+// LABEL CONTROL: Durchlicht normal
+// LABEL SCAN POSITION: 10%
+write("FCDE--r0-------");
+write("FCDEA-r10------");
+// RIBBON CONTROL: Nein
+// RIBBON SENSE: Schwach
+write("FCDB--r00------");
+// MATERIAL: Typ 1
+write("FCDNA-r0-------");
+write("FCDNB-r1-------");
+write("FCDNC-r0000----");
+// SCAN MODE: 0
+// SCAN PORT: 0
+// NO READ: 0
+// FEED LABEL: 0
+write("FCDM--r0000----");
+// MIRROR LABEL: Nein
+write("FCDO--r0-------");
+// ROTATE LABEL: Nein
+write("FCDN--r0-------");
+// RFTAG
+write("FRF---rCLR=1");
+// TEXT (1/100 mm)
+write("AM[1]2030;9593;0;4;0;7;297;297;0");
+write("BM[1]Adresse:");
+write("AM[2]2580;9601;0;4;0;7;297;297;0");
+write("BM[2]Kalkofenstrasse 3");
+write("AM[3]3130;9601;0;4;0;7;297;297;0");
+write("BM[3]78050 VS-Villingen");
+write("AM[4]3680;9601;0;4;0;7;297;297;0");
+write("BM[4]");
+write("AM[5]4230;9601;0;4;0;7;297;297;0");
+write("BM[5]Telefon (AB): 07721/64605");
+write("AM[6]4780;9601;0;4;0;7;297;297;0");
+write("BM[6]Fax:  07721 507889");
+write("AM[7]5330;9601;0;4;0;7;297;297;0");
+write("BM[7]E-mail:  info@kjr-sb.de ");
+// TEXT (1/100 mm)
+write("AM[8]3017;3730;0;4;0;7;297;297;0");
+write("BM[8]Ansprechpartner:");
+write("AM[9]3567;3738;0;4;0;7;297;297;0");
+write("BM[9]Benjamin Tisler");
+write("AM[10]4117;3738;0;4;0;7;297;297;0");
+write("BM[10]");
+write("AM[11]4667;3738;0;4;0;7;297;297;0");
+write("BM[11]Tel. (Geschäft): ");
+write("AM[12]5217;3738;0;4;0;7;297;297;0");
+write("BM[12]07720 9712-40");
+// VARIABLE TEXT (1/100 mm)
+write("AM[13]2240;5666;0;4;0;3;398;398;0");
+
+    n = Integer.toString(i).toCharArray();
+    for (j=n.length; j>0; j--)
+    {
+        num[num.length-j] = n[n.length-j];
+    }
+
+    write("BM[13]" + String.valueOf(num));
+
+// LINES: 13
+write("FBAA--r13");
+// COPIES: 1
+write("FBBA--r00001---");
+// PRINT
+write("FBC---r--------");
+printf(i + "\n");
+}

@@ -1,0 +1,30 @@
+// Show PH Temp
+
+Count=1;
+lastTime = System.currentTimeMillis();
+DoForEver=1;
+while (DoForEver >0)
+{
+
+clock = new Date();
+lTime = System.currentTimeMillis();
+Timediff = lTime-lastTime;
+
+
+lastTime=lTime;
+write("S");
+msg = read();
+printf(msg + "\n");
+
+printf("\n\n");
+printf(clock.toString() + "\n");
+//printf("\n");
+printf("Request " + Count + "\n");
+printf("Time " + Timediff + "\n");
+
+if(Timediff > 35000)
+  DoForEver=0;
+
+sleep(2000);
+Count++;
+}

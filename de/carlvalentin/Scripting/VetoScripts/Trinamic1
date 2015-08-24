@@ -1,0 +1,48 @@
+// Show PH Temp
+
+Count=1;
+lastTime = System.currentTimeMillis();
+DoForEver=1;
+while (DoForEver >0)
+{
+
+clock = new Date();
+lTime = System.currentTimeMillis();
+Timediff = lTime-lastTime;
+
+
+lastTime=lTime;
+write("S");
+msg = read();
+printf(msg + "\n");
+write("RCMC--wDK-TEMP");
+msg = read();
+printf(msg + "\n");
+write("FBE---wJobname");
+msg = read();
+printf(msg + "\n");
+write("FCAA--w Speed ");
+msg = read();
+printf(msg + "\n");
+write("FCAB--w Dark  ");
+msg = read();
+printf(msg + "\n");
+write("FCHA--wPrinter");
+msg = read();
+printf(msg + "\n");
+write("FCHB--w P-Head");
+msg = read();
+printf(msg + "\n");
+
+printf("\n\n");
+printf(clock.toString() + "\n");
+//printf("\n");
+printf("Request " + Count + "\n");
+printf("Time " + Timediff + "\n");
+
+if(Timediff > 250)
+  DoForEver=0;
+
+sleep(50);
+Count++;
+}

@@ -1,0 +1,74 @@
+rand = new Random(1);
+clock = new Date();
+
+void PrintLabel()
+{
+// Abrisskante 6mm
+write("FCCG--r+060----");
+// Druckgeschw. 300mm/s
+write ("FCAA--r300-----");
+// Transferband AUS
+write("FCDB--r00------");
+// Endlosetiketten
+write("FCDA--r1-------");
+// Etikettenlänge: 60mm, Schlitz: 3mm
+write("FCCL--r0006000-");
+write("FCCM--r00300---");
+// RECTANGLE (1/100 mm)
+write("AM[1]2183;9427;0;10;1553;8715;44;0");
+// TEXT (1/100 mm)
+write("AM[2]2020;8441;0;4;0;1;1000;1000;0");
+write("BM[2]GARVENS");
+//write("AC[2]NAME=""ID_01""");
+// BARCODE (1/100 mm)
+write("AM[3]4166;9304;0;37;0;1500;0;3;1;1");
+write("BM[3]98354265471234");
+//write("AC[3]NAME=""ID_02""");
+// TEXT (1/100 mm)
+write("AM[4]5151;1537;0;4;0;1;400;400;0");
+write("BM[4]1");
+//write("AC[4]NAME=""ID_03""");
+// LINES: 4
+write("FBAA--r4");
+// COPIES: 1
+write("FBBA--r00001---");
+}
+
+int getNewRand(int lowBorder, int highBorder) 
+{
+	do {
+		wait = rand.nextInt(highBorder);    
+	} while (wait < lowBorder);
+return wait;
+}
+
+PrintLabel();
+WaitForIdle = 0;
+
+printf(clock.toString());
+lTime = System.currentTimeMillis();
+for (Count=1; Count<500000; Count++) {
+	printf(System.currentTimeMillis() + " Etikett: " + Count + "\n");
+	write("BM[4]" + Count);
+	write("FBI---r");
+	sleep(getNewRand(50, 300));
+	printf(System.currentTimeMillis() + "start print \n");
+	write("FBC---r");
+
+	if(WaitForIdle == 1)
+	{
+	  do 
+	  {
+	    write("SE");
+	    msg = read();
+          } while ( ! msg.equals("#Idle") );
+        }
+	else
+	{
+	    sleep(500);
+ 	}
+	//printf("Etikett " + Count + "\n");
+	//write("BM[4]"+ Count);
+	//sleep(getNewRand(0, 500));
+}
+	

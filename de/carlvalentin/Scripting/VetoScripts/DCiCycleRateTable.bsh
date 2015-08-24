@@ -1,0 +1,88 @@
+// type: 0: Cycles, 1: tPrint, 2: tBack
+int getCycleTimes(int type, int speed, int dist) {
+    int time4Forward;
+    int time4Backward;
+
+    write("FCDRW-w" + CarriageMotor + "," + speed + ","+ dist + "," + Forward + ";12345678");
+    msga = read();
+    time4Print = Integer.parseInt(msga.substring(1,5));
+
+    write("FCDRW-w" + CarriageMotor + ",600," + dist + "," + Backward + ";12345678");
+    msga = read();
+    time4BackwardCarriage = Integer.parseInt(msga.substring(1,5));
+
+    write("FCDRW-w" + RibbonMotor + ",600," + dist + "," + Forward + ";12345678");
+    msga = read();
+    time4BackwardRibbon = Integer.parseInt(msga.substring(1,5));
+
+    if (time4BackwardCarriage > time4BackwardRibbon) {
+        time4Backward = time4BackwardCarriage;
+    } else {
+        time4Backward = time4BackwardRibbon;
+    }
+
+    write("FCDRCAw12345678");
+    msga = read();
+    time4PHDown = Integer.parseInt(msga.substring(1,4));
+
+    write("FCDRCCw12345678");
+    msga = read();
+    time4PHUp = Integer.parseInt(msga.substring(1,4));
+             
+              // NU_Sleep(1)
+              // in DoBackFeed        Warten auf RibbonMotor
+    time4Backward = 10 + time4Backward + 10;
+ 
+          // keine Ahnung woher...
+          // Das ist noch einProblem 
+    time4Forward = 25 + time4PHDown + time4Print + time4PHUp;
+
+    // Runden
+    time4Forward = (time4Forward + 10) / 10;
+    time4Forward = time4Forward * 10;
+
+    time4Backward = (time4Backward + 10) / 10;
+    time4Backward = time4Backward * 10;
+
+    time4Cycle = time4Forward + time4Backward;
+
+    cycles = 60000 / time4Cycle;
+
+    if (type == 0) return cycles;
+    if (type == 1) return time4Forward;
+    else           return time4Backward;
+}
+
+RibbonMotor = "0";
+CarriageMotor = "1";
+Backward = "0";
+Forward = "1";
+
+printf("\nC = Cyles per Minute\n");
+printf("tP = Time for print in ms\n");
+printf("tB = Time for backward movement in ms\n");
+printf("Back-Speed: always 600 mm/s\n");
+printf("\n");
+printf("Speed/Dist||5 mm    |10 mm   |15 mm   |20 mm   |25 mm   |30 mm   |35 mm   |40 mm   |45 mm   |50 mm   |55 mm   |60 mm   |65 mm   |70 mm   |75 mm   |\n");
+printf("==========++========+========+========+========+========+========+========+========+========+========+========+========+========+========+========+\n");
+
+for (speed=50; speed<=600; speed+=10)
+{
+    printf("%3d mm/s  ||", new Object[]{speed});
+    for (dist=5; dist<=75; dist+=5) {  
+        printf("C:  %3d |", new Object[]{getCycleTimes(0, speed, dist)});
+    }
+    printf("\n");
+    printf("          ||");
+    for (dist=5; dist<=75; dist+=5) {  
+        printf("tP:%4d |", new Object[]{getCycleTimes(1, speed, dist)});
+    }
+    printf("\n");
+    printf("          ||");
+    for (dist=5; dist<=75; dist+=5) {  
+        printf("tB:%4d |", new Object[]{getCycleTimes(2, speed, dist)});
+    }
+    printf("\n");
+    printf("----------++--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+\n");
+}
+

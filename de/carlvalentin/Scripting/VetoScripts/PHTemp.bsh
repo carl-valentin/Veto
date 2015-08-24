@@ -1,0 +1,8 @@
+// Show PH Temp
+while (true)
+{
+write("RCMC--wDK-TEMP");
+msg = read();
+printf(msg + "\n");
+sleep(1000);
+}

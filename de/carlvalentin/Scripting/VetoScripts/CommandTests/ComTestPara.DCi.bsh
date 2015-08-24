@@ -1,0 +1,27 @@
+/* Zum Parametersaetze testen:
+   Beipiel: Zuerst Brennstaerke auf 150% setzen, Dann auslesen und schauen ob's stimmt:
+   "RCAB--r150-----", "RCAB--w12345678", "A150-----12345678",
+*/
+
+String[] testCases = {
+// 1st send string  |  2nd send string  |  Expected answer string
+   "FCAA--r600-----",  "RCAA--w00000100",  "A600-----00000100", // Geschwindigkeit
+   "FCADG-r600-----",  "RCADG-w00000101",  "A600-----00000101", // Rueckfahrgeschwindigkeit
+   
+};
+
+for (i=0; i<testCases.length; i+=3)
+{
+    write(testCases[i]);
+    write(testCases[i+1]);
+    msg = read();
+    if ( !msg.equals(testCases[i+2]) )
+    {
+        error("Test failed!");
+        printf("Send: " + testCases[i+1] + "\n"); 
+        printf("    Expected Answer: " + testCases[i+2] + "\n");
+        printf("    Return Value:    " + msg + "\n");
+        break;
+    }
+}
+

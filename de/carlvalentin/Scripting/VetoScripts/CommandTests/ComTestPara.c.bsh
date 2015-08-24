@@ -1,0 +1,36 @@
+/* Zum Parametersaetze testen:
+   Beipiel: Zuerst Brennstaerke auf 150% setzen, Dann auslesen und schauen ob's stimmt:
+   "RCAB--r150-----", "RCAB--w12345678", "A150-----12345678",
+*/
+
+String[] testCases = {
+// 1st send string  |  2nd send string  |  Expected answer string
+   "FCDC--r3-------",  "RCDC--w00000100",  "A3-------00000100", // Betriebsart
+   "FCADLAr02345--0",  "RCADLAw00000101",  "A02345--000000101", // Druckoffset
+   "FCADUDr1-------",  "RCADUDw00000103",  "A1-------00000103", // Check Speed On Start
+   "FCADUAr4321----",  "RCADUAw00000104",  "A4321----00000104", // Drehgeberaufloesung
+   "FCADUBr4567----",  "RCADUBw00000105",  "A4567----00000105", // Materialvorschub
+   ""               ,  "RCADUCw00000106",  "A0000----00000106", // Materialgeschwindigkeit
+
+   "FCDRA-r3-------",  "RCDRA-w00000201",  "A3-------00000201", // Optimierungsmodus
+   "FCDRB-r010-----",  "RCDRB-w00000202",  "A010-----00000202", // Sync
+   "FCDRCAr0020----",  "RCDRCAw00000203",  "A0020----00000203", // Druckkopfanklappzeit
+   "FCDRFAr0100----",  "RCDRFAw00000204",  "A0100----00000204", // Rueckzugsstrecke
+   "FCDRFBr0600----",  "RCDRFBw00000205",  "A0600----00000205", // Rueckzugsgeschwindigkeit
+};
+
+for (i=0; i<testCases.length; i+=3)
+{
+    write(testCases[i]);
+    write(testCases[i+1]);
+    msg = read();
+    if ( !msg.equals(testCases[i+2]) )
+    {
+        error("Test failed!");
+        printf("Send: " + testCases[i+1] + "\n"); 
+        printf("    Expected Answer: " + testCases[i+2] + "\n");
+        printf("    Return Value:    " + msg + "\n");
+        break;
+    }
+}
+

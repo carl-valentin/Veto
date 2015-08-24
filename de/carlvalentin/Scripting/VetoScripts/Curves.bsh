@@ -1,0 +1,92 @@
+import bsh.util.BshCanvas;   // BshCanvas simply buffers graphics
+
+graph(int width, int height, double scalewidth, double scaleheight) {
+    BshCanvas canvas;
+    Graphics  graphics;
+    int iNamePos = 30;
+
+    canvas=new BshCanvas(); 
+
+    canvas.setSize( (int)(scalewidth*(width+20)), (int)(scaleheight*(height+20)) );
+    frame=frame( canvas );
+    graphics=canvas.getBufferedGraphics();
+
+    // draw axis
+    graphics.setColor( Color.red );
+    graphics.drawLine( 0, (int)(scaleheight*(height+10)), (int)(scalewidth*(width+10)), 
+                       (int)(scaleheight*(height+10)) );
+    graphics.drawLine( (int)(scalewidth*10), (int)(scaleheight*10), (int)(scalewidth*10), 
+                       (int)(scaleheight*(height+20)) );    
+    graphics.setColor( Color.black );
+
+    setColor(Color c) {
+        graphics.setColor(c);
+    }
+
+    setTitle(String sName) {
+        graphics.drawString(sName, iNamePos, 20);
+        iNamePos += 100;
+    }
+
+    plot(int x, int y) {
+        if (scalewidth > scaleheight) scale = scalewidth;
+        else                          scale = scaleheight;
+        if (scale < 1) scale = 1;         
+        graphics.fillOval( (int)(scalewidth*(x+10)), (int)(scaleheight*(height+10-y)), 
+                           (int)(scale+1), (int)(scale+1));
+        canvas.repaint();
+    }
+
+    return this;
+}
+
+drawCurve(Color c, String sCVPLCmd) {
+    StringTokenizer st;
+    int i;
+    int x;
+    int y;
+    boolean bGData = false;
+
+    msg=null;
+    myGraph.setColor(c);
+
+    write(sCVPLCmd);
+
+    do {
+        prevMsg = msg;
+        msg = read();
+        printf(msg + "\n");
+        st = new StringTokenizer(msg);
+        if (msg.equals("------")) break;
+        if (msg.equals("i X  Y")) {
+            title = prevMsg;
+            bGData = true;
+            continue;
+        }
+        if (bGData) {
+            i=0;
+            while (st.hasMoreTokens()) {
+                if      (i==1) x=Integer.parseInt(st.nextToken());
+                else if (i==2) y=Integer.parseInt(st.nextToken());
+                else           st.nextToken();
+                i++;
+            }
+
+            printf("    %i:%i\n", x, y);
+            myGraph.plot( x, y );
+        }
+    } while(!msg.equals("------"));
+
+    myGraph.setTitle(title);
+}
+
+//              breite, hoehe, breitenskalierung, hoehenskalierung
+myGraph = graph(500,    2000,  2,                 0.4);
+
+// drawCurve(Color.black, "FCYNBAwTPUMotorFw");
+// drawCurve(Color.green, "FCYNBBwTPUMotorFw");
+
+drawCurve(Color.black, "FCYNAAwTestRMotFw");
+drawCurve(Color.green, "FCYNABwTestRMotFw");
+
+myGraph.frame.setTitle("Motor");

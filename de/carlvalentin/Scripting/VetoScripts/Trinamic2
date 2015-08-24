@@ -1,0 +1,11 @@
+write("S");
+msg = read();
+printf(msg + "\n");
+sleep(50);
+write("RCYATCw07-220001B1");
+msg = read();
+printf(msg + "\n");
+sleep(50);
+write("RCYATCr07-00000000");
+msg = read();
+printf(msg + "\n");

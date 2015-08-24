@@ -1,0 +1,97 @@
+rand = new Random(1);
+clock = new Date();
+int bStatusRequested = 0;
+
+
+void PrintLabel()
+{
+// Abrisskante 6mm
+write("FCCG--r+060----");
+// Druckgeschw. 300mm/s
+write ("FCAA--r300-----");
+// Transferband AUS
+write("FCDB--r00------");
+// Endlosetiketten
+write("FCDA--r1-------");
+// Etikettenlänge: 60mm, Schlitz: 3mm
+write("FCCL--r0006000-");
+write("FCCM--r00300---");
+// RECTANGLE (1/100 mm)
+write("AM[1]2183;9427;0;10;1553;8715;44;0");
+// TEXT (1/100 mm)
+write("AM[2]2020;8441;0;4;0;1;1000;1000;0");
+write("BM[2]GARVENS");
+//write("AC[2]NAME=""ID_01""");
+// BARCODE (1/100 mm)
+write("AM[3]4166;9304;0;37;0;1500;0;3;1;1");
+write("BM[3]98354265471234");
+//write("AC[3]NAME=""ID_02""");
+// TEXT (1/100 mm)
+write("AM[4]5151;1537;0;4;0;1;400;400;0");
+write("BM[4]1");
+//write("AC[4]NAME=""ID_03""");
+// LINES: 4
+write("FBAA--r4");
+// COPIES: 1
+write("FBBA--r00001---");
+}
+
+int getNewRand(int lowBorder, int highBorder) 
+{
+	do {
+		wait = rand.nextInt(highBorder);    
+	} while (wait < lowBorder);
+return wait;
+}
+
+PrintLabel();
+WaitForIdle = 0;
+
+printf(clock.toString());
+
+lTimeInit = System.currentTimeMillis();
+lTimeAct = lTimeInit;
+lTimeState = lTimeAct;	//lTimeState = letzte Zeit einer Statusanfrage
+lTimePrint = lTimeAct;  //lTimePrint = letzte Zeit FBC senden
+lTimeNextPrint = getNewRand(600,800); // variable Ziet für nächsten Ausdruck
+lTimePrintDelay = getNewRand(50,100); // variable Verzögerung Startbefehl
+Count = 0;
+
+while((lTimeAct - lTimeInit) < 3600000)	// 3600000 entspr. 60 Minuten 
+{
+
+	if(lTimeAct - lTimeState > 1000) // Statusanfrage senden da 1 sec seit letzter Anfrage
+	{
+		printf(lTimeAct + "send Staterequest \n");
+		write("FCMH--w");
+		lTimeState = lTimeAct;
+		bStatusRequested = 1;
+	}
+	if(lTimeAct - lTimePrint > lTimeNextPrint) //nächster Ausdruck ist faellig
+	{
+		Count++;
+		
+		printf(lTimeAct + "send Data " + Count + "\n");
+		write("BM[4]" + Count);
+		write("FBI---r");
+		lTimePrint = lTimeAct;	
+		bPrintRequest = 1;
+		lTimeNextPrint = getNewRand(500,700);
+	}
+	if((lTimeAct - lTimePrint > lTimePrintDelay) && (bPrintRequest==1))// variable Verzögerung des Startbefehls abgelaufen
+	{
+		printf(lTimeAct + "send Printcommand \n");
+		write("FBC---r");
+		lTimePrintDelay = getNewRand(50,100);
+		bPrintRequest = 0;
+	}
+	if(bStatusRequested == 1)//wenn eine Statusanfrage gesendet wurde
+	{
+		printf("-> ");
+		msg = read();
+		bStatusRequested = 0;
+		printf("State: " + msg + "\n");
+	}
+	lTimeAct = System.currentTimeMillis();
+}// end WHILE
+printf("Test beendet nach " + (lTimeAct - lTimeInit)/1000 + " Sekunden.");

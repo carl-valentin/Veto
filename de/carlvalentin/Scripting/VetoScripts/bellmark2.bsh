@@ -1,0 +1,10 @@
+// Start Print 
+count = 0;
+while (true)
+{
+write("RBMS--w--------");
+count ++;
+// msg = read();
+printf("Start " + count + "\n");
+sleep(6000);
+}
