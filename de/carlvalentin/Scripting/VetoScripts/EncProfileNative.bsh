@@ -1,0 +1,95 @@
+import bsh.util.BshCanvas;   // BshCanvas simply buffers graphics
+
+graph(int width, int height, double scalewidth, double scaleheight) {
+    BshCanvas canvas;
+    Graphics  graphics;
+    int iNamePos = 30;
+    int lk_iWidth = width;
+    int lk_iHeight = height;
+    int lk_iScalewidth = scalewidth;
+    int lk_iScaleheight = scaleheight;
+
+    canvas=new BshCanvas(); 
+
+    canvas.setSize( (int)(scalewidth*(width+20)), (int)(scaleheight*(height+20)) );
+    frame=frame( canvas );
+    graphics=canvas.getBufferedGraphics();
+
+    // draw axis
+    graphics.setColor( Color.red );
+    graphics.drawLine( 0, (int)(scaleheight*(height+10)), (int)(scalewidth*(width+10)), 
+                       (int)(scaleheight*(height+10)) );
+    graphics.drawLine( (int)(scalewidth*10), (int)(scaleheight*10), (int)(scalewidth*10), 
+                       (int)(scaleheight*(height+20)) );
+    
+    graphics.setColor( Color.black );
+
+    setColor(Color c) {
+        graphics.setColor(c);
+    }
+
+    setTitle(String sName) {
+        graphics.drawString(sName, iNamePos, 20);
+        iNamePos += 100;
+    }
+
+    plot(int x, int y) {
+        if (scalewidth > scaleheight) scale = scalewidth;
+        else                          scale = scaleheight;
+        if (scale < 1) scale = 1;         
+        graphics.fillOval( (int)(scalewidth*(x+10)), (int)(scaleheight*(height+10-y)), 
+                           (int)(scale+1), (int)(scale+1));
+        canvas.repaint();
+    }
+    
+    clear() {
+        graphics.clearRect(0,0,(int)(lk_iScalewidth*(lk_iWidth+20)),(int)(lk_iScaleheight*(lk_iHeight+20)));
+    }
+
+    return this;
+}
+
+drawCurve(Color c) {
+    int x;
+    int y;
+    
+    msg=null;    
+    myGraph.setColor(c);
+
+    do {
+        msg = read();
+        printf(msg + "\n");
+        if (msg.length() > 0) {
+            String[] tokens = msg.split("[\\,\\-\\:]");
+            if ( (tokens[0].compareTo("HSEnc") == 0) 
+                 && (tokens.length == 7) ) {
+                if (tokens[1].compareTo("Dist") == 0) {
+                    x = Integer.parseInt(tokens[2]);
+                }
+                if (tokens[3].compareTo("Speed") == 0) {
+                    y = Integer.parseInt(tokens[4]);
+                }
+                printf("%i,%i\n", x, y);
+                myGraph.plot( x, y );
+            }
+            
+            if ( (tokens[0].compareTo("HSEnc") == 0) 
+                 && (tokens.length == 2) ) {
+                if (tokens[1].compareTo("Begin") == 0) {
+                    myGraph.clear();
+                }
+            }
+        }
+    } while(true);
+
+//    myGraph.setTitle(title);
+}
+
+write("FHA---r2");
+write("FHM---rF1");
+
+//              breite, hoehe, breitenskalierung, hoehenskalierung
+myGraph = graph(200,   400,    5,                 1);
+myGraph.frame.setTitle("Encoder Profile");
+
+drawCurve(Color.black);

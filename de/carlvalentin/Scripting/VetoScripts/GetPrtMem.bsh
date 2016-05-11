@@ -1,0 +1,52 @@
+int len = 0;
+InputStreamReader inputStreamReader;
+StringBuffer returnValue = new StringBuffer();
+char         readValue   = 0;
+readBytes = new byte[1];
+int i;
+long         lMilliSeconds = 10000;
+long         lMilliSecondsCounter = 0;
+
+write("RGM---r2");
+msg = read();
+String[] a = msg.split(";");
+if (a[0].equals("AOK")) {
+	len = Integer.parseInt(a[1]);
+}
+else {
+	error("False answer from printer\n");
+}
+
+fileOut = openFile("D:\\BTisler\\temp\\out.pbm");
+
+try {
+    inputStreamReader = 
+        cConnectionManager.getConnectedInterface().getInterfaceReader();
+        
+    for (i=0; i<len; ) {
+        if (inputStreamReader.ready()) {
+            readBytes[0] = (byte)inputStreamReader.read();
+            write(fileOut, readBytes);
+            i++;
+            lMilliSecondsCounter = 0;
+        }
+
+        if (lMilliSeconds > 0) {
+            sleep(1);
+            lMilliSecondsCounter++;
+            if (lMilliSecondsCounter >= lMilliSeconds) {
+                chk4StpScr();
+                error("Not enougth data\n");
+            }
+        }
+    }
+}
+catch(IOException ex) {
+    printf("\n<-------------------------------------->\n");
+    printf("Scripting: read->IOException: " + ex.getMessage() + "\n");
+    printf("<-------------------------------------->\n");
+    error("Scritping: read->IOException");
+    return "";
+}
+
+close(fileOut);

@@ -1,0 +1,28 @@
+/*
+ * Erzeugt zufaellige Binaerdaten einer bestimmten Laenge, versieht sie mit
+ * einer CRC-Checksumme und schickt sie an den Drucker. 
+ * Dieser zeigt an ob die CRC gestimmt hat oder nicht 
+ */
+import java.util.zip.CRC32;
+
+NoOfBytes = 1024;
+Timeout = 10000; // ms
+
+rand = new Random(1);
+crc32 = new CRC32();
+
+bytes = new byte[NoOfBytes];
+rand.nextBytes(bytes);
+
+crc32.update(bytes);
+
+                  // C-Style sprintf (bis zu 10 Argumente) 
+startCRCTestCmd = sprintf("FCYXCTr%x;%x", NoOfBytes, Timeout);
+             // Java-Style printf (unbegrenzte Argumentanzahl)
+giveCRCCmd = sprintf("FCYXC-r%x;%x;%uK", 
+                     new Object[]{bytes.length, crc32.getValue(), 
+                     NoOfBytes/1024});
+
+write(startCRCTestCmd);
+write(giveCRCCmd);
+write(bytes);

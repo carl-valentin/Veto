@@ -1,0 +1,141 @@
+addClassPath(ScriptPath + "jfreechart-1.0.19.jar");
+addClassPath(ScriptPath + "jcommon-1.0.23.jar"); 
+
+import javax.swing.JFrame;
+import org.jfree.chart.*;
+import org.jfree.chart.plot.*;
+import org.jfree.data.xy.*;
+import org.jfree.chart.renderer.xy.*;
+
+XYSeriesCollection dataset = new XYSeriesCollection();
+XYSeries seriesEnc = new XYSeries("Enc");
+XYSeries seriesEncReal = new XYSeries("EncReal");
+XYSeries seriesOffset = new XYSeries("Offset");
+XYSeries seriesImg = new XYSeries("Img");
+XYSeries seriesPh = new XYSeries("Ph");
+XYSeries seriesRMot = new XYSeries("RMot");
+dataset.addSeries(seriesEnc);
+dataset.addSeries(seriesEncReal);
+dataset.addSeries(seriesOffset);
+dataset.addSeries(seriesImg);
+dataset.addSeries(seriesPh);
+dataset.addSeries(seriesRMot);
+JFreeChart chart = ChartFactory.createXYLineChart(
+    "Encoder Profile",        // chart title
+    "Dist in mm",             // x axis label
+    "Speed in mm/s",          // y axis label
+    dataset,                  // data
+    PlotOrientation.VERTICAL,
+    true,                     // include legend
+    true,                     // tooltips
+    false                     // urls
+);
+
+ChartPanel chartPanel = new ChartPanel(chart);
+XYPlot plot = chart.getXYPlot( );
+XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
+renderer.setSeriesPaint( 0 , Color.GREEN );
+renderer.setSeriesPaint( 1 , Color.RED );
+renderer.setSeriesPaint( 2 , Color.GRAY );
+renderer.setSeriesPaint( 3 , Color.BLACK );
+renderer.setSeriesPaint( 4 , Color.YELLOW );
+renderer.setSeriesPaint( 5 , Color.ORANGE );
+plot.setRenderer( renderer ); 
+
+JFrame frame = new JFrame();
+frame.add(chartPanel);
+frame.pack();
+frame.setVisible(true);
+
+write("FHA---r2");
+write("FHM---rF1");
+
+int x = 0;
+int y = 0;
+int yr = 0;
+boolean bPhDown = false;
+boolean bRMotStart = false;
+
+do {
+    msg = read();
+    printf(msg + "\n");
+    if (msg.length() > 0) {
+        String[] tokens = msg.split("[\\,\\-\\:]");
+        if ( (tokens[0].compareTo("HSEnc") == 0) 
+             && (tokens.length == 7) ) {
+            if (tokens[1].compareTo("Dist") == 0) {            	
+                x = Integer.parseInt(tokens[2]);
+            }
+            if (tokens[3].compareTo("Speed") == 0) {
+                y = Integer.parseInt(tokens[4]);
+            }
+            if (tokens[5].compareTo("RealSpeed") == 0) {
+                yr = Integer.parseInt(tokens[6]);
+            }
+            seriesEnc.add(x, y);
+            seriesEncReal.add(x, yr);
+        }
+       
+        if ( (tokens[0].compareTo("HSEnc") == 0) 
+            && (tokens.length == 2) ) {
+           if (tokens[1].compareTo("Begin") == 0) {               
+               seriesEnc = new XYSeries("Enc");
+               seriesEncReal = new XYSeries("EncReal");
+               seriesOffset = new XYSeries("Offset");
+               seriesImg = new XYSeries("Img");
+               seriesPh = new XYSeries("Ph");
+               seriesRMot = new XYSeries("RMot");
+               bPhDown = false;
+               bRMotStart = false;
+               seriesOffset.add(0, 25);
+               seriesPh.add(0, 50);
+               seriesRMot.add(0, 0);
+           }
+           if (tokens[1].compareTo("ImgStart") == 0) {
+           	seriesOffset.add(x, 25);
+           	seriesImg.add(x, 25);
+           }
+           if (tokens[1].compareTo("ImgEnd") == 0) {
+           	seriesImg.add(x, 25);
+           }
+           if (tokens[1].compareTo("PhDown") == 0) {
+           	if (!bPhDown) {
+           	    seriesPh.add(x, 50);
+           	}
+           	seriesPh.add(x, 0);
+           	bPhDown = true;
+           }
+           if (tokens[1].compareTo("PhUp") == 0) {
+           	if (bPhDown) {
+           	    seriesPh.add(x, 0);
+           	}
+           	seriesPh.add(x, 50);
+           	bPhDown = false;
+           }
+           if (tokens[1].compareTo("RMotStart") == 0) {
+           	if (!bRMotStart) {
+           	    seriesRMot.add(x, 0);
+           	}
+           	seriesRMot.add(x, 40);
+           	bRMotStart = true;
+           }
+           if (tokens[1].compareTo("RMotStop") == 0) {
+           	if (bRMotStart) {
+           	    seriesRMot.add(x, 40);
+           	}
+           	seriesRMot.add(x, 0);
+           	bRMotStart = false;
+           }
+           
+           if (tokens[1].compareTo("End") == 0) {
+           	dataset.removeAllSeries();
+               dataset.addSeries(seriesEnc);
+               dataset.addSeries(seriesEncReal);
+               dataset.addSeries(seriesOffset);
+               dataset.addSeries(seriesImg);
+               dataset.addSeries(seriesPh);
+               dataset.addSeries(seriesRMot);
+           }
+        }
+    }
+} while(true);

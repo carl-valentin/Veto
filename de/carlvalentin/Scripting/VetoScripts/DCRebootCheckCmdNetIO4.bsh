@@ -1,0 +1,53 @@
+// Encoding auf 0x0/0x0
+// Script connected selber
+// IP-Adresse hier im Skript konfigurieren!
+IpAddrPrinter = "10.102.1.136";
+IpAddrNetIO4 = "10.102.3.13";
+
+Counter = 1;
+
+itf = openTCP(IpAddrNetIO4, 1234);
+write("login admin admin\n".getBytes());
+sleep(1 * 1000);
+printf("Turn on port 1\n");
+write("port 1 1\n".getBytes());
+close(itf);
+printf("Waiting");
+for (i=0; i<40; i++) {
+    printf(".");
+    sleep(1 * 1000);
+}
+printf("\n");
+
+while(true)
+{
+    printf("Count: %i\n", Counter);
+    itf = openTCP(IpAddrPrinter);
+    write("RCYVCBw");
+    msg = read();
+    printf(msg + "\n");
+    if (msg.startsWith("A1")) {
+        printf("Error\n");
+        break;
+    }
+    close(itf);
+
+    itf = openTCP(IpAddrNetIO4, 1234);
+    write("login admin admin\n".getBytes());
+    sleep(1 * 1000);
+    printf("Turn off port 1\n");
+    write("port 1 0\n".getBytes());
+    sleep(7 * 1000);
+    printf("Turn on port 1\n");
+    write("port 1 1\n".getBytes());    
+    close(itf);
+    printf("Waiting");
+
+    for (i=0; i<50; i++) {
+        printf(".");
+        sleep(1 * 1000);
+    }
+    printf("\n");
+    Counter++;
+}
+close(itf);
