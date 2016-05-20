@@ -6,6 +6,7 @@ import org.jfree.chart.*;
 import org.jfree.chart.plot.*;
 import org.jfree.data.xy.*;
 import org.jfree.chart.renderer.xy.*;
+import org.jfree.chart.annotations.XYTextAnnotation;
 
 XYSeriesCollection dataset = new XYSeriesCollection();
 XYSeries seriesEnc = new XYSeries("Enc");
@@ -13,13 +14,17 @@ XYSeries seriesEncReal = new XYSeries("EncReal");
 XYSeries seriesOffset = new XYSeries("Offset");
 XYSeries seriesImg = new XYSeries("Img");
 XYSeries seriesPh = new XYSeries("Ph");
-XYSeries seriesRMot = new XYSeries("RMot");
+XYSeries seriesRMotState = new XYSeries("RMotState");
+XYSeries seriesRMotVal = new XYSeries("RMotVal");
+XYSeries seriesStartSig = new XYSeries("StartSig");
 dataset.addSeries(seriesEnc);
 dataset.addSeries(seriesEncReal);
 dataset.addSeries(seriesOffset);
 dataset.addSeries(seriesImg);
 dataset.addSeries(seriesPh);
-dataset.addSeries(seriesRMot);
+dataset.addSeries(seriesRMotState);
+dataset.addSeries(seriesRMotVal);
+dataset.addSeries(seriesStartSig);
 JFreeChart chart = ChartFactory.createXYLineChart(
     "Encoder Profile",        // chart title
     "Dist in mm",             // x axis label
@@ -34,12 +39,14 @@ JFreeChart chart = ChartFactory.createXYLineChart(
 ChartPanel chartPanel = new ChartPanel(chart);
 XYPlot plot = chart.getXYPlot( );
 XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
-renderer.setSeriesPaint( 0 , Color.GREEN );
-renderer.setSeriesPaint( 1 , Color.RED );
-renderer.setSeriesPaint( 2 , Color.GRAY );
-renderer.setSeriesPaint( 3 , Color.BLACK );
+renderer.setSeriesPaint( 0 , Color.BLACK );
+renderer.setSeriesPaint( 1 , Color.PINK );
+renderer.setSeriesPaint( 2 , Color.WHITE );
+renderer.setSeriesPaint( 3 , Color.GRAY );
 renderer.setSeriesPaint( 4 , Color.YELLOW );
-renderer.setSeriesPaint( 5 , Color.ORANGE );
+renderer.setSeriesPaint( 5 , Color.MAGENTA );
+renderer.setSeriesPaint( 6 , Color.RED );
+renderer.setSeriesPaint( 7 , Color.BLUE );
 plot.setRenderer( renderer ); 
 
 JFrame frame = new JFrame();
@@ -48,13 +55,16 @@ frame.pack();
 frame.setVisible(true);
 
 write("FHA---r2");
-write("FHM---rF1");
+write("FHM---rF2");
 
 int x = 0;
 int y = 0;
 int yr = 0;
+int yo = 0;
+int xio = 0;
 boolean bPhDown = false;
 boolean bRMotStart = false;
+boolean bIOFirst = true;
 
 do {
     msg = read();
@@ -62,7 +72,7 @@ do {
     if (msg.length() > 0) {
         String[] tokens = msg.split("[\\,\\-\\:]");
         if ( (tokens[0].compareTo("HSEnc") == 0) 
-             && (tokens.length == 7) ) {
+             && (tokens.length == 9) ) {
             if (tokens[1].compareTo("Dist") == 0) {            	
                 x = Integer.parseInt(tokens[2]);
             }
@@ -72,32 +82,72 @@ do {
             if (tokens[5].compareTo("RealSpeed") == 0) {
                 yr = Integer.parseInt(tokens[6]);
             }
+            if (tokens[7].compareTo("Opt") == 0) {
+                yo = Integer.parseInt(tokens[8]);
+            }
             seriesEnc.add(x, y);
             seriesEncReal.add(x, yr);
+            seriesRMotVal.add(x, yo);
+        }
+
+        if ( (tokens[0].compareTo("HSEnc") == 0) 
+            && (tokens.length == 3) ) {
+     	if (x <= xio) {
+     		xio = xio + 1;
+     	}
+     	else {
+     		xio = x;
+     	}
+          if (tokens[1].compareTo("IORise") == 0) {
+           	seriesStartSig.add(xio, 0);
+           	seriesStartSig.add(xio, 100);
+           	if (!bIOFirst) {
+                   XYTextAnnotation textA = new XYTextAnnotation(tokens[2], xio, 100);
+                   plot.addAnnotation(textA);
+           	}
+           }
+           if (tokens[1].compareTo("IOFall") == 0) {
+           	seriesStartSig.add(xio, 100);
+           	seriesStartSig.add(xio, 0);
+           	if (!bIOFirst) {
+                   XYTextAnnotation textA = new XYTextAnnotation(tokens[2], xio, 100);
+                   plot.addAnnotation(textA);
+           	}
+           }
+            bIOFirst = false;
         }
        
         if ( (tokens[0].compareTo("HSEnc") == 0) 
             && (tokens.length == 2) ) {
-           if (tokens[1].compareTo("Begin") == 0) {               
+           if (tokens[1].compareTo("Begin") == 0) {
+           	plot.clearAnnotations();
                seriesEnc = new XYSeries("Enc");
                seriesEncReal = new XYSeries("EncReal");
                seriesOffset = new XYSeries("Offset");
                seriesImg = new XYSeries("Img");
                seriesPh = new XYSeries("Ph");
-               seriesRMot = new XYSeries("RMot");
+               seriesRMotState = new XYSeries("RMotState");
+               seriesRMotVal = new XYSeries("RMotVal");
+               seriesStartSig = new XYSeries("StartSig");
+               xio = 0;
+               bIOFirst = true;
+               x = 0;
+               printf("0: " + xio + "\n");
                bPhDown = false;
                bRMotStart = false;
-               seriesOffset.add(0, 25);
+               seriesOffset.add(0, 30);
                seriesPh.add(0, 50);
-               seriesRMot.add(0, 0);
+               seriesRMotState.add(0, 0);
            }
+           
            if (tokens[1].compareTo("ImgStart") == 0) {
-           	seriesOffset.add(x, 25);
-           	seriesImg.add(x, 25);
+           	seriesOffset.add(x, 30);
+           	seriesImg.add(x, 30);
            }
            if (tokens[1].compareTo("ImgEnd") == 0) {
-           	seriesImg.add(x, 25);
+           	seriesImg.add(x, 30);
            }
+           
            if (tokens[1].compareTo("PhDown") == 0) {
            	if (!bPhDown) {
            	    seriesPh.add(x, 50);
@@ -112,29 +162,54 @@ do {
            	seriesPh.add(x, 50);
            	bPhDown = false;
            }
+           
            if (tokens[1].compareTo("RMotStart") == 0) {
            	if (!bRMotStart) {
-           	    seriesRMot.add(x, 0);
+           	    seriesRMotState.add(x, 0);
            	}
-           	seriesRMot.add(x, 40);
+           	seriesRMotState.add(x, 20);
            	bRMotStart = true;
+           }
+           if (tokens[1].compareTo("RMotHold") == 0) {
+           	if (bRMotStart) {
+           	    seriesRMotState.add(x, 20);
+           	}
+           	seriesRMotState.add(x, 40);
+           }
+           if (tokens[1].compareTo("RMotDec") == 0) {
+           	if (bRMotStart) {
+           	    seriesRMotState.add(x, 40);
+           	}
+           	seriesRMotState.add(x, 20);
            }
            if (tokens[1].compareTo("RMotStop") == 0) {
            	if (bRMotStart) {
-           	    seriesRMot.add(x, 40);
+           	    seriesRMotState.add(x, 20);
            	}
-           	seriesRMot.add(x, 0);
+           	seriesRMotState.add(x, 0);
            	bRMotStart = false;
            }
+
+           if (tokens[1].compareTo("RMotVal") == 0) {
+               if (tokens[2].compareTo("Dist") == 0) {            	
+                   x = Integer.parseInt(tokens[3]);
+               }
+               if (tokens[4].compareTo("Speed") == 0) {
+                   y = Integer.parseInt(tokens[5]);
+               }
+               seriesRMotVal.add(x, y);
+           }
            
-           if (tokens[1].compareTo("End") == 0) {
-           	dataset.removeAllSeries();
+           if (tokens[1].compareTo("End") == 0) {           	
+           	dataset.removeAllSeries();           	
                dataset.addSeries(seriesEnc);
                dataset.addSeries(seriesEncReal);
                dataset.addSeries(seriesOffset);
                dataset.addSeries(seriesImg);
                dataset.addSeries(seriesPh);
-               dataset.addSeries(seriesRMot);
+               dataset.addSeries(seriesRMotState);
+               dataset.addSeries(seriesRMotVal);
+               dataset.addSeries(seriesStartSig);
            }
         }
     }
