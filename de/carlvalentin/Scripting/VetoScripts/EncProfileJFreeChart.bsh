@@ -49,13 +49,93 @@ renderer.setSeriesPaint( 6 , Color.RED );
 renderer.setSeriesPaint( 7 , Color.BLUE );
 plot.setRenderer( renderer ); 
 
-JFrame frame = new JFrame();
-frame.add(chartPanel);
-frame.pack();
-frame.setVisible(true);
+Object[] sObjDialogItem = new Object[20];
+Object[] sObjModeItem = new Object[20];
+Object[] sObjXUnitItem = new Object[20];
 
-write("FHA---r2");
-write("FHM---rF2");
+JTextField  sTextFieldNumOfRec;
+JRadioButton sRadioButton;
+uiObjDialogItemI = 0;
+uiObjModeItemI = 0;
+uiObjXUnitItemI = 0;
+
+JPanel sPanelMode = new JPanel();
+ButtonGroup sButtonGroupMode = new ButtonGroup();  
+sRadioButton = new JRadioButton("Itf StartSig Trig", true);
+sPanelMode.add(sRadioButton);
+sButtonGroupMode.add(sRadioButton);
+sObjModeItem[uiObjModeItemI++] = sRadioButton;
+sRadioButton = new JRadioButton("Itf Always", true);
+sPanelMode.add(sRadioButton);
+sButtonGroupMode.add(sRadioButton);
+sObjModeItem[uiObjModeItemI++] = sRadioButton;
+sObjDialogItem[uiObjDialogItemI++] = sPanelMode;
+
+JPanel sPanelXUnit = new JPanel();
+ButtonGroup sButtonGroupXUnit = new ButtonGroup(); 
+sRadioButton = new JRadioButton("Dist", true);
+sPanelXUnit.add(sRadioButton);
+sButtonGroupXUnit.add(sRadioButton);
+sObjXUnitItem[uiObjXUnitItemI++] = sRadioButton;
+sRadioButton = new JRadioButton("Steps", true);
+sPanelXUnit.add(sRadioButton);
+sButtonGroupXUnit.add(sRadioButton);
+sObjXUnitItem[uiObjXUnitItemI++] = sRadioButton;
+sRadioButton = new JRadioButton("Time", true);
+sPanelXUnit.add(sRadioButton);
+sButtonGroupXUnit.add(sRadioButton);
+sObjXUnitItem[uiObjXUnitItemI++] = sRadioButton;
+sObjDialogItem[uiObjDialogItemI++] = sPanelXUnit;
+
+sObjDialogItem[uiObjDialogItemI++] = new JLabel("Cycles");
+sTextFieldCycles = new JTextField("1");
+sObjDialogItem[uiObjDialogItemI++] = sTextFieldCycles;
+sObjDialogItem[uiObjDialogItemI++] = new JLabel("XStepSize");
+sTextFieldXStepSize = new JTextField("1");
+sObjDialogItem[uiObjDialogItemI++] = sTextFieldXStepSize;
+sObjDialogItem[uiObjDialogItemI++] = new JLabel("AlwaysXRepeat");
+sTextFieldAlwaysXRepeat = new JTextField("100");
+sObjDialogItem[uiObjDialogItemI++] = sTextFieldAlwaysXRepeat;
+
+JOptionPane.showMessageDialog( null, sObjDialogItem, "EncProfileOptions", JOptionPane.PLAIN_MESSAGE );
+
+JRadioButton sRadioButtonCur;
+for (uiMode=0; uiMode<uiObjModeItemI; uiMode++) {
+    sRadioButtonCur = sObjModeItem[uiMode];
+    if (sRadioButtonCur.isSelected()) {
+        break;
+    }
+}
+for (uiXUnit=0; uiXUnit<uiObjXUnitItemI; uiXUnit++) {
+    sRadioButtonCur = sObjXUnitItem[uiXUnit];
+    if (sRadioButtonCur.isSelected()) {
+        break;
+    }
+}
+
+msg = "FHA---r2";
+printf("<-- " + msg + "\n");
+write(msg);
+msg = sprintf("FHM---rF%u", uiMode+1);
+printf("<-- " + msg + "\n");
+write(msg);
+msg = sprintf("FHEA--r%u", uiXUnit);
+printf("<-- " + msg + "\n");
+write(msg);
+msg = "FHEB--r" + sTextFieldCycles.getText();
+printf("<-- " + msg + "\n");
+write(msg);
+msg = "FHEC--r" + sTextFieldXStepSize.getText();
+printf("<-- " + msg + "\n");
+write(msg);
+msg = "FHED--r" + sTextFieldAlwaysXRepeat.getText();
+printf("<-- " + msg + "\n");
+write(msg);
+
+JFrame sFrameChart = new JFrame();
+sFrameChart.add(chartPanel);
+sFrameChart.pack();
+sFrameChart.setVisible(true);
 
 int x = 0;
 int y = 0;
@@ -70,147 +150,153 @@ do {
     msg = read();
     printf(msg + "\n");
     if (msg.length() > 0) {
-        String[] tokens = msg.split("[\\,\\-\\:]");
-        if ( (tokens[0].compareTo("HSEnc") == 0) 
-             && (tokens.length == 9) ) {
-            if (tokens[1].compareTo("Dist") == 0) {            	
+        String[] tokens = msg.split("[\\;\\-\\:]");
+        
+        if (tokens[0].compareTo("HSEnc") == 0) {
+
+            if (tokens[1].compareTo("Begin") == 0) {
+                plot.clearAnnotations();
+                seriesEnc = new XYSeries("Enc");
+                seriesEncReal = new XYSeries("EncReal");
+                seriesOffset = new XYSeries("Offset");
+                seriesImg = new XYSeries("Img");
+                seriesPh = new XYSeries("Ph");
+                seriesRMotState = new XYSeries("RMotState");
+                seriesRMotVal = new XYSeries("RMotVal");
+                seriesStartSig = new XYSeries("StartSig");
+                xio = 0;
+                bIOFirst = true;
+                x = 0;
+                bPhDown = false;
+                bRMotStart = false;
+                seriesOffset.add(0, 30);
+                seriesPh.add(0, 50);
+                seriesRMotState.add(0, 0);
+            }
+            
+            if ( (tokens[1].compareTo("Dist") == 0) 
+                 || (tokens[1].compareTo("Time") == 0) ) {
                 x = Integer.parseInt(tokens[2]);
+                if (tokens[3].compareTo("Speed") == 0) {
+                    y = Integer.parseInt(tokens[4]);
+                }
+                if (tokens[5].compareTo("RealSpeed") == 0) {
+                    yr = Integer.parseInt(tokens[6]);
+                }
+                if (tokens[7].compareTo("RMotSpeed") == 0) {
+                    yo = Integer.parseInt(tokens[8]);
+                }
+                seriesEnc.add(x, y);
+                seriesEncReal.add(x, yr);
+                seriesRMotVal.add(x, yo);
             }
-            if (tokens[3].compareTo("Speed") == 0) {
-                y = Integer.parseInt(tokens[4]);
+
+            if (tokens[1].compareTo("ImgStart") == 0) {
+                seriesOffset.add(x, 30);
+                seriesImg.add(x, 30);
             }
-            if (tokens[5].compareTo("RealSpeed") == 0) {
-                yr = Integer.parseInt(tokens[6]);
+            if (tokens[1].compareTo("ImgEnd") == 0) {
+                seriesImg.add(x, 30);
             }
-            if (tokens[7].compareTo("Opt") == 0) {
-                yo = Integer.parseInt(tokens[8]);
+           
+            if (tokens[1].compareTo("PhDown") == 0) {
+                if (!bPhDown) {
+                    seriesPh.add(x, 50);
+                }
+                seriesPh.add(x, 0);
+                bPhDown = true;
             }
-            seriesEnc.add(x, y);
-            seriesEncReal.add(x, yr);
-            seriesRMotVal.add(x, yo);
+            if (tokens[1].compareTo("PhUp") == 0) {
+                if (bPhDown) {
+                    seriesPh.add(x, 0);
+                }
+                seriesPh.add(x, 50);
+                bPhDown = false;
+            }
+           
+            if (tokens[1].compareTo("RMotStart") == 0) {
+                if (!bRMotStart) {
+                    seriesRMotState.add(x, 0);
+                }
+                seriesRMotState.add(x, 20);
+                bRMotStart = true;
+            }
+            if (tokens[1].compareTo("RMotHold") == 0) {
+                if (bRMotStart) {
+                    seriesRMotState.add(x, 20);
+                }
+                seriesRMotState.add(x, 40);
+            }
+            if (tokens[1].compareTo("RMotDec") == 0) {
+                if (bRMotStart) {
+                    seriesRMotState.add(x, 40);
+                }
+                seriesRMotState.add(x, 20);
+            }
+            if (tokens[1].compareTo("RMotStop") == 0) {
+                if (bRMotStart) {
+                    seriesRMotState.add(x, 20);
+                }
+                seriesRMotState.add(x, 0);
+                bRMotStart = false;
+            }
+
+            if (tokens[1].compareTo("RMotVal") == 0) {
+                if (tokens[2].compareTo("Dist") == 0) {            	
+                    x = Integer.parseInt(tokens[3]);
+                }
+                if (tokens[4].compareTo("Speed") == 0) {
+                    y = Integer.parseInt(tokens[5]);
+                }
+                seriesRMotVal.add(x, y);
+            }
+
+            if ( (tokens[1].compareTo("IORise") == 0) 
+                 || (tokens[1].compareTo("IOFall") == 0) ) {
+                if (x <= xio) {
+                    xio = xio + 1;
+                }
+                else {
+                    xio = x;
+                }
+            }
+            if (tokens[1].compareTo("IORise") == 0) {
+                seriesStartSig.add(xio, 0);
+                seriesStartSig.add(xio, 100);
+                if (!bIOFirst) {
+                    XYTextAnnotation textA = new XYTextAnnotation(tokens[3], xio, 100);
+                    plot.addAnnotation(textA);
+                }
+                bIOFirst = false;
+            }
+            if (tokens[1].compareTo("IOFall") == 0) {
+                seriesStartSig.add(xio, 100);
+                seriesStartSig.add(xio, 0);
+                if (!bIOFirst) {
+                    XYTextAnnotation textA = new XYTextAnnotation(tokens[3], xio, 100);
+                    plot.addAnnotation(textA);
+                }
+                bIOFirst = false;
+            }            
+           
+            if (tokens[1].compareTo("End") == 0) {   
+                 printf(msg + "\n");        	
+                dataset.removeAllSeries();           	
+                dataset.addSeries(seriesEnc);
+                dataset.addSeries(seriesEncReal);
+                dataset.addSeries(seriesOffset);
+                dataset.addSeries(seriesImg);
+                dataset.addSeries(seriesPh);
+                dataset.addSeries(seriesRMotState);
+                dataset.addSeries(seriesRMotVal);
+                dataset.addSeries(seriesStartSig);
+            }
+            
         }
 
-        if ( (tokens[0].compareTo("HSEnc") == 0) 
-            && (tokens.length == 3) ) {
-     	if (x <= xio) {
-     		xio = xio + 1;
-     	}
-     	else {
-     		xio = x;
-     	}
-          if (tokens[1].compareTo("IORise") == 0) {
-           	seriesStartSig.add(xio, 0);
-           	seriesStartSig.add(xio, 100);
-           	if (!bIOFirst) {
-                   XYTextAnnotation textA = new XYTextAnnotation(tokens[2], xio, 100);
-                   plot.addAnnotation(textA);
-           	}
-           }
-           if (tokens[1].compareTo("IOFall") == 0) {
-           	seriesStartSig.add(xio, 100);
-           	seriesStartSig.add(xio, 0);
-           	if (!bIOFirst) {
-                   XYTextAnnotation textA = new XYTextAnnotation(tokens[2], xio, 100);
-                   plot.addAnnotation(textA);
-           	}
-           }
-            bIOFirst = false;
-        }
-       
-        if ( (tokens[0].compareTo("HSEnc") == 0) 
-            && (tokens.length == 2) ) {
-           if (tokens[1].compareTo("Begin") == 0) {
-           	plot.clearAnnotations();
-               seriesEnc = new XYSeries("Enc");
-               seriesEncReal = new XYSeries("EncReal");
-               seriesOffset = new XYSeries("Offset");
-               seriesImg = new XYSeries("Img");
-               seriesPh = new XYSeries("Ph");
-               seriesRMotState = new XYSeries("RMotState");
-               seriesRMotVal = new XYSeries("RMotVal");
-               seriesStartSig = new XYSeries("StartSig");
-               xio = 0;
-               bIOFirst = true;
-               x = 0;
-               printf("0: " + xio + "\n");
-               bPhDown = false;
-               bRMotStart = false;
-               seriesOffset.add(0, 30);
-               seriesPh.add(0, 50);
-               seriesRMotState.add(0, 0);
-           }
-           
-           if (tokens[1].compareTo("ImgStart") == 0) {
-           	seriesOffset.add(x, 30);
-           	seriesImg.add(x, 30);
-           }
-           if (tokens[1].compareTo("ImgEnd") == 0) {
-           	seriesImg.add(x, 30);
-           }
-           
-           if (tokens[1].compareTo("PhDown") == 0) {
-           	if (!bPhDown) {
-           	    seriesPh.add(x, 50);
-           	}
-           	seriesPh.add(x, 0);
-           	bPhDown = true;
-           }
-           if (tokens[1].compareTo("PhUp") == 0) {
-           	if (bPhDown) {
-           	    seriesPh.add(x, 0);
-           	}
-           	seriesPh.add(x, 50);
-           	bPhDown = false;
-           }
-           
-           if (tokens[1].compareTo("RMotStart") == 0) {
-           	if (!bRMotStart) {
-           	    seriesRMotState.add(x, 0);
-           	}
-           	seriesRMotState.add(x, 20);
-           	bRMotStart = true;
-           }
-           if (tokens[1].compareTo("RMotHold") == 0) {
-           	if (bRMotStart) {
-           	    seriesRMotState.add(x, 20);
-           	}
-           	seriesRMotState.add(x, 40);
-           }
-           if (tokens[1].compareTo("RMotDec") == 0) {
-           	if (bRMotStart) {
-           	    seriesRMotState.add(x, 40);
-           	}
-           	seriesRMotState.add(x, 20);
-           }
-           if (tokens[1].compareTo("RMotStop") == 0) {
-           	if (bRMotStart) {
-           	    seriesRMotState.add(x, 20);
-           	}
-           	seriesRMotState.add(x, 0);
-           	bRMotStart = false;
-           }
-
-           if (tokens[1].compareTo("RMotVal") == 0) {
-               if (tokens[2].compareTo("Dist") == 0) {            	
-                   x = Integer.parseInt(tokens[3]);
-               }
-               if (tokens[4].compareTo("Speed") == 0) {
-                   y = Integer.parseInt(tokens[5]);
-               }
-               seriesRMotVal.add(x, y);
-           }
-           
-           if (tokens[1].compareTo("End") == 0) {           	
-           	dataset.removeAllSeries();           	
-               dataset.addSeries(seriesEnc);
-               dataset.addSeries(seriesEncReal);
-               dataset.addSeries(seriesOffset);
-               dataset.addSeries(seriesImg);
-               dataset.addSeries(seriesPh);
-               dataset.addSeries(seriesRMotState);
-               dataset.addSeries(seriesRMotVal);
-               dataset.addSeries(seriesStartSig);
-           }
-        }
     }
-} while(true);
+} while(sFrameChart.isShowing());
+
+msg = sprintf("FHM---rF0");
+printf("<-- " + msg + "\n");
+write(msg);
