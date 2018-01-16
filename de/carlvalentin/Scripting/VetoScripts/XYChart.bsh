@@ -31,6 +31,19 @@ XYSeries seriesY3;
 XYSeries seriesY4;
 XYSeries seriesY5;
 
+msg = sprintf("FHA---r0");
+printf("<-- " + msg + "\n");
+write(msg);
+
+msg = read(500);
+printf("<-- " + msg + "\n");
+
+while (msg.length() > 0)
+{
+    msg = read(1);
+    printf("<-- " + msg + "\n");
+}
+
 msg = "FHA---r2";
 printf("<-- " + msg + "\n");
 write(msg);
@@ -38,12 +51,12 @@ write(msg);
 msg = read();
 printf(msg + "\n");
 
-msg = sprintf("FHM---rX");
+msg = sprintf("FHM---rXTest");
 printf("<-- " + msg + "\n");
 write(msg);
 
 msg = read();
-printf(msg + "\n");
+printf("1: " + msg + "\n");
 if (msg.length() > 0) {
     String[] tokens = msg.split("[\\-\\:]");
 
@@ -129,9 +142,11 @@ int x = 0;
 
 do {
     msg = read();
-    printf(msg + "\n");
+    printf("2: " + msg + "\n");
     if (msg.length() > 0) {
-    
+
+        msg = msg.replace(":-", ":~");
+        printf("3: " + msg + "\n");
         String[] tokens = msg.split("[\\;\\-\\:]");
         
         if (tokens[0].compareTo("HSXYChart") == 0) {
@@ -155,23 +170,28 @@ do {
                 }
 
                 if (tokens[i].compareTo("Y1Val") == 0) {
-                    y1 = Integer.parseInt(tokens[i+1]);
+                	tok = tokens[i+1].replace('~', '-');
+                    y1 = Integer.parseInt(tok);
                     seriesY1.add(x, y1);
                 }
                 if (tokens[i].compareTo("Y2Val") == 0) {
-                    y2 = Integer.parseInt(tokens[i+1]);
+                	tok = tokens[i+1].replace('~', '-');
+                    y2 = Integer.parseInt(tok);
                     seriesY2.add(x, y2);
                 }
                 if (tokens[i].compareTo("Y3Val") == 0) {
-                    y3 = Integer.parseInt(tokens[i+1]);
+                	tok = tokens[i+1].replace('~', '-');
+                    y3 = Integer.parseInt(tok);
                     seriesY3.add(x, y3);
                 }
                 if (tokens[i].compareTo("Y4Val") == 0) {
-                    y4 = Integer.parseInt(tokens[i+1]);
+                	tok = tokens[i+1].replace('~', '-');
+                    y4 = Integer.parseInt(tok);
                     seriesY4.add(x, y4);
                 }
                 if (tokens[i].compareTo("Y5Val") == 0) {
-                    y5 = Integer.parseInt(tokens[i+1]);
+                	tok = tokens[i+1].replace('~', '-');
+                    y5 = Integer.parseInt(tok);
                     seriesY5.add(x, y5);
                 }
                 
@@ -194,3 +214,12 @@ do {
 msg = sprintf("FHA---r0");
 printf("<-- " + msg + "\n");
 write(msg);
+
+msg = read(200);
+printf("<-- " + msg + "\n");
+
+while (msg.compareTo("HSTerminated") != 0)
+{
+    msg = read(200);
+    printf("<-- " + msg + "\n");
+}

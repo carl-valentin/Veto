@@ -113,12 +113,6 @@ for (uiXUnit=0; uiXUnit<uiObjXUnitItemI; uiXUnit++) {
     }
 }
 
-msg = "FHA---r2";
-printf("<-- " + msg + "\n");
-write(msg);
-msg = sprintf("FHM---rF%u", uiMode+1);
-printf("<-- " + msg + "\n");
-write(msg);
 msg = sprintf("FHEA--r%u", uiXUnit);
 printf("<-- " + msg + "\n");
 write(msg);
@@ -129,6 +123,12 @@ msg = "FHEC--r" + sTextFieldXStepSize.getText();
 printf("<-- " + msg + "\n");
 write(msg);
 msg = "FHED--r" + sTextFieldAlwaysXRepeat.getText();
+printf("<-- " + msg + "\n");
+write(msg);
+msg = "FHA---r2";
+printf("<-- " + msg + "\n");
+write(msg);
+msg = sprintf("FHM---rF%u", uiMode+1);
 printf("<-- " + msg + "\n");
 write(msg);
 

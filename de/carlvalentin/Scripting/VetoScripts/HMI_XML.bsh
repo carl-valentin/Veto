@@ -1,0 +1,82 @@
+import java.nio.*;
+
+byte[] readBytes( )
+{
+    long         lMilliSeconds = 10000;
+    long         lMilliSecondsCounter = 0;
+    ByteArrayOutputStream   returnValue = new ByteArrayOutputStream();
+    int          readValue   = 0;
+    int i = 0;
+    readBytes = new byte[1];
+
+    InputStreamReader inputStreamReader;
+    CVNetworkSettings settings;		
+
+    chk4StpScr();
+    
+    try
+    {
+        inputStreamReader = 
+        	cConnectionManager.getConnectedInterface().getInterfaceReader();        	
+
+        while (true)
+        {
+            if (inputStreamReader.ready())
+            {
+                readValue = inputStreamReader.read();
+
+                if (readValue == cConnectionManager.getSohEtb().gl_iSOH)
+                {
+                    break;
+                }
+                lMilliSecondsCounter = 0;
+            }
+
+            if (lMilliSeconds > 0)
+            {
+                sleep(1);
+                lMilliSecondsCounter++;
+                if (lMilliSecondsCounter >= lMilliSeconds)
+                {
+                    chk4StpScr();
+                    return "";
+                }
+            }
+        }
+        
+        while (true)
+        {
+            readValue = inputStreamReader.read();
+            readBytes[0] = (byte)readValue;
+            write(fileOut, readBytes);
+            if (readValue == 0xc0)
+            {
+            	printf("YEAH\n");            	
+            }            
+            printf("%x\n", readValue);
+
+            if(readValue == cConnectionManager.getSohEtb().gl_iETB)
+            {
+                break;
+            }
+            returnValue.write(readValue);
+        }       
+    }
+    catch(IOException ex)
+    {
+        printf("\n<-------------------------------------->\n");
+        printf("Scripting: read->IOException: " + ex.getMessage() + "\n");
+        printf("<-------------------------------------->\n");
+        error("Scritping: read->IOException");
+        return "";
+    }
+    
+    chk4StpScr();
+    return returnValue.toByteArray();
+}
+
+fileOut = openFile("D:\\BTisler\\temp\\out.bin");
+
+write("ST1");
+byte[] b = readBytes();
+printf("%x %x %x %x %x %x %x\n", b[0], b[1], b[2], b[3], b[4], b[5], 0xC0);
