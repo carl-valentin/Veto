@@ -14,12 +14,12 @@ import de.carlvalentin.Interface.*;
 import java.io.*;
 
 // -----------------------------------------------------------------------------
-// -> String read( );
+// -> String read( long lTimeoutInMs );
 // Liest von der Default-Schnittstelle (zuletzt geoeffnete) und gibt gewonnene 
 // Daten als String zurueck.
-String read( )
+String read( long lTimeoutInMs )
 {
-    long         lMilliSeconds = 10000;
+    long         lMilliSeconds = lTimeoutInMs;
     long         lMilliSecondsCounter = 0;
 	StringBuffer returnValue = new StringBuffer();
     char         readValue   = 0;
@@ -81,6 +81,15 @@ String read( )
     
     chk4StpScr();
     return returnValue.toString();
+}
+
+// -----------------------------------------------------------------------------
+// -> String read( long lTimeoutInMs );
+// Liest von der Default-Schnittstelle (zuletzt geoeffnete) und gibt gewonnene 
+// Daten als String zurueck.
+String read( )
+{
+    return read(10000);
 }
 
 // -----------------------------------------------------------------------------
