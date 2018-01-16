@@ -34,7 +34,7 @@
     <target name="compile.win32" depends="init"
             description="compile the source Win32-specific" >
         <!-- Compile the java code from ${src} into ${outputdir} -->
-        <javac srcdir="." destdir="${ODIR_CLASSES}"
+        <javac compiler="javac1.7" target="1.7" srcdir="." destdir="${ODIR_CLASSES}"
                classpath="javax.comm/Win32.V2.0/comm.jar;
         	              bsh/bsh-2.0b2.jar;
                           com/sharkysoft/lava3-core.jar;
