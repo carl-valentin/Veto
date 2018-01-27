@@ -5,7 +5,7 @@ import java.awt.Component;
 import javax.swing.JOptionPane;
 
 /**
- * Grafische Oberfläche um den Inhalt eines CVSohEtb-Objektes ueber einen 
+ * Grafische Oberfl&auml;che um den Inhalt eines CVSohEtb-Objektes ueber einen 
  * Auswahldialog mit allen Moeglichkeiten zu bestimmen.
  */
 public class CVUISohEtb 

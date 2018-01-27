@@ -2,7 +2,7 @@ package de.carlvalentin.Interface;
 
 import java.util.Enumeration;
 
-import javax.comm.SerialPort;
+import gnu.io.SerialPort;
 
 /**
  * Enum-Klasse zur Darstellung der unterstuetzten Anzahl an Datenbits.

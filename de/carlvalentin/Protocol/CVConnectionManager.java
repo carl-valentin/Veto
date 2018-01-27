@@ -10,84 +10,84 @@ import de.carlvalentin.Interface.*;
 /**
  * Verwaltet Verbindungen zum Drucker
  */
-public class CVConnectionManager 
+public class CVConnectionManager
 {
     /**
      * Ausgabe von Fehlermeldungen in Form von Dialogen
      */
     private CVErrorMessage       lk_cErrorMessage = null;
-    
+
     /**
      * Ausgabe von Fehlermeldungen in Logdatei
      */
     private CVLogging            lk_cErrorFile = null;
-    
+
     /**
      * Ausgabe von Statusmeldungen auf Statuszeile
      */
     private CVStatusLine         lk_cStatusMessage = null;
-    
+
     /**
      * Datei zum Speichern der akutellen Konfiguration
      */
     private CVConfigFile         lk_cConfigFile = null;
-    
+
     /**
      * Gibt an, ob Verbindung zum Drucker besteht
      */
     private boolean              lk_cIsConnected;
-    
+
     /**
      * Thread um Daten vom Drucker zu empfangen
      */
     private CVProtocolRecvThread lk_cRecvThread = null;
-    
+
     /**
      * Thread um Daten an den Drucker zu senden
      */
     private CVProtocolSendThread lk_cSendThread = null;
-    
+
     /**
      * Kodierung der Start- und Stopzeichen der CVPL.
      */
     private CVSohEtb             lk_cSohEtb = null;
-    
+
     /**
      * Interface zur Netzwerkschnittstelle TCP-Protokoll
      */
     private CVNetworkTCP         lk_cInterfaceNetworkTCP = null;
-    
+
     /**
      * Interface zur Netzwerkschnittstelle UDP-Protokoll
      */
     private CVNetworkUDP         lk_cInterfaceNetworkUDP = null;
-    
+
     /**
      * Interface zur seriellen Schnittstelle
      */
     private CVSerial             lk_cInterfaceSerial = null;
-    
+
     /**
      * Interface zur parallelen Schnittstelle
      */
     private CVParallel           lk_cInterfaceParallel = null;
-    
+
     /**
      * Interface, uber welches Verbindung zum Drucker besteht
      */
     private CVInterface          lk_cInterfaceCurrentConnected = null;
-    
+
     /**
      * Eingabestrom (Reader) aus welchem der Sendethread liest.
      */
     private Reader               lk_cSourceReader = null;
-    
+
     /**
      * Liste Ausgabestroeme (Writer), in welche der Empfangsthread schreibt
      */
     private Vector               lk_cVectorSinkWriterRecvThread;
     private Vector               lk_cVectorSinkWriterSendThread;
-    
+
     /**
      * Konstruktor der Klasse CVConnectionManager
      *
@@ -106,12 +106,12 @@ public class CVConnectionManager
         this.lk_cErrorFile     = cErrorFile;
         this.lk_cErrorMessage  = cErrorMessage;
         this.lk_cStatusMessage = cStatusMessage;
-        
+
         this.initCVConnectionManager();
-        
+
     	return;
     }
-    
+
     /**
      * Aufruf durch Garbage Collector
      */
@@ -137,46 +137,46 @@ public class CVConnectionManager
     		this.lk_cInterfaceSerial.finalize();
     		this.lk_cInterfaceSerial = null;
     	}
-        
+
         if(this.lk_cSourceReader != null)
         {
         	this.lk_cSourceReader = null;
         }
-     
+
         return;
     }
-    
+
     /**
      * Initialisiere Klassenkomponenten
      */
     private void initCVConnectionManager()
     {
         this.lk_cIsConnected = false;
-        
+
         this.lk_cRecvThread = null;
         this.lk_cSendThread = null;
-        
+
         this.lk_cSohEtb = CVSohEtb.none;
-        
+
         //this.lk_cVectorSinkWriterRecvThread = new Vector();
         //this.lk_cVectorSinkWriterSendThread = new Vector();
-        
+
         this.lk_cSourceReader = null;
     }
-    
+
     /**
      * Abfrage, ob Verbindung zum Drucker besteht
-     * 
+     *
      * @return true, wenn Verbindung, sonst false
      */
     public boolean isConnected()
-    {     
+    {
     	return this.lk_cIsConnected;
     }
-    
+
     /**
      * Abfrage Netzwerkinterface TCP-Protokoll
-     * 
+     *
      * @return Netzwerkinterface TCP-Protokoll
      */
     public CVNetworkTCP getTCPNetworkInterface()
@@ -191,10 +191,10 @@ public class CVConnectionManager
     	}
     	return this.lk_cInterfaceNetworkTCP;
     }
-    
+
     /**
      * Setzen Netzwerkinterface TCP-Protokoll
-     * 
+     *
      * @param cTCPNetworkInterface Netzwerkinterface TCP-Protokoll
      */
     public void setTCPNetworkInterface(CVNetworkTCP cTCPNetworkInterface)
@@ -211,13 +211,13 @@ public class CVConnectionManager
                         "setTCPNetworkInterface: null pointer");
             }
         }
-        
+
         return;
     }
-    
+
     /**
      * Abfrage Netzwerkinterface UDP-Protokoll
-     * 
+     *
      * @return Netzwerkinterface UDP-Protokoll
      */
     public CVNetworkUDP getUDPNetworkInterface()
@@ -232,10 +232,10 @@ public class CVConnectionManager
     	}
     	return this.lk_cInterfaceNetworkUDP;
     }
-    
+
     /**
      * Setzen Netzwerkinterface UDP-Protokoll
-     * 
+     *
      * @param cUDPNetworkInterface Netzwerkinterface UDP-Protokoll
      */
     public void setUDPNetworkInterface(CVNetworkUDP cUDPNetworkInterface)
@@ -248,17 +248,17 @@ public class CVConnectionManager
     	{
     		if(this.lk_cErrorMessage != null)
     		{
-    			this.lk_cErrorMessage.write("CVConnectionManager->" + 
+    			this.lk_cErrorMessage.write("CVConnectionManager->" +
     					"setUDPNetworkInterface: null pointer");
     		}
     	}
-    	
+
     	return;
     }
-    
+
     /**
      * Abfrage Parallelinterface
-     * 
+     *
      * @return Parallelinterface
      */
     public CVParallel getParallelInterface()
@@ -273,10 +273,10 @@ public class CVConnectionManager
     	}
     	return this.lk_cInterfaceParallel;
     }
-    
+
     /**
      * Setzen Parallelinterface
-     * 
+     *
      * @param cParallelInterface Parallelinterface
      */
     public void setParallelInterface(CVParallel cParallelInterface)
@@ -293,13 +293,13 @@ public class CVConnectionManager
                         "setParallelInterface: null pointer");
             }
         }
-        
+
         return;
     }
-    
+
     /**
      * Abfrage serielles Interface
-     *  
+     *
      * @return serielles Interface
      */
     public CVSerial getSerialInterface()
@@ -314,10 +314,10 @@ public class CVConnectionManager
     	}
     	return this.lk_cInterfaceSerial;
     }
-    
+
     /**
      * Setzen serielles Interface
-     * 
+     *
      * @param cSerialInterface serielles Interface
      */
     public void setSerialInterface(CVSerial cSerialInterface)
@@ -334,23 +334,23 @@ public class CVConnectionManager
                         "setSerialInterface: null pointer");
             }
         }
-        
-        return;        
+
+        return;
     }
-    
+
     /**
      * Abfrage des Interface, ueber welches eine Verbindung zum Drucker besteht
-     * 
+     *
      * @return Mit Drucker verbundenes Interface
      */
     public CVInterface getConnectedInterface()
     {
     	return this.lk_cInterfaceCurrentConnected;
     }
-    
+
     /**
      * Setzt die Quelle des Datenstroms (Reader) zum Interface
-     * 
+     *
      * @param cSourceReader Reader der Eingabekomponente
      */
 	public void setSource(Reader cSourceReader)
@@ -367,19 +367,19 @@ public class CVConnectionManager
                         "setSource: null pointer");
             }
         }
-        
+
 		return;
     }
-    
+
     /**
      * Setzt das Ziel des Datenstroms (Writer) vom Interface
-     * 
+     *
      * @param cSinkWriter Writer der Ausgabekomponente
-     * @param bRecvThread true, Writer wird für Empfangsthread registriert
-     * @param bSendThread true, Writer wird für Sendenthread registriert
+     * @param bRecvThread true, Writer wird f&uuml;r Empfangsthread registriert
+     * @param bSendThread true, Writer wird f&uuml;r Sendenthread registriert
      */
-    public void setSink(Writer cSinkWriter, 
-    					boolean bRecvThread, 
+    public void setSink(Writer cSinkWriter,
+    					boolean bRecvThread,
     					boolean bSendThread)
     {
         if(cSinkWriter != null)
@@ -409,13 +409,13 @@ public class CVConnectionManager
                         "setSink: null pointer");
             }
         }
-        
+
         return;
     }
-    
+
     /**
      * Binaeren Ausgabestrom zum Interface abfragen
-     * 
+     *
      * @return Ausgabestrom, wenn vorhanden, sonst null
      */
     public OutputStream getInterfaceBinaryOutput()
@@ -424,7 +424,7 @@ public class CVConnectionManager
         {
     		return this.lk_cSendThread.getBinaryOutput();
         }
-        
+
         if(this.lk_cErrorMessage != null)
         {
         	this.lk_cErrorMessage.write("CVConnectionManager->" +
@@ -437,13 +437,13 @@ public class CVConnectionManager
                     "getInterfaceBinaryOutput: interface has no binary output" +
                     "or send thread not running ");
         }
-        
+
         return null;
     }
-    
+
     /**
      * Binaeren Eingabestrom vom Interface abfragen
-     * 
+     *
      * @return Eingabestrom, wenn vorhanden, sonst null
      */
     public InputStream getInterfaceBinaryInput()
@@ -452,7 +452,7 @@ public class CVConnectionManager
         {
     		return this.lk_cRecvThread.getBinaryInput();
         }
-        
+
         if(this.lk_cErrorMessage != null)
         {
         	this.lk_cErrorMessage.write("CVConnectionManager->" +
@@ -465,23 +465,23 @@ public class CVConnectionManager
                     "getInterfaceBinaryInput: interface has no binary input " +
                     "or receive thread not running ");
         }
-        
+
         return null;
     }
-    
+
     /**
      * Abfrage der Kodierung der Start- und Stopzeichen der CVPL
-     * 
+     *
      * @return aktuell verwendete Kodierung der Start- und Stopzeichen der CVPL
      */
     public CVSohEtb getSohEtb()
     {
     	return this.lk_cSohEtb;
     }
-    
+
     /**
      * Setzen der Kodierung der Start- und Stopzeichen der CVPL
-     * 
+     *
      * @param cSohEtb Kodierung CVPL
      */
     public void setSohEtb(CVSohEtb cSohEtb)
@@ -489,13 +489,13 @@ public class CVConnectionManager
         if(cSohEtb != null)
         {
         	this.lk_cSohEtb = cSohEtb;
-        
+
         	/*if(this.lk_cRecvThread != null)
         	{
         		this.lk_cRecvThread.setSohEtb(this.lk_cSohEtb);
         	}*/
-        
-        	//Umschaltung im laufenden Thread nur für Dateiübertragung notwendig
+
+        	//Umschaltung im laufenden Thread nur f&uuml;r Datei&uuml;bertragung notwendig
         	if(this.lk_cSendThread != null)
         	{
         		this.lk_cSendThread.setSohEtb(this.lk_cSohEtb);
@@ -509,7 +509,7 @@ public class CVConnectionManager
                         "setSohEtb: null pointer");
             }
         }
-        
+
     	return;
     }
 
@@ -528,10 +528,10 @@ public class CVConnectionManager
                 this.lk_cErrorFile.write("CVConnectionManager->" +
                         "connect: allready connected to printer");
             }
-            
+
             return false;
         }
-            
+
         //----------------------------------------------------------------------
         // Interface oeffnen
         //----------------------------------------------------------------------
@@ -547,20 +547,20 @@ public class CVConnectionManager
                 this.lk_cErrorFile.write("CVConnectionManager->" +
                         "connect: could not open interface");
             }
-            
+
             return false;
-        }        
-        
+        }
+
     	this.lk_cInterfaceCurrentConnected = cInterface;
-    
+
     	this.lk_cIsConnected = true;
-    
+
     	return true;
     }
-    
+
     /**
      * Stellt eine Verbindung zum Drucker her
-     * 
+     *
      * @param cInterface gewaehlte Schnittstelle
      * @return true, wenn Verbindung hergestellt, sonst false
      */
@@ -582,10 +582,10 @@ public class CVConnectionManager
                 this.lk_cErrorFile.write("CVConnectionManager->" +
                         "connect: allready connected to printer");
             }
-            
+
         	return false;
         }
-        
+
     	//----------------------------------------------------------------------
         // Interface oeffnen
     	//----------------------------------------------------------------------
@@ -601,15 +601,15 @@ public class CVConnectionManager
                 this.lk_cErrorFile.write("CVConnectionManager->" +
                         "connect: could not open interface");
             }
-            
+
         	return false;
         }
-        
+
         //----------------------------------------------------------------------
         // Parallelport hat unter Java keine Moeglichkeit Daten zu empfangen
         //----------------------------------------------------------------------
         if(cInterface.equals((CVInterface)this.lk_cInterfaceParallel) != true)
-        {                        
+        {
         	//------------------------------------------------------------------
         	// Thread zum Empfangen von Daten anlegen
         	//------------------------------------------------------------------
@@ -618,7 +618,7 @@ public class CVConnectionManager
 					this.lk_cErrorFile,
 					this.lk_cStatusMessage);
         	this.lk_cRecvThread.setSohEtb(this.lk_cSohEtb);
-                
+
         	if(cInterface.hasInterfaceReader() == true)
         	{
         		this.lk_cRecvThread.setThreadReader(
@@ -640,11 +640,11 @@ public class CVConnectionManager
         			this.lk_cErrorFile.write("CVConnectionManager->" +
                         "connect: interface has no reader - no receive thread");
         		}
-            
+
         		return false;
         	}
         }
-        
+
         //----------------------------------------------------------------------
         // Thread zum Senden von Daten anlegen
         //----------------------------------------------------------------------
@@ -660,9 +660,9 @@ public class CVConnectionManager
         				((Object)cInterface.getInterfaceWriter());
             this.lk_cSendThread.setThreadWriter
             			(this.lk_cVectorSinkWriterSendThread);
-            
+
             this.lk_cSendThread.setBinaryOutput(
-                cInterface.getInterfaceBinaryOutput());    
+                cInterface.getInterfaceBinaryOutput());
         }
         else
         {
@@ -676,10 +676,10 @@ public class CVConnectionManager
                 this.lk_cErrorFile.write("CVConnectionManager->" +
                         "connect: interface has no writer - no send thread");
             }
-            
+
         	return false;
         }
-        
+
         //----------------------------------------------------------------------
         // Threads starten
         //----------------------------------------------------------------------
@@ -691,17 +691,17 @@ public class CVConnectionManager
         {
         	this.lk_cSendThread.start();
         }
-        
+
         this.lk_cInterfaceCurrentConnected = cInterface;
-        
+
         this.lk_cIsConnected = true;
-        
+
     	return true;
     }
-    
+
     /**
      * Beendet bestehende Verbindung
-     * 
+     *
      * @param cInterface gewaehlte Schnittstelle
      * @return true, wenn Verbindung beendet, sonst false
      */
@@ -722,10 +722,10 @@ public class CVConnectionManager
             	this.lk_cErrorFile.write("CVConnectionManager->" +
                         "disconnect: not connected to printer");
             }
-            
+
         	return false;
         }
-        
+
         //----------------------------------------------------------------------
         // Threads beenden
         //----------------------------------------------------------------------
@@ -739,13 +739,13 @@ public class CVConnectionManager
         	this.lk_cSendThread.stopThread();
         	this.lk_cSendThread = null;
         }
-        
+
         try
         {
         	Thread.sleep(250);
         }
         catch(InterruptedException ex) {}
-        
+
         //----------------------------------------------------------------------
         // Interface schliessen
         //----------------------------------------------------------------------
@@ -761,10 +761,10 @@ public class CVConnectionManager
                 this.lk_cErrorFile.write("CVConnectionManager->" +
                         "disconnect: could not close interface");
             }
-            
+
         	return false;
         }
-        
+
         //----------------------------------------------------------------------
         // Interface loeschen
         //----------------------------------------------------------------------
@@ -794,11 +794,11 @@ public class CVConnectionManager
         	this.lk_cVectorSinkWriterSendThread.clear();
         	this.lk_cVectorSinkWriterSendThread = null;
         }
-        
+
         this.lk_cInterfaceCurrentConnected = null;
-        
+
         this.lk_cIsConnected = false;
-        
+
     	return true;
     }
 }

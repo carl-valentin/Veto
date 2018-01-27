@@ -7,9 +7,9 @@ import de.carlvalentin.Common.UI.CVStatusLine;
 import de.carlvalentin.Common.CVLogging;
 
 /**
- * Klasse zum Senden von Daten gemäss der Konventionen der CVPL von einem
+ * Klasse zum Senden von Daten gem&auml;ss der Konventionen der CVPL von einem
  * Reader zu einem Writer(Javaklassen). Der genaue Ursprung des Datenstroms
- * im Reader und das Ziel des Writer sind für die Bearbeitung der Daten
+ * im Reader und das Ziel des Writer sind f&uuml;r die Bearbeitung der Daten
  * unerheblich. Die Klasse verpackt die Daten in die geforderten Start- und
  * Stopzeichen der CVPL.
  */
@@ -19,7 +19,7 @@ public class CVProtocolSendThread extends CVProtocolThread
      * Binaerer Ausgabestrom des Threads - Durchleitung aller Daten
      */
     private OutputStream lk_cBinaryOutput = null;
-    
+
     /**
      * Konstruktor der Klasse CVProtocolSendThread
      *
@@ -28,15 +28,15 @@ public class CVProtocolSendThread extends CVProtocolThread
      * @param statusMessage Ausgabe von Statusmeldungen auf Statuszeile.
      */
 	public CVProtocolSendThread(
-            CVErrorMessage errorMessage, 
+            CVErrorMessage errorMessage,
             CVLogging      errorFile,
             CVStatusLine   statusMessage)
     {
 		super(errorMessage, errorFile, statusMessage);
-        
+
         return;
     }
-    
+
     /**
      * Aufruf durch den Garabage Collector
      */
@@ -47,36 +47,36 @@ public class CVProtocolSendThread extends CVProtocolThread
         	this.lk_cBinaryOutput.flush();
         	this.lk_cBinaryOutput.close();
         }
-        
+
         super.finalize();
-        
+
     	return;
     }
-    
+
     /**
-     * Setzen des binaeren Ausgabestrom des Threads - Daten werden nicht 
+     * Setzen des binaeren Ausgabestrom des Threads - Daten werden nicht
      * bearbeitet.
-     * 
+     *
      * @param out Binaerer Ausgabestrom.
      */
     public void setBinaryOutput(OutputStream out)
     {
         this.lk_cBinaryOutput = out;
-        
+
         return;
     }
-    
+
     /**
-     * Abfrage des binaeren Ausgabestrom des Thread - Daten werden nicht 
+     * Abfrage des binaeren Ausgabestrom des Thread - Daten werden nicht
      * bearbeitet.
-     * 
+     *
      * @return Binaerer Eingabestrom.
      */
     public OutputStream getBinaryOutput()
     {
         return this.lk_cBinaryOutput;
     }
-    
+
     /**
      * Beendet die Verarbeitung des Threads
      */
@@ -84,9 +84,9 @@ public class CVProtocolSendThread extends CVProtocolThread
     {
     	this.lk_cIsStoppedSemaphore.grab();
     	this.lk_bIsStopped = true;
-    	
+
     	this.stop();
-        
+
         if(this.lk_cInputReader != null)
     	{
     		this.lk_cInputReader = null;
@@ -95,19 +95,19 @@ public class CVProtocolSendThread extends CVProtocolThread
     	{
     		this.lk_cVectorOutputWriter = null;
     	}
-    	
+
         this.lk_cIsStoppedSemaphore.release();
-        
+
     	return;
     }
-    
+
     /**
      * Ausfuehrungsfunktion  des Threads
      */
     public void run()
     {
     	char c;
-        while(true)
+        while(!lk_bIsStopped)
         {
         	if((this.lk_cInputReader != null)&&
                (this.lk_cVectorOutputWriter != null) &&
@@ -116,15 +116,15 @@ public class CVProtocolSendThread extends CVProtocolThread
         		if(this.lk_cSohEtb.equals(CVSohEtb.none) == true)
                 {
                 	//----------------------------------------------------------
-                    //keine Start-/Stopzeichen einfügen
+                    //keine Start-/Stopzeichen einf&uuml;gen
                 	//----------------------------------------------------------
                     try
-                    {                    	
+                    {
                     	//if(this.lk_cInputReader.ready() == true)
                     	//{
                     		c = (char)this.lk_cInputReader.read();
-                    		for(int i=0; 
-                    			i<this.lk_cVectorOutputWriter.size(); 
+                    		for(int i=0;
+                    			i<this.lk_cVectorOutputWriter.size();
                     			i++)
                     		{
                     			((Writer)this.lk_cVectorOutputWriter.get(i)).
@@ -134,7 +134,7 @@ public class CVProtocolSendThread extends CVProtocolThread
                     		}
                     	//}
                     }
-                    catch(IOException ex)
+                    catch(Exception ex)
                     {
                         if(this.lk_cErrorMessage != null)
                         {
@@ -146,14 +146,14 @@ public class CVProtocolSendThread extends CVProtocolThread
                         	this.lk_cErrorFile.write( "CVPLSendThread: " +
                         			"I/O Exception run: " + ex.getMessage());
                         }
-                        
+
                         return; // Thread verlassen
                     }
                 }
                 else
                 {
                 	//----------------------------------------------------------
-                    // Start-/Stopzeichen einfügen
+                    // Start-/Stopzeichen einf&uuml;gen
                 	//----------------------------------------------------------
                     try
                     {
@@ -166,8 +166,8 @@ public class CVProtocolSendThread extends CVProtocolThread
                     			//----------------------------------------------
                     			// Start- und Stopzeichen der CVPL hinzufuegen
                     			//----------------------------------------------
-                    			for(int i=0; 
-                    				i<this.lk_cVectorOutputWriter.size(); 
+                    			for(int i=0;
+                    				i<this.lk_cVectorOutputWriter.size();
                             		i++)
                     			{
                     				if(((Writer)this.lk_cVectorOutputWriter.
@@ -175,10 +175,10 @@ public class CVProtocolSendThread extends CVProtocolThread
                     				{
                     					((Writer)this.lk_cVectorOutputWriter.
                     						get(i)).write(
-                    						this.lk_cSohEtb.gl_strSOH + 
+                    						this.lk_cSohEtb.gl_strSOH +
                     						this.lk_szCurrentLine +
                     						this.lk_cSohEtb.gl_strETB + "\n",
-                    						0, 
+                    						0,
                     						this.lk_szCurrentLine.length() + 3);
                     					((Writer)this.lk_cVectorOutputWriter.
                     						get(i)).flush();
@@ -187,9 +187,9 @@ public class CVProtocolSendThread extends CVProtocolThread
                     			this.lk_szCurrentLine = "";
                     			break;
                     		case '\b':
-                    			this.lk_szCurrentLine = 
+                    			this.lk_szCurrentLine =
                     				this.lk_szCurrentLine.substring(
-                                        0, this.lk_szCurrentLine.length()-1); 
+                                        0, this.lk_szCurrentLine.length()-1);
                     			break;
                     		default:
                     			this.lk_szCurrentLine += c;
@@ -197,7 +197,7 @@ public class CVProtocolSendThread extends CVProtocolThread
                     		}
                     	//}
                     }
-                    catch(IOException ex)
+                    catch(Exception ex)
                     {
                         if(this.lk_cErrorMessage != null)
                         {
@@ -209,8 +209,12 @@ public class CVProtocolSendThread extends CVProtocolThread
                         	this.lk_cErrorFile.write( "CVPLSendThread: " +
                         			"I/O Exception run: " + ex.getMessage());
                         }
-                        
+
                         return; // Thread verlassen
+                    }
+                    catch (Throwable t)
+                    {
+
                     }
                 }
             }

@@ -2,7 +2,7 @@ package de.carlvalentin.Interface;
 
 import java.util.Enumeration;
 
-import javax.comm.ParallelPort;
+import gnu.io.ParallelPort;
 
 /**
  * Enum-Klasse zur Darstellung der unterstuetzten Baudraten

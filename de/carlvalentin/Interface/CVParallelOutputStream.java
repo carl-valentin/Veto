@@ -6,9 +6,9 @@ package de.carlvalentin.Interface;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.comm.CommPortIdentifier;
-import javax.comm.ParallelPort;
-import javax.comm.PortInUseException;
+import gnu.io.CommPortIdentifier;
+import gnu.io.ParallelPort;
+import gnu.io.PortInUseException;
 
 import de.carlvalentin.Common.CVLogging;
 import de.carlvalentin.Common.UI.CVStatusLine;

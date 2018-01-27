@@ -165,7 +165,7 @@ public class ValentinConsole extends JFrame {
         //----------------------------------------------------------------------
         System.setProperty("java.class.path",
                 "Veto.jar;" +
-                ".\\comm.jar;" +
+                ".\\RXTXcomm.jar;" +
                 ".\\bsh-2.0b2.jar;" +
                 ".\\lava3-core.jar;" +
                 ".\\lava3-printf.jar" +
@@ -1090,7 +1090,7 @@ public class ValentinConsole extends JFrame {
                 public void actionPerformed(java.awt.event.ActionEvent e)
                 {
                     JOptionPane.showMessageDialog(null,
-                            "Valentin Embedded Test Office\nVersion 0.8",
+                            "Valentin Embedded Test Office\nVersion 0.9",
                             "Info",
                             JOptionPane.OK_OPTION);
                 }

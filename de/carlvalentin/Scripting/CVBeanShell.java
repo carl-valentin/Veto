@@ -107,7 +107,7 @@ public class CVBeanShell
     private CVTextDisplay       lk_cDisplayInterfaceHEX = null;
 
     /**
-     * Zeigt an, ob Skriptinterpreter ein Skript ausführt
+     * Zeigt an, ob Skriptinterpreter ein Skript ausf&uuml;hrt
      */
     private boolean            lk_bScriptIsRunning = false;
 
@@ -580,7 +580,7 @@ public class CVBeanShell
     }
 
     /**
-     * Stoppe laufende Ausführung eines Skripts
+     * Stoppe laufende Ausf&uuml;hrung eines Skripts
      */
     public void stopScript()
     {

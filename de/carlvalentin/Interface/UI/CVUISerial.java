@@ -5,7 +5,7 @@ import de.carlvalentin.Common.*;
 import de.carlvalentin.Interface.*;
 import de.carlvalentin.Protocol.CVConnectionManager;
 
-import javax.comm.*;
+import gnu.io.*;
 import java.util.*;
 
 import javax.swing.JFrame;
@@ -357,7 +357,7 @@ public class CVUISerial extends JFrame
 			jComboBoxBaudrate = new JComboBox();
 			jComboBoxBaudrate.setBackground(java.awt.Color.white);   
 		}
-        // Liste aller unterstuetzten Baudraten einfügen
+        // Liste aller unterstuetzten Baudraten einf&uuml;gen
         CVSerialBaudrate baudRateSelected = 
             this.lk_cSerialInterfaceSettings.getBaudrate();
         for(Enumeration baudRateEnum = CVSerialBaudrate.elements();

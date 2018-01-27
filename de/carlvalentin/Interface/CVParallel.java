@@ -1,7 +1,7 @@
 package de.carlvalentin.Interface;
 
 import java.io.*;
-import javax.comm.*;
+import gnu.io.*;
 
 import de.carlvalentin.Common.UI.CVErrorMessage;
 import de.carlvalentin.Common.UI.CVStatusLine;

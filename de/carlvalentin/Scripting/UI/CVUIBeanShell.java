@@ -15,7 +15,7 @@ import javax.swing.event.*;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 /**
- * Grafische Oberfläche zur Steuerung der Skriptumgebung BeanShell.
+ * Grafische Oberfl&auml;che zur Steuerung der Skriptumgebung BeanShell.
  */
 public class CVUIBeanShell extends JPanel
 {
@@ -104,7 +104,7 @@ public class CVUIBeanShell extends JPanel
     private JButton jButtonStepScript           = null;
 
     private boolean lk_bStdOutPrintf = false;
-    
+
     /**
      * Konstruktor der Klasse CVUIBeanShell.
      *
@@ -181,7 +181,7 @@ public class CVUIBeanShell extends JPanel
      */
     private void setupBeanShellInterpreter()
     {
-        // JTextArea ist in BeanShell üeber cTextArea zugreifbar
+        // JTextArea ist in BeanShell &uuml;ber cTextArea zugreifbar
         this.lk_cBeanShell.setDisplayScriptOutput(this.jTextAreaScriptOutput);
 
         // Displays zur Anzetge der transportierten Daten
@@ -419,19 +419,19 @@ public class CVUIBeanShell extends JPanel
         return this.lk_cDisplayInterfaceHEX.getWriter();
     }
 
-    
+
     public void loadScript(String sScript)
     {
         File cScriptFile = new File(sScript);
-        
+
         if (lk_cBeanShellEditor.loadScriptFile(cScriptFile))
         {
             jTextFieldCurrentScript.setText(cScriptFile.getName());
             lk_cBeanShell.setScriptPath(cScriptFile.getParent() + "\\");
         }
     }
-    
-    
+
+
     /**
      * This method initializes this
      *
@@ -675,23 +675,23 @@ public class CVUIBeanShell extends JPanel
             jTextAreaScriptOutput.getDocument().addDocumentListener(
                     new documentListenerJTA()
             {
-                public void insertUpdate(DocumentEvent e) 
+                public void insertUpdate(DocumentEvent e)
                 {
                     if (!lk_bStdOutPrintf)
                     {
                         return;
                     }
-                    try 
+                    try
                     {
                         System.out.print(e.getDocument().getText(
                                             e.getOffset(), e.getLength()));
-                    } 
+                    }
                     catch (javax.swing.text.BadLocationException ex)
                     {
 
                     }
-                }           
-            }                    
+                }
+            }
             );
         }
         return jTextAreaScriptOutput;

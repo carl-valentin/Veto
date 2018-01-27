@@ -1,4 +1,4 @@
-<project name="Valentin Embedded Test Office V0.8" default="dist.win32" basedir=".">
+<project name="Valentin Embedded Test Office V0.9" default="dist.win32" basedir=".">
     <description>
         Ant build file for the Valentin Embedded Test Office
     </description>
@@ -35,7 +35,18 @@
             description="compile the source Win32-specific" >
         <!-- Compile the java code from ${src} into ${outputdir} -->
         <javac compiler="javac1.7" target="1.7" srcdir="." destdir="${ODIR_CLASSES}"
-               classpath="javax.comm/Win32.V2.0/comm.jar;
+               classpath="javax.comm/mfz-rxtx-2.2-20081207-win-x86/RXTXcomm.jar;
+        	              bsh/bsh-2.0b2.jar;
+                          com/sharkysoft/lava3-core.jar;
+        	              com/sharkysoft/lava3-printf.jar;
+    	                  rsyntaxtextarea-2.5.6/rsyntaxtextarea-2.5.6.jar"/>
+    </target>
+
+    <target name="compile.win64" depends="init"
+            description="compile the source Win64-specific" >
+        <!-- Compile the java code from ${src} into ${outputdir} -->
+        <javac srcdir="." destdir="${ODIR_CLASSES}"
+               classpath="javax.comm/mfz-rxtx-2.2-20081207-win-x64/RXTXcomm.jar;
         	              bsh/bsh-2.0b2.jar;
                           com/sharkysoft/lava3-core.jar;
         	              com/sharkysoft/lava3-printf.jar;
@@ -75,7 +86,37 @@
              manifest="de/carlvalentin/ValentinConsole/manifest.mf"/>
         <!-- Copy the rest needed for dist in package dir -->
         <copy todir="${ODIR_PACKAGE}">
-            <fileset dir="javax.comm/Win32.V2.0" excludes="**/*.pj"/>
+            <fileset dir="javax.comm/mfz-rxtx-2.2-20081207-win-x86" includes="**/*.jar,**/*.dll"/>
+            <fileset dir="bsh" excludes="**/*.pj"/>
+            <fileset dir="com/sharkysoft" excludes="**/*.pj"/>
+        	<fileset dir="rsyntaxtextarea-2.5.6" includes="**/*.jar"/>
+        </copy>
+        <!-- Copy BeanShell script files in package dir -->
+        <mkdir dir="${ODIR_PACKAGE}\bshscripts"/>
+        <copy todir="${ODIR_PACKAGE}\bshscripts">
+            <fileset dir="${SCRIPTDIR}" includes="**/*.bsh" />
+        </copy>
+        <mkdir dir="${ODIR_PACKAGE}\ExampleScripts"/>
+        <copy todir="${ODIR_PACKAGE}\ExampleScripts">
+            <fileset dir="${SCRIPTDIR}\Examples" includes="**/*.bsh,**/*.prn" />
+        </copy>
+        <!-- Copy VETO documentation files in package dir -->
+        <copy todir="${ODIR_PACKAGE}">
+            <fileset dir="." includes="*.doc"/>
+            <fileset dir="." includes="VetoStart.bat"/>
+        </copy>
+    </target>
+
+    <target name="dist.win64" depends="compile.win64"
+            description="generate the distribution" >
+
+        <!-- Put everything in into the jar file -->
+        <jar jarfile="${ODIR_PACKAGE}/Veto.jar"
+             basedir="${ODIR_CLASSES}"
+             manifest="de/carlvalentin/ValentinConsole/manifest.mf"/>
+        <!-- Copy the rest needed for dist in package dir -->
+        <copy todir="${ODIR_PACKAGE}">
+            <fileset dir="javax.comm/mfz-rxtx-2.2-20081207-win-x64" includes="**/*.jar,**/*.dll"/>
             <fileset dir="bsh" excludes="**/*.pj"/>
             <fileset dir="com/sharkysoft" excludes="**/*.pj"/>
         	<fileset dir="rsyntaxtextarea-2.5.6" includes="**/*.jar"/>

@@ -4,7 +4,7 @@ import de.carlvalentin.Common.UI.CVErrorMessage;
 import de.carlvalentin.Common.UI.CVStatusLine;
 import de.carlvalentin.Common.CVLogging;
 import de.carlvalentin.Common.CVConfigFile;
-import javax.comm.*;
+import gnu.io.*;
 
 import java.util.Vector;
 import java.util.Enumeration;

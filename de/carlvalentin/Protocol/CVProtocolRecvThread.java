@@ -7,9 +7,9 @@ import de.carlvalentin.Common.UI.CVStatusLine;
 import de.carlvalentin.Common.CVLogging;
 
 /**
- * Klasse zum Senden von Daten gemäss der Konventionen der CVPL von einem
+ * Klasse zum Senden von Daten gem&auml;ss der Konventionen der CVPL von einem
  * Reader zu einem Writer(Javaklassen). Der genaue Ursprung des Datenstroms
- * im Reader und das Ziel des Writer sind für die Bearbeitung der Daten
+ * im Reader und das Ziel des Writer sind f&uuml;r die Bearbeitung der Daten
  * unerheblich. Die Klasse verpackt die Daten in die geforderten Start- und
  * Stopzeichen der CVPL.
  */
@@ -107,7 +107,7 @@ public class CVProtocolRecvThread extends CVProtocolThread
     public void run()
     {
     	int iC;
-        while(true)
+        while(!lk_bIsStopped)
         {
             if((this.lk_cInputReader != null)&&
                (this.lk_cVectorOutputWriter != null) ||
@@ -118,7 +118,30 @@ public class CVProtocolRecvThread extends CVProtocolThread
                     // keine Start-/Stopzeichen verarbeiten
                     try
                     {
-                        iC = this.lk_cInputReader.read();
+                        try
+                        {
+                            iC = this.lk_cInputReader.read();
+                        }
+                        catch(IOException ex)
+                        {
+                            if (!this.lk_cInputReader.ready())
+                            {
+                                continue;
+                            }
+                            
+                            if(this.lk_cErrorMessage != null)
+                            {
+                                this.lk_cErrorMessage.write(
+                                    "CVProtocolRecvThread: I/O Exception run");
+                            }
+                            if(this.lk_cErrorFile != null)
+                            {
+                                this.lk_cErrorFile.write( "CVPLRecvThread: " +
+                                        "I/O Exception run: " + ex.getMessage());
+                            }
+                            
+                            return; // Thread verlassen
+                        }
                     	for(int i=0; i<this.lk_cVectorOutputWriter.size(); i++)
                         {
                            ((Writer)this.lk_cVectorOutputWriter.get(i)).write(iC);
@@ -149,9 +172,32 @@ public class CVProtocolRecvThread extends CVProtocolThread
                         iC = 0;
                         this.lk_szCurrentLine = "";
                         // Auf Startzeichen der CVPL warten
-                        while(true)
+                        while(!lk_bIsStopped)
                         {
-                        	iC = this.lk_cInputReader.read();
+                            try
+                            {
+                                iC = this.lk_cInputReader.read();
+                            }
+                            catch(IOException ex)
+                            {
+                                if (!this.lk_cInputReader.ready())
+                                {
+                                    continue;
+                                }
+                                
+                                if(this.lk_cErrorMessage != null)
+                                {
+                                    this.lk_cErrorMessage.write(
+                                        "CVProtocolRecvThread: I/O Exception run");
+                                }
+                                if(this.lk_cErrorFile != null)
+                                {
+                                    this.lk_cErrorFile.write( "CVPLRecvThread: " +
+                                            "I/O Exception run: " + ex.getMessage());
+                                }
+                                
+                                return; // Thread verlassen
+                            }
                         	if(iC == this.lk_cSohEtb.gl_iSOH)
                         	{
                         		break;

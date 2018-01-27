@@ -5,7 +5,7 @@ import de.carlvalentin.Common.*;
 import de.carlvalentin.Interface.*;
 import de.carlvalentin.Protocol.*;
 
-import javax.comm.*;
+import gnu.io.*;
 
 import java.util.*;
 

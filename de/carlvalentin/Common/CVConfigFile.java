@@ -78,7 +78,7 @@ public class CVConfigFile
     /**
      * @param strName Name der "Cookie"-/Konfigurationsdatei
      * @param strVersion Version der Datei. Stimmt die hier &uuml;bergebene 
-     *                   Version nicht mit der in der g&ouml;öffneten Datei 
+     *                   Version nicht mit der in der g&ouml;ffneten Datei 
      *                   &uuml;berein, dann wird der Inhalt ignoriert und 
      *                   die Datei mit einer neuen &uuml;berschrieben. 
      */
