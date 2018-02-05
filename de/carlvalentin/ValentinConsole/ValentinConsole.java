@@ -166,10 +166,10 @@ public class ValentinConsole extends JFrame {
         System.setProperty("java.class.path",
                 "Veto.jar;" +
                 ".\\RXTXcomm.jar;" +
-                ".\\bsh-2.0b2.jar;" +
+                ".\\bsh-2.0b4.jar;" +
                 ".\\lava3-core.jar;" +
                 ".\\lava3-printf.jar" +
-                ".\\rsyntaxtextarea-2.5.6.jar");
+                ".\\rsyntaxtextarea-2.6.0.jar");
 
         while (i<args.length && args[i].startsWith("-"))
         {

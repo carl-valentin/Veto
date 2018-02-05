@@ -25,10 +25,10 @@
             description="compile the source" >
         <!-- Compile the java code from ${src} into ${outputdir} -->
         <javac srcdir="." destdir="${ODIR_CLASSES}"
-               classpath="bsh/bsh-2.0b2.jar;
+               classpath="bsh/bsh-2.0b4.jar;
         	              com/sharkysoft/lava3-core.jar;
                           com/sharkysoft/lava3-printf.jar;
-        	              rsyntaxtextarea-2.5.6/rsyntaxtextarea-2.5.6.jar"/>
+        	              rsyntaxtextarea-2.6.0/rsyntaxtextarea-2.6.0.jar"/>
     </target>
 
     <target name="compile.win32" depends="init"
@@ -36,10 +36,10 @@
         <!-- Compile the java code from ${src} into ${outputdir} -->
         <javac compiler="javac1.7" target="1.7" srcdir="." destdir="${ODIR_CLASSES}"
                classpath="javax.comm/mfz-rxtx-2.2-20081207-win-x86/RXTXcomm.jar;
-        	              bsh/bsh-2.0b2.jar;
+        	              bsh/bsh-2.0b4.jar;
                           com/sharkysoft/lava3-core.jar;
         	              com/sharkysoft/lava3-printf.jar;
-    	                  rsyntaxtextarea-2.5.6/rsyntaxtextarea-2.5.6.jar"/>
+    	                  rsyntaxtextarea-2.6.0/rsyntaxtextarea-2.6.0.jar"/>
     </target>
 
     <target name="compile.win64" depends="init"
@@ -47,10 +47,10 @@
         <!-- Compile the java code from ${src} into ${outputdir} -->
         <javac srcdir="." destdir="${ODIR_CLASSES}"
                classpath="javax.comm/mfz-rxtx-2.2-20081207-win-x64/RXTXcomm.jar;
-        	              bsh/bsh-2.0b2.jar;
+        	              bsh/bsh-2.0b4.jar;
                           com/sharkysoft/lava3-core.jar;
         	              com/sharkysoft/lava3-printf.jar;
-    	                  rsyntaxtextarea-2.5.6/rsyntaxtextarea-2.5.6.jar"/>
+    	                  rsyntaxtextarea-2.6.0/rsyntaxtextarea-2.6.0.jar"/>
     </target>
 
     <target name="dist" depends="compile"
@@ -64,7 +64,7 @@
         <copy todir="${ODIR_PACKAGE}">
             <fileset dir="bsh" excludes="**/*.pj"/>
             <fileset dir="com/sharkysoft" excludes="**/*.pj"/>
-        	<fileset dir="rsyntaxtextarea-2.5.6" includes="**/*.jar"/>
+        	<fileset dir="rsyntaxtextarea-2.6.0" includes="rsyntaxtextarea-2.6.0.jar"/>
         </copy>
         <!-- Copy BeanShell script files in package dir -->
         <mkdir dir="${ODIR_PACKAGE}\bshscripts"/>
@@ -89,7 +89,7 @@
             <fileset dir="javax.comm/mfz-rxtx-2.2-20081207-win-x86" includes="**/*.jar,**/*.dll"/>
             <fileset dir="bsh" excludes="**/*.pj"/>
             <fileset dir="com/sharkysoft" excludes="**/*.pj"/>
-        	<fileset dir="rsyntaxtextarea-2.5.6" includes="**/*.jar"/>
+        	<fileset dir="rsyntaxtextarea-2.6.0" includes="rsyntaxtextarea-2.6.0.jar"/>
         </copy>
         <!-- Copy BeanShell script files in package dir -->
         <mkdir dir="${ODIR_PACKAGE}\bshscripts"/>
@@ -119,7 +119,7 @@
             <fileset dir="javax.comm/mfz-rxtx-2.2-20081207-win-x64" includes="**/*.jar,**/*.dll"/>
             <fileset dir="bsh" excludes="**/*.pj"/>
             <fileset dir="com/sharkysoft" excludes="**/*.pj"/>
-        	<fileset dir="rsyntaxtextarea-2.5.6" includes="**/*.jar"/>
+        	<fileset dir="rsyntaxtextarea-2.6.0" includes="rsyntaxtextarea-2.6.0.jar"/>
         </copy>
         <!-- Copy BeanShell script files in package dir -->
         <mkdir dir="${ODIR_PACKAGE}\bshscripts"/>
