@@ -39,6 +39,16 @@ boolean bY7 = false;
 boolean bY8 = false;
 boolean bY9 = false;
 
+JCheckBox checkY1Show;
+JCheckBox checkY2Show;
+JCheckBox checkY3Show;
+JCheckBox checkY4Show;
+JCheckBox checkY5Show;
+JCheckBox checkY6Show;
+JCheckBox checkY7Show;
+JCheckBox checkY8Show;
+JCheckBox checkY9Show;
+
 XYSeries seriesY1;
 XYSeries seriesY2;
 XYSeries seriesY3;
@@ -53,6 +63,7 @@ JPanel sMainPanel;
 JMenuBar menuBar;
 JMenu menuFile;
 JMenuItem menuItemSave;
+JMenuItem menuItemOption;
 
 File fileOut;
 File dirOut;
@@ -69,6 +80,28 @@ ActionListener alSave = new ActionListener() {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             FileUtils.copyDirectory(dirOut, fc.getSelectedFile());
         }        
+    }
+};
+
+ActionListener alOption = new ActionListener() {
+    public void actionPerformed( ActionEvent e ) {       
+        JDialog dialog = new JDialog(sFrameChart);
+        JPanel panel = new JPanel(new GridLayout(0, 1));
+        dialog.add(panel);
+        
+        if (bY1) {panel.add(checkY1Show);}
+        if (bY2) {panel.add(checkY2Show);}
+        if (bY3) {panel.add(checkY3Show);}
+        if (bY4) {panel.add(checkY4Show);}
+        if (bY5) {panel.add(checkY5Show);}
+        if (bY6) {panel.add(checkY6Show);}
+        if (bY7) {panel.add(checkY7Show);}
+        if (bY8) {panel.add(checkY8Show);}
+        if (bY9) {panel.add(checkY9Show);}
+        
+        dialog.pack();
+        dialog.setModal(true);
+        dialog.setVisible(true);
     }
 };
 
@@ -175,6 +208,16 @@ if (msg.length() > 0) {
 
 XYSeriesCollection dataset = new XYSeriesCollection();
 
+JCheckBox checkY1Show = new JCheckBox(sY1Name, bY1);
+JCheckBox checkY2Show = new JCheckBox(sY2Name, bY2);
+JCheckBox checkY3Show = new JCheckBox(sY3Name, bY3);
+JCheckBox checkY4Show = new JCheckBox(sY4Name, bY4);
+JCheckBox checkY5Show = new JCheckBox(sY5Name, bY5);
+JCheckBox checkY6Show = new JCheckBox(sY6Name, bY6);
+JCheckBox checkY7Show = new JCheckBox(sY7Name, bY7);
+JCheckBox checkY8Show = new JCheckBox(sY8Name, bY8);
+JCheckBox checkY9Show = new JCheckBox(sY9Name, bY9);
+
 if (bY1) dataset.addSeries(seriesY1);
 if (bY2) dataset.addSeries(seriesY2);
 if (bY3) dataset.addSeries(seriesY3);
@@ -221,6 +264,10 @@ menuItemSave.addActionListener(alSave);
 menuFile.add(menuItemSave);
 menuBar.add(menuFile);
 sFrameChart.setJMenuBar(menuBar);
+
+menuItemOption = new JMenuItem("Option");
+menuItemOption.addActionListener(alOption);
+menuFile.add(menuItemOption);
 
 sFrameChart.add(chartPanel);
 sFrameChart.pack();
@@ -333,15 +380,15 @@ do {
                 
                 if (tokens[i].compareTo("End") == 0) {   
                     dataset.removeAllSeries();           	
-                    if (bY1) dataset.addSeries(seriesY1);
-                    if (bY2) dataset.addSeries(seriesY2);
-                    if (bY3) dataset.addSeries(seriesY3);
-                    if (bY4) dataset.addSeries(seriesY4);
-                    if (bY5) dataset.addSeries(seriesY5);
-                    if (bY6) dataset.addSeries(seriesY6);
-                    if (bY7) dataset.addSeries(seriesY7);
-                    if (bY8) dataset.addSeries(seriesY8);
-                    if (bY9) dataset.addSeries(seriesY9);
+                    if (checkY1Show.isSelected()) dataset.addSeries(seriesY1);
+                    if (checkY2Show.isSelected()) dataset.addSeries(seriesY2);
+                    if (checkY3Show.isSelected()) dataset.addSeries(seriesY3);
+                    if (checkY4Show.isSelected()) dataset.addSeries(seriesY4);
+                    if (checkY5Show.isSelected()) dataset.addSeries(seriesY5);
+                    if (checkY6Show.isSelected()) dataset.addSeries(seriesY6);
+                    if (checkY7Show.isSelected()) dataset.addSeries(seriesY7);
+                    if (checkY8Show.isSelected()) dataset.addSeries(seriesY8);
+                    if (checkY9Show.isSelected()) dataset.addSeries(seriesY9);
 
                     close(fileOut);
                     bFileOutIsOpen = false;
