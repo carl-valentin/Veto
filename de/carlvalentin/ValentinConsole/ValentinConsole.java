@@ -158,6 +158,7 @@ public class ValentinConsole extends JFrame {
         String sArg;
         String sScript = null;
         String sIP = null;
+        boolean bRunScript = false;
         int iPort = 0;
 
         //----------------------------------------------------------------------
@@ -180,6 +181,7 @@ public class ValentinConsole extends JFrame {
                 System.out.println("-sSERVER:    Device IP-Address");
                 System.out.println("-pPORT:      Printer Port-Number");
                 System.out.println("-aSCRIPT");
+                System.out.println("-lSCRIPT");
                 System.exit(0);
             }
 
@@ -196,17 +198,23 @@ public class ValentinConsole extends JFrame {
             if (sArg.startsWith("-a"))
             {
                 sScript = sArg.substring(2);
+                bRunScript = true;
+            }
+
+            if (sArg.startsWith("-l"))
+            {
+                sScript = sArg.substring(2);
             }
         }
 
-        ValentinConsole rc = new ValentinConsole(sIP, iPort, sScript);
+        ValentinConsole rc = new ValentinConsole(sIP, iPort, sScript, bRunScript);
         rc.show();
     }
 
     /**
      * Konstruktor der Klasse ValentinConsole
      */
-    public ValentinConsole(String sIP, int iPort, String sScript)
+    public ValentinConsole(String sIP, int iPort, String sScript, boolean bRunScript)
     {
         super();
 
@@ -218,7 +226,7 @@ public class ValentinConsole extends JFrame {
         if (sScript != null)
         {
             lk_cErrorMessage.setShowWindow(false, true);
-            jTabbedPaneMain.setSelectedIndex(1);
+            jTabbedPaneMain.setSelectedIndex(2);
             lk_cBeanShellScriptingUI.loadScript(sScript);
         }
 
@@ -247,7 +255,7 @@ public class ValentinConsole extends JFrame {
             bConnect = true;
         }
 
-        if (sScript != null)
+        if ( (sScript != null) && bRunScript )
         {
             lk_cBeanShellScriptingUI.processButtonRunScript(true);
         }
