@@ -57,7 +57,7 @@
             description="compile the source Linux64-specific" >
         <!-- Compile the java code from ${src} into ${outputdir} -->
         <javac srcdir="." destdir="${ODIR_CLASSES}"
-               classpath="javax.comm/mfz-rxtx-2.2-20081207-linux-x86_64/RXTXcomm.jar;
+               classpath="javax.comm/rxtx-2.2pre2-bins/RXTXcomm.jar;
         	              bsh/bsh-2.0b4.jar;
                           com/sharkysoft/lava3-core.jar;
         	              com/sharkysoft/lava3-printf.jar;
@@ -157,7 +157,8 @@
              manifest="de/carlvalentin/ValentinConsole/manifest.mf"/>
         <!-- Copy the rest needed for dist in package dir -->
         <copy todir="${ODIR_PACKAGE}">
-            <fileset dir="javax.comm/mfz-rxtx-2.2-20081207-linux-x86_64" includes="**/*.jar,**/*.so"/>
+            <fileset dir="javax.comm/rxtx-2.2pre2-bins" includes="**/*.jar"/>
+        	<fileset dir="javax.comm/rxtx-2.2pre2-bins/x86_64-unknown-linux-gnu" includes="**/*.so"/>
             <fileset dir="bsh" excludes="**/*.pj"/>
             <fileset dir="com/sharkysoft" excludes="**/*.pj"/>
         	<fileset dir="rsyntaxtextarea-2.6.0" includes="rsyntaxtextarea-2.6.0.jar"/>

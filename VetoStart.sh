@@ -1,3 +1,3 @@
 #!/bin/sh
 
-java -Djava.library.path=. -jar Veto.jar
+sudo java -Djava.library.path=. -jar Veto.jar
