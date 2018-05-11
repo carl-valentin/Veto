@@ -1,6 +1,5 @@
 addClassPath(ScriptPath + "jfreechart-1.0.19.jar");
 addClassPath(ScriptPath + "jcommon-1.0.23.jar"); 
-addClassPath(ScriptPath + "commons-io-2.6.jar"); 
 
 import javax.swing.JFrame;
 import org.jfree.chart.*;
@@ -9,12 +8,11 @@ import org.jfree.data.xy.*;
 import org.jfree.chart.renderer.xy.*;
 import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.title.*;
-import org.apache.commons.io.FileUtils;
+
+int i;
 
 // String sSaveFolder = "D:\\BTisler\\temp\\PrintProfile\\";
 String sSaveFolder = System.getProperty("java.io.tmpdir",".") + "\\PrintProfile\\";
-
-int i;
 
 String sChartName;
 String sXNameAndUnit;
@@ -48,72 +46,49 @@ XYSeries seriesY7;
 XYSeries seriesY8;
 XYSeries seriesY9;
 
-JFrame sFrameChart;
-JPanel sMainPanel;
-JMenuBar menuBar;
-JMenu menuFile;
-JMenuItem menuItemSave;
+Button sPrevButton;
+Button sNextButton;
 
 File fileOut;
-File dirOut;
 int iFileNum = 0;
 boolean bFileOutIsOpen = false;
 String s;
 
-ActionListener alSave = new ActionListener() {
+ActionListener alPrev = new ActionListener() {
     public void actionPerformed( ActionEvent e ) {
-        JFileChooser fc = new JFileChooser();
-        // fc.setCurrentDirectory(new java.io.File("."));
-        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        int returnVal = fc.showSaveDialog(sFrameChart);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            FileUtils.copyDirectory(dirOut, fc.getSelectedFile());
-        }        
+    	   if (iFileNum > 1) {    	   
+            iFileNum--;
+            printf("File: " + iFileNum + "\n");
+    	   }
     }
 };
 
-dirOut = new File(sSaveFolder);
-FileUtils.forceMkdir(dirOut);
-FileUtils.cleanDirectory(dirOut); 
+ActionListener alNext = new ActionListener() {
+    public void actionPerformed( ActionEvent e ) {
+        iFileNum++;
+        printf("File: " + iFileNum + "\n");
+    }
+};
 
-msg = sprintf("FHA---r0");
-printf("<-- " + msg + "\n");
-write(msg);
+JFrame sFrameChart = new JFrame();
 
-msg = read(500);
-printf("<-- " + msg + "\n");
+JFileChooser fc = new JFileChooser();
+// fc.setCurrentDirectory(new java.io.File("."));
+fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+int returnVal = fc.showSaveDialog(sFrameChart);
+if (returnVal == JFileChooser.APPROVE_OPTION) {
+    sSaveFolder = fc.getSelectedFile().getAbsolutePath() + "\\";
+} 
 
-while (msg.length() > 0)
-{
-    msg = read(1);
-    printf("<-- " + msg + "\n");
-}
+fileOut = openFile(sSaveFolder + iFileNum + ".txt");
 
-msg = "FHA---r2";
-printf("<-- " + msg + "\n");
-write(msg);
-
-msg = read();
-printf(msg + "\n");
-
-msg = sprintf("FHM---rXPrtProfile");
-printf("<-- " + msg + "\n");
-write(msg);
-
-msg = read();
+msg = read(fileOut);
 printf("1: " + msg + "\n");
 if (msg.length() > 0) {
     String[] tokens = msg.split("[\\-\\:]");
 
     if (tokens[0].compareTo("HSXYChart;Name") == 0) {
-
-        fileOut = openFile(sSaveFolder + iFileNum + ".txt");
-        fileOut.delete();
-        s =  msg + "\n";
-        write(fileOut, s.getBytes());
-        close(fileOut);
-        iFileNum++;
-    	
+   	
         for (i=1; i<tokens.length; i++) {
             if (tokens[i].compareTo("ChartName") == 0) {
                 sChartName = new String(tokens[i+1]);
@@ -173,6 +148,9 @@ if (msg.length() > 0) {
     }
 }
 
+close(fileOut);
+iFileNum++;
+
 XYSeriesCollection dataset = new XYSeriesCollection();
 
 if (bY1) dataset.addSeries(seriesY1);
@@ -209,31 +187,51 @@ renderer.setSeriesPaint( 6 , Color.RED );
 renderer.setSeriesPaint( 7 , Color.BLUE );
 plot.setRenderer( renderer ); 
 
-sFrameChart = new JFrame();
-sMainPanel = new JPanel();
+JPanel sMainPanel = new JPanel();
+JPanel sButtonPanel = new JPanel();
 sMainPanel.setLayout(new BorderLayout());
 sMainPanel.add(chartPanel, BorderLayout.CENTER);
-
-menuBar = new JMenuBar();
-menuFile = new JMenu("File");
-menuItemSave = new JMenuItem("Save");
-menuItemSave.addActionListener(alSave);
-menuFile.add(menuItemSave);
-menuBar.add(menuFile);
-sFrameChart.setJMenuBar(menuBar);
-
-sFrameChart.add(chartPanel);
+sPrevButton = new Button("Prev");
+sPrevButton.addActionListener(alPrev);
+sNextButton = new Button("Next");
+sNextButton.addActionListener(alNext);
+sButtonPanel.add(sPrevButton);
+sButtonPanel.add(sNextButton);
+sMainPanel.add(sButtonPanel, BorderLayout.SOUTH);
+sFrameChart.add(sMainPanel);
 sFrameChart.pack();
 sFrameChart.setVisible(true);
 
+Scanner scanner;
 int x = 0;
+int iFileNumOld = 0;
 
 do {
-    msg = read();
-    printf("2: " + msg + "\n");
-    if (bFileOutIsOpen) {
-        String s =  msg + "\n";
-        write(fileOut, s.getBytes());
+
+if (iFileNumOld != iFileNum) {
+    fileOut = new File(sSaveFolder + iFileNum + ".txt");
+    if (!fileOut.exists()) {
+        iFileNum--;
+    }
+    else {    
+	    s = read(fileOut);
+	    scanner = new Scanner(s);
+	    iFileNumOld = iFileNum;
+    }
+}
+else {
+	sleep(100);
+}
+
+do {
+    if (scanner.hasNextLine())
+    {
+        msg = scanner.nextLine();
+        printf("2: " + msg + "\n");
+    }
+    else
+    {
+        msg = "";
     }
     
     if (msg.length() > 0) {
@@ -263,12 +261,6 @@ do {
                     if (bY9) seriesY9 = new XYSeries(sY9Name);
 
                     x = 0;
-
-                    fileOut = openFile(sSaveFolder + iFileNum + ".txt");
-                    fileOut.delete();
-                    s =  msg + "\n";
-                    write(fileOut, s.getBytes());
-                    bFileOutIsOpen = true;
                 }
 
                 if (tokens[i].compareTo("RecName") == 0) {
@@ -342,10 +334,6 @@ do {
                     if (bY7) dataset.addSeries(seriesY7);
                     if (bY8) dataset.addSeries(seriesY8);
                     if (bY9) dataset.addSeries(seriesY9);
-
-                    close(fileOut);
-                    bFileOutIsOpen = false;
-                    iFileNum++;
                 }
             
             }
@@ -353,17 +341,6 @@ do {
         }
 
     }
+} while(scanner.hasNextLine());
+
 } while(sFrameChart.isShowing());
-
-msg = sprintf("FHA---r0");
-printf("<-- " + msg + "\n");
-write(msg);
-
-msg = read(200);
-printf("<-- " + msg + "\n");
-
-while (msg.compareTo("HSTerminated") != 0)
-{
-    msg = read(200);
-    printf("<-- " + msg + "\n");
-}
