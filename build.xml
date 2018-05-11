@@ -53,6 +53,17 @@
     	                  rsyntaxtextarea-2.6.0/rsyntaxtextarea-2.6.0.jar"/>
     </target>
 
+    <target name="compile.linux64" depends="init"
+            description="compile the source Linux64-specific" >
+        <!-- Compile the java code from ${src} into ${outputdir} -->
+        <javac srcdir="." destdir="${ODIR_CLASSES}"
+               classpath="javax.comm/mfz-rxtx-2.2-20081207-linux-x86_64/RXTXcomm.jar;
+        	              bsh/bsh-2.0b4.jar;
+                          com/sharkysoft/lava3-core.jar;
+        	              com/sharkysoft/lava3-printf.jar;
+    	                  rsyntaxtextarea-2.6.0/rsyntaxtextarea-2.6.0.jar"/>
+    </target>
+
     <target name="dist" depends="compile"
             description="generate the distribution" >
 
@@ -134,6 +145,36 @@
         <copy todir="${ODIR_PACKAGE}">
             <fileset dir="." includes="*.doc"/>
             <fileset dir="." includes="VetoStart.bat"/>
+        </copy>
+    </target>
+
+    <target name="dist.linux64" depends="compile.linux64"
+            description="generate the distribution" >
+
+        <!-- Put everything in into the jar file -->
+        <jar jarfile="${ODIR_PACKAGE}/Veto.jar"
+             basedir="${ODIR_CLASSES}"
+             manifest="de/carlvalentin/ValentinConsole/manifest.mf"/>
+        <!-- Copy the rest needed for dist in package dir -->
+        <copy todir="${ODIR_PACKAGE}">
+            <fileset dir="javax.comm/mfz-rxtx-2.2-20081207-linux-x86_64" includes="**/*.jar,**/*.so"/>
+            <fileset dir="bsh" excludes="**/*.pj"/>
+            <fileset dir="com/sharkysoft" excludes="**/*.pj"/>
+        	<fileset dir="rsyntaxtextarea-2.6.0" includes="rsyntaxtextarea-2.6.0.jar"/>
+        </copy>
+        <!-- Copy BeanShell script files in package dir -->
+        <mkdir dir="${ODIR_PACKAGE}\bshscripts"/>
+        <copy todir="${ODIR_PACKAGE}\bshscripts">
+            <fileset dir="${SCRIPTDIR}" includes="**/*.bsh" />
+        </copy>
+        <mkdir dir="${ODIR_PACKAGE}\ExampleScripts"/>
+        <copy todir="${ODIR_PACKAGE}\ExampleScripts">
+            <fileset dir="${SCRIPTDIR}\Examples" includes="**/*.bsh,**/*.prn" />
+        </copy>
+        <!-- Copy VETO documentation files in package dir -->
+        <copy todir="${ODIR_PACKAGE}">
+            <fileset dir="." includes="*.doc"/>
+        	<fileset dir="." includes="VetoStart.sh"/>
         </copy>
     </target>
 
