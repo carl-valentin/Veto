@@ -159,7 +159,7 @@ public class Console {
         boolean bBinary = false;
         int     iNumState = 0;
         int     iNum;
-        StringBuffer strBuf = new StringBuffer(2);;
+        StringBuffer strBuf = new StringBuffer(2);
 
         for (i=offset; i<offset+size; i++) {
             if (bBackslash) {
@@ -187,6 +187,7 @@ public class Console {
                     }
                     else if (cbuf[i] == 'x') {
                         iNumState = 1;
+                        strBuf = new StringBuffer(2);
                     }
                     else if (cbuf[i] == 'b') {
                         bBinary = true;
