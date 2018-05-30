@@ -8,11 +8,13 @@ import de.carlvalentin.ValentinConsole.ValentinConsole;
 
 import java.awt.*;
 import java.io.*;
+import java.awt.event.*;
 
 import javax.swing.*;
 import javax.swing.event.*;
 
-import org.fife.ui.rtextarea.RTextScrollPane;
+import org.fife.ui.rtextarea.*;
+import org.fife.ui.rsyntaxtextarea.*;
 
 /**
  * Grafische Oberfl&auml;che zur Steuerung der Skriptumgebung BeanShell.
@@ -102,6 +104,11 @@ public class CVUIBeanShell extends JPanel
     private JButton jButtonRunScript            = null;
     private JButton jButtonStopScript           = null;
     private JButton jButtonStepScript           = null;
+    private JButton jButtonFind                 = null;
+    private JTextField searchField              = null;
+    private JCheckBox regexCB                   = null;
+    private JCheckBox matchCaseCB               = null;
+    private ActionListener alFind               = null;
 
     private boolean lk_bStdOutPrintf = false;
 
@@ -387,6 +394,40 @@ public class CVUIBeanShell extends JPanel
         return;
     }
 
+    private void processButtonFind()
+    {
+        JDialog dialog = new JDialog(lk_valentinConsole);
+        JPanel panel = new JPanel(new GridLayout(0, 1));
+        dialog.add(panel);
+
+        searchField = new JTextField(30);
+        panel.add(searchField);
+
+        JButton nextButton = new JButton("Find Next");
+        nextButton.setActionCommand("FindNext");
+        nextButton.addActionListener(alFind);
+        panel.add(nextButton);
+        searchField.addActionListener(new ActionListener() {
+           public void actionPerformed(ActionEvent e) {
+              nextButton.doClick(0);
+           }
+        });
+        JButton prevButton = new JButton("Find Previous");
+        prevButton.setActionCommand("FindPrev");
+        prevButton.addActionListener(alFind);
+        panel.add(prevButton);
+        regexCB = new JCheckBox("Regex");
+        panel.add(regexCB);
+        matchCaseCB = new JCheckBox("Match Case");
+        panel.add(matchCaseCB);
+
+        dialog.pack();
+        dialog.setModal(false);
+        dialog.setVisible(true);
+
+        return;
+    }
+
     /**
      * Abfrage zur Klasse gehoerender Skriptinterpreter
      *
@@ -511,6 +552,33 @@ public class CVUIBeanShell extends JPanel
             jPanelScriptButtonBarBottom.add(getJButtonStepScript(), null);
             jPanelScriptButtonBarBottom.add(
                     getJCheckBoxShowErrorMessages(), null);
+            jPanelScriptButtonBarBottom.add(getJButtonFind(), null);
+
+            alFind = new ActionListener() {
+                public void actionPerformed( ActionEvent e ) {
+                    // "FindNext" => search forward, "FindPrev" => search backward
+                    String command = e.getActionCommand();
+                    boolean forward = "FindNext".equals(command);
+
+                    // Create an object defining our search parameters.
+                    SearchContext context = new SearchContext();
+                    String text = searchField.getText();
+                    if (text.length() == 0) {
+                       return;
+                    }
+                    context.setSearchFor(text);
+                    context.setMatchCase(matchCaseCB.isSelected());
+                    context.setRegularExpression(regexCB.isSelected());
+                    context.setSearchForward(forward);
+                    context.setWholeWord(false);
+
+                    boolean found = SearchEngine.find(lk_cBeanShellEditor, context).wasFound();
+                    if (!found) {
+                       JOptionPane.showMessageDialog(lk_valentinConsole, "Text not found");
+                    }
+                }
+            };
+
         }
         return jPanelScriptButtonBarBottom;
     }
@@ -656,6 +724,24 @@ public class CVUIBeanShell extends JPanel
         }
         return jButtonStepScript;
     }
+
+    private JButton getJButtonFind() {
+        if (jButtonFind == null) {
+            jButtonFind = new JButton();
+            jButtonFind.setText("Find");
+            jButtonFind.setEnabled(true);
+            jButtonFind.addActionListener(
+                    new java.awt.event.ActionListener()
+            {
+                public void actionPerformed(java.awt.event.ActionEvent e)
+                {
+                    processButtonFind();
+                }
+            });
+        }
+        return jButtonFind;
+    }
+
     class documentListenerJTA implements DocumentListener {
         public void changedUpdate(DocumentEvent e) {}
         public void insertUpdate(DocumentEvent e) {}
