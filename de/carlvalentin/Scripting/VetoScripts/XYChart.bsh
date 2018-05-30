@@ -16,6 +16,10 @@ String sSaveFolder = System.getProperty("java.io.tmpdir",".") + "\\PrintProfile\
 
 int i;
 
+String sCfgChartName  = "PrtProfile";
+String sCfgResolution = "2";
+String sCfgFieldName  = "1";
+
 String sChartName;
 String sXNameAndUnit;
 String sYUnit;
@@ -38,6 +42,10 @@ boolean bY6 = false;
 boolean bY7 = false;
 boolean bY8 = false;
 boolean bY9 = false;
+
+JTextField textCfgChartName; 
+JTextField textCfgResolution;
+JTextField textCfgFieldName;
 
 JCheckBox checkY1Show;
 JCheckBox checkY2Show;
@@ -63,6 +71,7 @@ JPanel sMainPanel;
 JMenuBar menuBar;
 JMenu menuFile;
 JMenuItem menuItemSave;
+JMenuItem menuItemFilter;
 JMenuItem menuItemOption;
 
 File fileOut;
@@ -83,7 +92,7 @@ ActionListener alSave = new ActionListener() {
     }
 };
 
-ActionListener alOption = new ActionListener() {
+ActionListener alFilter = new ActionListener() {
     public void actionPerformed( ActionEvent e ) {       
         JDialog dialog = new JDialog(sFrameChart);
         JPanel panel = new JPanel(new GridLayout(0, 1));
@@ -105,11 +114,92 @@ ActionListener alOption = new ActionListener() {
     }
 };
 
+ActionListener alSaveOption = new ActionListener() {
+    public void actionPerformed( ActionEvent e ) {     
+        fileCfg = openFile(System.getProperty("java.io.tmpdir",".") + "\\XYChart.cfg");
+        fileCfg.delete();
+        
+        s = textCfgChartName.getText() + "\n";
+        write(fileCfg, s.getBytes());
+        s = textCfgResolution.getText() + "\n";
+        write(fileCfg, s.getBytes());
+        s = textCfgFieldName.getText() + "\n";
+        write(fileCfg, s.getBytes());
+        
+        close(fileCfg);
+        write("FHXAA-r" + textCfgResolution.getText());
+        write("FHXBA-r" + textCfgFieldName.getText());
+    }
+};
+ 
+ActionListener alOption = new ActionListener() {
+    public void actionPerformed( ActionEvent e ) {       
+        JDialog dialog = new JDialog(sFrameChart);
+        JPanel panel = new JPanel(new GridLayout(0, 1));
+        dialog.add(panel);
+        
+        panel.add(textCfgChartName);
+        
+        JLabel labelCfgRes = new JLabel("Resolution:");
+        panel.add(labelCfgRes);
+        panel.add(textCfgResolution);
+
+        JLabel labelCfgFieldName = new JLabel("FieldName:");
+        panel.add(labelCfgFieldName);
+        panel.add(textCfgFieldName);
+        
+        JButton button = new JButton("OK");
+        button.addActionListener(alSaveOption);
+        panel.add(button);
+        
+        dialog.pack();
+        dialog.setModal(true);
+        dialog.setVisible(true);
+    }
+};
+
+String sFileCfg = System.getProperty("java.io.tmpdir",".") + "\\XYChart.cfg";
+fileCfg = openFile(sFileCfg);
+if (fileCfg.exists()) {
+    msgCfg = read(fileCfg);
+    Scanner scanner = new Scanner(msgCfg);
+    if (scanner.hasNextLine())
+    {
+        msg = scanner.nextLine();    
+        printf(msg + "\n");
+        if (msg.length() > 0) {
+            sCfgChartName = msg;
+        }
+    }
+    if (scanner.hasNextLine())
+    {
+        msg = scanner.nextLine();    
+        printf(msg + "\n");
+        if (msg.length() > 0) {
+            sCfgResolution = msg;
+        }
+    }
+    if (scanner.hasNextLine())
+    {
+        msg = scanner.nextLine();    
+        printf(msg + "\n");
+        if (msg.length() > 0) {
+            sCfgFieldName = msg;
+        }
+    }
+} 
+close(fileCfg);
+
+textCfgChartName = new JTextField(sCfgChartName);
+textCfgChartName.setToolTipText("i.e. 'PrtProfile' or 'Test' or 'PrtProfile;ms'");
+textCfgResolution = new JTextField(sCfgResolution);
+textCfgFieldName = new JTextField(sCfgFieldName);
+
 dirOut = new File(sSaveFolder);
 FileUtils.forceMkdir(dirOut);
 FileUtils.cleanDirectory(dirOut); 
 
-msg = sprintf("FHA---r0");
+msg = sprintf("FHBX--rX");
 printf("<-- " + msg + "\n");
 write(msg);
 
@@ -122,16 +212,21 @@ while (msg.length() > 0)
     printf("<-- " + msg + "\n");
 }
 
-msg = "FHA---r2";
+// msg = "FHA---r2";
+// printf("<-- " + msg + "\n");
+// write(msg);
+
+// msg = read();
+// printf(msg + "\n");
+
+msg = sprintf("FHBA--rX" + textCfgChartName.getText());
 printf("<-- " + msg + "\n");
 write(msg);
 
 msg = read();
 printf(msg + "\n");
 
-msg = sprintf("FHM---rXPrtProfile");
-printf("<-- " + msg + "\n");
-write(msg);
+write("FHXAA-r" + textCfgResolution.getText());
 
 msg = read();
 printf("1: " + msg + "\n");
@@ -265,6 +360,10 @@ menuFile.add(menuItemSave);
 menuBar.add(menuFile);
 sFrameChart.setJMenuBar(menuBar);
 
+menuItemFilter = new JMenuItem("Filter");
+menuItemFilter.addActionListener(alFilter);
+menuFile.add(menuItemFilter);
+
 menuItemOption = new JMenuItem("Option");
 menuItemOption.addActionListener(alOption);
 menuFile.add(menuItemOption);
@@ -372,10 +471,58 @@ do {
                     seriesY9.add(x, y9);
                 }
 
+                if (tokens[i].compareTo("Y1Text") == 0) {
+                	tok = tokens[i+1];
+                    XYTextAnnotation textXY = new XYTextAnnotation(tok, x, y1+20);
+                    plot.addAnnotation(textXY);                    
+                }
+
+                if (tokens[i].compareTo("Y2Text") == 0) {
+                	tok = tokens[i+1];
+                    XYTextAnnotation textXY = new XYTextAnnotation(tok, x, y2+20);
+                    plot.addAnnotation(textXY);                    
+                }
+
+                if (tokens[i].compareTo("Y3Text") == 0) {
+                	tok = tokens[i+1];
+                    XYTextAnnotation textXY = new XYTextAnnotation(tok, x, y3+20);
+                    plot.addAnnotation(textXY);                    
+                }
+
+                if (tokens[i].compareTo("Y4Text") == 0) {
+                	tok = tokens[i+1];
+                    XYTextAnnotation textXY = new XYTextAnnotation(tok, x, y4+20);
+                    plot.addAnnotation(textXY);                    
+                }
+
+                if (tokens[i].compareTo("Y5Text") == 0) {
+                	tok = tokens[i+1];
+                    XYTextAnnotation textXY = new XYTextAnnotation(tok, x, y5+20);
+                    plot.addAnnotation(textXY);
+                }
+
+                if (tokens[i].compareTo("Y6Text") == 0) {
+                	tok = tokens[i+1];
+                    XYTextAnnotation textXY = new XYTextAnnotation(tok, x, y6+20);
+                    plot.addAnnotation(textXY);
+                }
+
+                if (tokens[i].compareTo("Y7Text") == 0) {
+                	tok = tokens[i+1];
+                    XYTextAnnotation textXY = new XYTextAnnotation(tok, x, y7+20);
+                    plot.addAnnotation(textXY);
+                }
+
                 if (tokens[i].compareTo("Y8Text") == 0) {
                 	tok = tokens[i+1];
                     XYTextAnnotation textXY = new XYTextAnnotation(tok, x, y8+20);
                     plot.addAnnotation(textXY);                    
+                }
+
+                if (tokens[i].compareTo("Y9Text") == 0) {
+                	tok = tokens[i+1];
+                    XYTextAnnotation textXY = new XYTextAnnotation(tok, x, y9+20);
+                    plot.addAnnotation(textXY);
                 }
                 
                 if (tokens[i].compareTo("End") == 0) {   
@@ -402,7 +549,7 @@ do {
     }
 } while(sFrameChart.isShowing());
 
-msg = sprintf("FHA---r0");
+msg = sprintf("FHBX--rX");
 printf("<-- " + msg + "\n");
 write(msg);
 

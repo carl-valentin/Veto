@@ -11,7 +11,7 @@ import org.jfree.chart.title.*;
 
 int i;
 
-// String sSaveFolder = "D:\\BTisler\\temp\\PrintProfile\\";
+//String sSaveFolder = "D:\\BTisler\\temp\\PrintProfile\\";
 String sSaveFolder = System.getProperty("java.io.tmpdir",".") + "\\PrintProfile\\";
 
 String sChartName;
@@ -70,10 +70,12 @@ File fileOut;
 int iFileNum = 0;
 boolean bFileOutIsOpen = false;
 String s;
+int x = 0;
+int iFileNumOld = 0;
 
 ActionListener alPrev = new ActionListener() {
     public void actionPerformed( ActionEvent e ) {
-    	   if (iFileNum > 1) {    	   
+    	   if (iFileNum > 0) {    	   
             iFileNum--;
             printf("File: " + iFileNum + "\n");
     	   }
@@ -122,12 +124,25 @@ if (returnVal == JFileChooser.APPROVE_OPTION) {
 fileOut = openFile(sSaveFolder + iFileNum + ".txt");
 
 msg = read(fileOut);
-printf("1: " + msg + "\n");
-if (msg.length() > 0) {
+if (msg.length() > 0) {    
+    scanner = new Scanner(msg);
+}
+
+bLegalDataAvailable = false;
+if (scanner.hasNextLine())
+{
+    bLegalDataAvailable = true;
+    msg = scanner.nextLine();
+    msg = msg.replaceAll(cConnectionManager.getSohEtb().gl_strSOH, "");
+    msg = msg.replaceAll(cConnectionManager.getSohEtb().gl_strETB, "");
+    printf("1: " + msg + "\n");
+}
+
+while (bLegalDataAvailable) {
     String[] tokens = msg.split("[\\-\\:]");
 
     if (tokens[0].compareTo("HSXYChart;Name") == 0) {
-   	
+   	   bLegalDataAvailable = false;
         for (i=1; i<tokens.length; i++) {
             if (tokens[i].compareTo("ChartName") == 0) {
                 sChartName = new String(tokens[i+1]);
@@ -185,10 +200,42 @@ if (msg.length() > 0) {
             }
         }
     }
+    else if (tokens[0].compareTo("HSActivated") == 0) {
+    	   bLegalDataAvailable = false;
+        if (scanner.hasNextLine())
+        {
+            bLegalDataAvailable = true;
+            msg = scanner.nextLine();
+            msg = msg.replaceAll(cConnectionManager.getSohEtb().gl_strSOH, "");
+            msg = msg.replaceAll(cConnectionManager.getSohEtb().gl_strETB, "");
+            printf("1: " + msg + "\n");
+        }
+    }
+    else {
+        bLegalDataAvailable = false;
+    }
+}
+
+if (scanner.hasNextLine())
+{
+    msg = scanner.nextLine();
+    msg = msg.replaceAll(cConnectionManager.getSohEtb().gl_strSOH, "");
+    msg = msg.replaceAll(cConnectionManager.getSohEtb().gl_strETB, "");
+    printf("1: " + msg + "\n");
+    String[] tokens = msg.split("[\\-\\:]");
+    if (tokens[0].compareTo("HSXYChart;Begin") == 0) {
+        bLegalDataAvailable = true;
+    }
 }
 
 close(fileOut);
-iFileNum++;
+
+if (bLegalDataAvailable) {
+	iFileNumOld=iFileNum-1;
+}
+else {
+	iFileNum++;	
+}
 
 XYSeriesCollection dataset = new XYSeriesCollection();
 
@@ -263,8 +310,6 @@ sFrameChart.pack();
 sFrameChart.setVisible(true);
 
 Scanner scanner;
-int x = 0;
-int iFileNumOld = 0;
 
 do {
 
@@ -287,6 +332,8 @@ do {
     if (scanner.hasNextLine())
     {
         msg = scanner.nextLine();
+        msg = msg.replaceAll(cConnectionManager.getSohEtb().gl_strSOH, "");
+        msg = msg.replaceAll(cConnectionManager.getSohEtb().gl_strETB, "");
         printf("2: " + msg + "\n");
     }
     else
@@ -377,10 +424,58 @@ do {
                     seriesY9.add(x, y9);
                 }
 
+                if (tokens[i].compareTo("Y1Text") == 0) {
+                	tok = tokens[i+1];
+                    XYTextAnnotation textXY = new XYTextAnnotation(tok, x, y1+20);
+                    plot.addAnnotation(textXY);                    
+                }
+
+                if (tokens[i].compareTo("Y2Text") == 0) {
+                	tok = tokens[i+1];
+                    XYTextAnnotation textXY = new XYTextAnnotation(tok, x, y2+20);
+                    plot.addAnnotation(textXY);                    
+                }
+
+                if (tokens[i].compareTo("Y3Text") == 0) {
+                	tok = tokens[i+1];
+                    XYTextAnnotation textXY = new XYTextAnnotation(tok, x, y3+20);
+                    plot.addAnnotation(textXY);                    
+                }
+
+                if (tokens[i].compareTo("Y4Text") == 0) {
+                	tok = tokens[i+1];
+                    XYTextAnnotation textXY = new XYTextAnnotation(tok, x, y4+20);
+                    plot.addAnnotation(textXY);                    
+                }
+
+                if (tokens[i].compareTo("Y5Text") == 0) {
+                	tok = tokens[i+1];
+                    XYTextAnnotation textXY = new XYTextAnnotation(tok, x, y5+20);
+                    plot.addAnnotation(textXY);
+                }
+
+                if (tokens[i].compareTo("Y6Text") == 0) {
+                	tok = tokens[i+1];
+                    XYTextAnnotation textXY = new XYTextAnnotation(tok, x, y6+20);
+                    plot.addAnnotation(textXY);
+                }
+
+                if (tokens[i].compareTo("Y7Text") == 0) {
+                	tok = tokens[i+1];
+                    XYTextAnnotation textXY = new XYTextAnnotation(tok, x, y7+20);
+                    plot.addAnnotation(textXY);
+                }
+
                 if (tokens[i].compareTo("Y8Text") == 0) {
                 	tok = tokens[i+1];
                     XYTextAnnotation textXY = new XYTextAnnotation(tok, x, y8+20);
                     plot.addAnnotation(textXY);                    
+                }
+
+                if (tokens[i].compareTo("Y9Text") == 0) {
+                	tok = tokens[i+1];
+                    XYTextAnnotation textXY = new XYTextAnnotation(tok, x, y9+20);
+                    plot.addAnnotation(textXY);
                 }
                 
                 if (tokens[i].compareTo("End") == 0) {   
