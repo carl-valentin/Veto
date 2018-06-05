@@ -403,7 +403,7 @@ public class CVUIBeanShell extends JPanel
         searchField = new JTextField(30);
         panel.add(searchField);
 
-        JButton nextButton = new JButton("Find Next");
+        final JButton nextButton = new JButton("Find Next");
         nextButton.setActionCommand("FindNext");
         nextButton.addActionListener(alFind);
         panel.add(nextButton);
