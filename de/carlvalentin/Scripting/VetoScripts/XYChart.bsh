@@ -209,12 +209,21 @@ do {
 } while (msg.startsWith("HS"));
 if (msg.length() > 0)
 {
+	int iMajorVers;
+	int iMinorVers;
+	int iBuildNum;
+
 	String[] tokens = msg.split("[;]");
 	String[] tokens2 = tokens[2].split("[V .]");
 
-	int iMajorVers = Integer.parseInt(tokens2[1]);
-	int iMinorVers = Integer.parseInt(tokens2[2]);
-	int iBuildNum = Integer.parseInt(tokens2[4].substring(2));
+	iMajorVers = Integer.parseInt(tokens2[1]);
+	iMinorVers = Integer.parseInt(tokens2[2]);
+	try {	    
+	    iBuildNum = Integer.parseInt(tokens2[4].substring(2));
+	}
+	catch (Exception e) {
+		iBuildNum = Integer.parseInt(tokens2[5].substring(2));
+	}	
 
 	printf("%i.%i Build %i\n", iMajorVers, iMinorVers, iBuildNum);
 	
