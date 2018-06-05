@@ -80,6 +80,8 @@ int iFileNum = 0;
 boolean bFileOutIsOpen = false;
 String s;
 
+boolean bNewProto = false;
+
 ActionListener alSave = new ActionListener() {
     public void actionPerformed( ActionEvent e ) {
         JFileChooser fc = new JFileChooser();
@@ -199,37 +201,99 @@ dirOut = new File(sSaveFolder);
 FileUtils.forceMkdir(dirOut);
 FileUtils.cleanDirectory(dirOut); 
 
-msg = sprintf("FHBX--rX");
-printf("<-- " + msg + "\n");
+msg = sprintf("U");
 write(msg);
-
-msg = read(500);
-printf("<-- " + msg + "\n");
-
-while (msg.length() > 0)
+do {
+    msg = read(500);
+    printf("--> " + msg + "\n");
+} while (msg.startsWith("HS"));
+if (msg.length() > 0)
 {
-    msg = read(1);
-    printf("<-- " + msg + "\n");
+	String[] tokens = msg.split("[;]");
+	String[] tokens2 = tokens[2].split("[V .]");
+
+	int iMajorVers = Integer.parseInt(tokens2[1]);
+	int iMinorVers = Integer.parseInt(tokens2[2]);
+	int iBuildNum = Integer.parseInt(tokens2[4].substring(2));
+
+	printf("%i.%i Build %i\n", iMajorVers, iMinorVers, iBuildNum);
+	
+	if ( (iMajorVers > 1) ||
+	     ((iMajorVers == 1) && (iMinorVers > 73)) ||
+	     ((iMajorVers == 1) && (iMinorVers == 73) && (iBuildNum >= 16)) )
+	{
+		bNewProto = true;
+	}
 }
 
-// msg = "FHA---r2";
-// printf("<-- " + msg + "\n");
-// write(msg);
+if (bNewProto)
+{
+	msg = sprintf("FHBX--rX");
+	printf("<-- " + msg + "\n");
+	write(msg);	
 
-// msg = read();
-// printf(msg + "\n");
+	do
+	{
+	    msg = read(500);
+	    printf("--> " + msg + "\n");
+	} while ( msg.startsWith("HSXYChart;Vals") 
+	          || msg.startsWith("HSXYChart;Begin") 
+	          || msg.startsWith("HSXYChart;End") );
 
-msg = sprintf("FHBA--rX" + textCfgChartName.getText());
-printf("<-- " + msg + "\n");
-write(msg);
+	if (msg.startsWith("HSTerminated"))
+	{
+		sleep(2000);
+	}
 
-msg = read();
-printf(msg + "\n");
+	msg = sprintf("FHBA--rX" + textCfgChartName.getText());
+	printf("<-- " + msg + "\n");
+	write(msg);
+	
+	msg = read();
+	printf(msg + "\n");
 
-write("FHXAA-r" + textCfgResolution.getText());
+	msg = sprintf("FHXAA-r" + textCfgResolution.getText());
+	printf("<-- " + msg + "\n");
+	write(msg);
+	msg = read();
+	printf("1: " + msg + "\n");
+}
+else
+{
+	msg = sprintf("FHA---r0");
+	printf("<-- " + msg + "\n");
+	write(msg);
+	
+	msg = read(500);
+	printf("--> " + msg + "\n");
+	
+	while (msg.length() > 0)
+	{
+	    msg = read(1);
+	    printf("<-- " + msg + "\n");
+	}
 
-msg = read();
-printf("1: " + msg + "\n");
+	sleep(1000);
+	
+	msg = "FHA---r2";
+	printf("<-- " + msg + "\n");
+	write(msg);
+	
+	msg = read();
+	printf(msg + "\n");
+	
+	msg = sprintf("FHM---rX" + textCfgChartName.getText());
+	printf("<-- " + msg + "\n");
+	write(msg);
+	msg = read();
+	printf("1: " + msg + "\n");
+}
+
+while (msg.startsWith("HSXYChart;Vals") || msg.startsWith("HSXYChart;Begin")) {
+    msg = read(500);
+    printf("1: " + msg + "\n");
+};
+
 if (msg.length() > 0) {
     String[] tokens = msg.split("[\\-\\:]");
 
@@ -549,7 +613,14 @@ do {
     }
 } while(sFrameChart.isShowing());
 
-msg = sprintf("FHBX--rX");
+if (bNewProto)
+{
+    msg = sprintf("FHBX--rX");
+}
+else
+{
+	msg = sprintf("FHA---r0");
+}
 printf("<-- " + msg + "\n");
 write(msg);
 
