@@ -4,6 +4,7 @@ import de.carlvalentin.Common.UI.*;
 import de.carlvalentin.Common.*;
 import de.carlvalentin.Protocol.*;
 import de.carlvalentin.Scripting.*;
+import de.carlvalentin.Scripting.UI.*;
 import de.carlvalentin.ValentinConsole.ValentinConsole;
 
 import java.awt.*;
