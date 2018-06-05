@@ -549,7 +549,7 @@ public class CVUIBeanShell extends JPanel
             flowLayout3.setAlignment(java.awt.FlowLayout.LEFT);
             jPanelScriptButtonBarBottom.add(getJButtonRunScript(), null);
             jPanelScriptButtonBarBottom.add(getJButtonStopScript(), null);
-            jPanelScriptButtonBarBottom.add(getJButtonStepScript(), null);
+            //jPanelScriptButtonBarBottom.add(getJButtonStepScript(), null);
             jPanelScriptButtonBarBottom.add(
                     getJCheckBoxShowErrorMessages(), null);
             jPanelScriptButtonBarBottom.add(getJButtonFind(), null);

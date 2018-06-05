@@ -276,7 +276,7 @@ public class ValentinConsole extends JFrame {
         this.lk_cErrorMessage = new CVErrorMessage(this);
         // Ausgabe von Fehlermeldungen in Logdatei
         this.lk_cErrorFile =
-                new CVLogging("ErrorLog.txt", this.lk_cErrorMessage);
+                new CVLogging(System.getProperty("java.io.tmpdir",".") + "\\VetoErrorLog.txt", this.lk_cErrorMessage);
         // Ausgabe von Fehlermeldungen in Statuszeile des Programms
         this.lk_cStatusMessage = new CVStatusLine();
 
@@ -310,6 +310,7 @@ public class ValentinConsole extends JFrame {
 
         // Start-/Stopzeichen CVPL
         this.lk_cSohEtb = CVSohEtb.x0117;
+        this.lk_cConnectionManager.setSohEtb(this.lk_cSohEtb);
 
         this.lk_cConsoleInput.restoreHistory(lk_cConfigFile);
 
@@ -934,6 +935,7 @@ public class ValentinConsole extends JFrame {
                     jComboBoxConnectBarChooseEncoding.setSelectedItem(
                         configValue);
                     lk_cSohEtb = CVSohEtb.fromString(configValue);
+                    this.lk_cConnectionManager.setSohEtb(this.lk_cSohEtb);
                 }
                 else
                 {
@@ -952,6 +954,7 @@ public class ValentinConsole extends JFrame {
                 {
                     lk_cSohEtb = CVSohEtb.fromString((String)
                         jComboBoxConnectBarChooseEncoding.getSelectedItem());
+                    lk_cConnectionManager.setSohEtb(lk_cSohEtb);
 
                     // Speichern gewaehlte Enkodierung in Konfigurationsdatei
                     if(lk_cConfigFile != null)
