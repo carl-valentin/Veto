@@ -1,0 +1,25 @@
+TouchTestIP = "10.102.1.212";
+TouchLengthInMs = 200;
+
+void DoIt(iZ, iX) {
+    conn = openTCP(TouchTestIP);
+    s = sprintf("%i,%i,%i,1\n", iZ, iX, TouchLengthInMs);
+    printf(s);
+    write(s.getBytes());
+    close(conn);
+}
+
+while(true) {
+    DoIt(80,90);
+    sleep(3000);
+    DoIt(95,90);
+    sleep(2000);
+    DoIt(80,90);
+    sleep(1500);
+    DoIt(80,115);
+    sleep(1500);
+    DoIt(155,100);
+    sleep(3000);
+    DoIt(155,100);
+    sleep(1000);
+}

@@ -1,0 +1,30 @@
+ServerSocket server;
+Socket client;
+port = 9099;
+try {
+    server = new ServerSocket(port);
+} catch (IOException e) {
+    printf("Port " + port + " wird bereits verwendet!" + "\n");
+}
+
+while(true){    
+    try {
+        printf("Warte auf Clientverbindung an Port " + port + "\n");
+        client = server.accept();
+        printf("Verbindung Akzeptiert! Verbindung kommt von " + client.getRemoteSocketAddress() + "\n");
+        DataInputStream input = new DataInputStream(client.getInputStream());
+//        BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
+        DataOutputStream out = new DataOutputStream(client.getOutputStream());                
+        uebergabe = input.readLine();
+        out.writeBoolean(false);
+        printf("Daten Erhalten! Nachricht: " + uebergabe + "\n");        
+    } 
+    catch (Exception e) {
+        printf(e.toString() + "\n");
+        break;
+    }
+    client.close();
+}
+
+client.close();
+server.close();

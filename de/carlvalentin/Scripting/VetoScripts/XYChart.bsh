@@ -43,9 +43,11 @@ boolean bY7 = false;
 boolean bY8 = false;
 boolean bY9 = false;
 
+JComboBox  comboCfgChartName; 
 JTextField textCfgChartName; 
 JTextField textCfgResolution;
 JTextField textCfgFieldName;
+String[] sCfgChartNames;
 
 JCheckBox checkY1Show;
 JCheckBox checkY2Show;
@@ -74,6 +76,8 @@ JMenuItem menuItemSave;
 JMenuItem menuItemFilter;
 JMenuItem menuItemOption;
 
+JDialog dialog;
+
 File fileOut;
 File dirOut;
 int iFileNum = 0;
@@ -81,6 +85,7 @@ boolean bFileOutIsOpen = false;
 String s;
 
 boolean bNewProto = false;
+boolean bChartNamesAreKnown = false;
 
 ActionListener alSave = new ActionListener() {
     public void actionPerformed( ActionEvent e ) {
@@ -120,8 +125,13 @@ ActionListener alSaveOption = new ActionListener() {
     public void actionPerformed( ActionEvent e ) {     
         fileCfg = openFile(System.getProperty("java.io.tmpdir",".") + "\\XYChart.cfg");
         fileCfg.delete();
-        
-        s = textCfgChartName.getText() + "\n";
+
+        if (bChartNamesAreKnown) {
+            s = comboCfgChartName.getSelectedItem() + "\n";
+        }
+        else {
+            s = textCfgChartName.getText() + "\n";
+        }
         write(fileCfg, s.getBytes());
         s = textCfgResolution.getText() + "\n";
         write(fileCfg, s.getBytes());
@@ -131,16 +141,23 @@ ActionListener alSaveOption = new ActionListener() {
         close(fileCfg);
         write("FHXAA-r" + textCfgResolution.getText());
         write("FHXBA-r" + textCfgFieldName.getText());
+
+        dialog.dispose();
     }
 };
  
 ActionListener alOption = new ActionListener() {
-    public void actionPerformed( ActionEvent e ) {       
-        JDialog dialog = new JDialog(sFrameChart);
+    public void actionPerformed( ActionEvent e ) {    	   
+        dialog = new JDialog(sFrameChart);
         JPanel panel = new JPanel(new GridLayout(0, 1));
         dialog.add(panel);
-        
-        panel.add(textCfgChartName);
+
+        if (bChartNamesAreKnown) {        
+            panel.add(comboCfgChartName);
+        }
+        else {
+            panel.add(textCfgChartName);
+        }
         
         JLabel labelCfgRes = new JLabel("Resolution:");
         panel.add(labelCfgRes);
@@ -156,7 +173,7 @@ ActionListener alOption = new ActionListener() {
         
         dialog.pack();
         dialog.setModal(true);
-        dialog.setVisible(true);
+        dialog.setVisible(true);        
     }
 };
 
@@ -254,7 +271,27 @@ if (bNewProto)
 		sleep(2000);
 	}
 
-	msg = sprintf("FHBA--rX" + textCfgChartName.getText());
+	msg = sprintf("FHBA--w12345678");
+	printf("<-- " + msg + "\n");
+	write(msg);
+
+	msg = read(500);
+	printf(msg + "\n");
+	if (msg.startsWith("A12345678")) {
+		sCfgChartNames = msg.substring(10).split("[;]");
+		if (sCfgChartNames.length > 0) {		
+		    comboCfgChartName = new JComboBox(sCfgChartNames);
+		    comboCfgChartName.setSelectedItem(sCfgChartName);
+		    bChartNamesAreKnown = true;
+		}
+	}
+
+     if (bChartNamesAreKnown) {     
+	    msg = sprintf("FHBA--rX" + comboCfgChartName.getSelectedItem());
+     }
+     else {
+         msg = sprintf("FHBA--rX" + textCfgChartName.getText());
+     }
 	printf("<-- " + msg + "\n");
 	write(msg);
 	
