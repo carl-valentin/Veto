@@ -1,0 +1,191 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+class Log{
+  
+  JFrame Frame;
+  JPanel btnPanel;
+  TextArea taAusgabe;
+  
+  int len = 0;
+  InputStreamReader inputStreamReader;
+  readBytes = new byte[1];
+  int i;
+  String ausgabe = null;
+  String ausgabeAlt = null;
+  long         lMilliSeconds = 10000;
+  long         lMilliSecondsCounter = 0;
+  StringBuilder sb;
+  boolean unterbrechen = true;
+  String modus;
+  int pollingTime = 2000;
+  
+  private Log (){
+    window();
+    Frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+    //Frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            
+    Frame.pack();
+    Frame.setVisible(true);
+    getLog(modus);
+    while (Frame.isShowing()){
+      if(unterbrechen == false){
+        getLog(modus);
+        sleep(pollingTime);
+      } else{
+        sleep(2000);
+      }
+    }
+  }
+
+  private void window(){
+    taAusgabe = new TextArea("");
+    System.out.println("Neues Fenster");
+    Frame = new JFrame();
+    Frame.setLayout(new BorderLayout());
+    Frame.setTitle("LogFenster");
+    Frame.add(taAusgabe, BorderLayout.CENTER);
+
+    write("FCMUA-w"+"index");
+    String msg;
+    msg = read();
+    String[] a;
+    a = msg.split(";");
+    String[] modeTitles = new String[a.length-1];
+    for(int j=1; j<a.length;j++){
+    	modeTitles[j-1] = new String (a[j]);
+    }
+    
+    JComboBox modeList = new JComboBox(modeTitles);
+    modeList.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent e) {
+      	modus = (String) modeList.getSelectedItem();
+      	getLog(modus);
+      }
+    });
+    modus = "log";
+    Frame.add(modeList, BorderLayout.NORTH);
+    
+    btnPanel = new JPanel();
+    Frame.add(btnPanel, BorderLayout.SOUTH);
+    JButton btnAktualisieren = new JButton("Aktualisieren");
+    btnAktualisieren.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent e) {
+      	getLog(modus);
+      }
+    });
+    btnPanel.add(btnAktualisieren);
+
+    JButton btnLoeschen = new JButton("Löschen");
+    btnLoeschen.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent e) {
+      	taAusgabe.setText("");
+      }
+    });
+    btnPanel.add(btnLoeschen);
+    
+    JButton btnPlgStart = new JButton("Polling starten");
+    btnPlgStart.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent e) {
+        unterbrechen = false;
+        taAusgabe.append("Polling gestartet" + "\n");
+      }
+    });
+    btnPanel.add(btnPlgStart);
+    JButton btnPlgStopp = new JButton("Polling stoppen");
+    btnPlgStopp.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent e) {
+        unterbrechen = true;
+        taAusgabe.append("Polling gestoppt" + "\n");
+      }
+    });
+    btnPanel.add(btnPlgStopp);
+    
+    String[] timeTitles = new String[] {"2 Sekunden", "5 Sekunden", "10 Sekunden", "20 Sekunden", "30 Sekunden"};
+    JComboBox timeList = new JComboBox(timeTitles);
+    timeList.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent e) {
+        if(((String) timeList.getSelectedItem()).equals("2 Sekunden")){
+          pollingTime = 2000;
+        }else if(((String) timeList.getSelectedItem()).equals("5 Sekunden")){
+          pollingTime = 5000;
+        }else if(((String) timeList.getSelectedItem()).equals("10 Sekunden")){
+          pollingTime = 10000;
+        }else if(((String) timeList.getSelectedItem()).equals("20 Sekunden")){
+          pollingTime = 20000;
+        }else if(((String) timeList.getSelectedItem()).equals("30 Sekunden")){
+          pollingTime = 30000;
+        }
+      }
+    });
+    btnPanel.add(timeList);
+  }
+
+  private void getLog(String pmodus){
+    ausgabeAlt = ausgabe;
+    sb = new StringBuilder();
+    write("FCMUA-w"+pmodus);
+    String msg;
+    msg = read();
+    String[] a;
+    len = -1;
+    a = msg.split("\\*");
+    if (a[0].equals("A"+modus)) {
+      len = Integer.parseInt(a[1]);
+      printf(a[0]);
+      printf("Länge der Antwort: ");
+      printf(a[1]);
+    } else{
+      error("False answer from printer\n");
+    }
+    
+    try {
+      inputStreamReader =
+      cConnectionManager.getConnectedInterface().getInterfaceReader();
+      
+      for (i=0; i<len; ) {
+        if (inputStreamReader.ready()) {
+          readBytes[0] = (byte)inputStreamReader.read();
+          readString = new String(readBytes);
+          sb.append(readString);
+          i++;
+          lMilliSecondsCounter = 0;
+        }
+        if (lMilliSeconds > 0) {
+          sleep(1);
+          lMilliSecondsCounter++;
+          if (lMilliSecondsCounter >= lMilliSeconds) {
+            chk4StpScr();
+            error("Not enougth data\n");
+          }
+        }
+      }
+      ausgabe = sb.toString();
+      if(!ausgabe.equals(ausgabeAlt)){
+        taAusgabe.setText(a[0]);
+        taAusgabe.append(", Länge der Antwort: " + a[1]);
+        taAusgabe.append("\n");
+        taAusgabe.append(ausgabe);
+        taAusgabe.append("\n");
+        taAusgabe.append("\n");
+        taAusgabe.append("\n");
+        taAusgabe.append("Ende des Logs" + "\n");
+        printf(ausgabe);
+        printf("\n");
+        printf("\n");
+        printf("\n");
+        printf("Ende der Antwort" + "\n");
+      }
+    }
+    catch(IOException ex) {
+      printf("\n<-------------------------------------->\n");
+      printf("Scripting: read->IOException: " + ex.getMessage() + "\n");
+      printf("<-------------------------------------->\n");
+      error("Scritping: read->IOException");
+      return "";
+    }
+  }
+};
+// Main
+new Log();
