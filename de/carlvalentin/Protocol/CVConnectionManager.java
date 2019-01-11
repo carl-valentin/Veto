@@ -627,6 +627,18 @@ public class CVConnectionManager
         					(this.lk_cVectorSinkWriterRecvThread);
         		this.lk_cRecvThread.setBinaryInput(
         				cInterface.getInterfaceBinaryInput());
+
+        		if(cInterface.equals((CVInterface)this.lk_cInterfaceNetworkTCP) == true)
+        		{
+        		    CVNetworkSettings cNetworkSettings = (CVNetworkSettings)
+        		            this.lk_cInterfaceNetworkTCP.getInterfaceSettings();
+        		    if (cNetworkSettings.getTCPKeepAlive())
+        		    {
+                		this.lk_cRecvThread.setKeepAliveItfWriter(
+                		        cInterface.getInterfaceWriter(),
+                		        !cNetworkSettings.getTCPAutoReconn());
+        		    }
+        		}
         	}
         	else
         	{
@@ -663,6 +675,36 @@ public class CVConnectionManager
 
             this.lk_cSendThread.setBinaryOutput(
                 cInterface.getInterfaceBinaryOutput());
+
+            if(cInterface.equals((CVInterface)this.lk_cInterfaceNetworkTCP) == true)
+            {
+                CVNetworkSettings cNetworkSettings = (CVNetworkSettings)
+                        this.lk_cInterfaceNetworkTCP.getInterfaceSettings();
+                if (cNetworkSettings.getTCPAutoSendAfterConnOnOff())
+                {
+                    try
+                    {
+                        OutputStreamWriter cOutStreamWriter = cInterface.getInterfaceWriter();
+                        cOutStreamWriter.write(this.lk_cSohEtb.gl_iSOH);
+                        cOutStreamWriter.write(cNetworkSettings.getTCPAutoSendAfterConn());
+                        cOutStreamWriter.write(this.lk_cSohEtb.gl_iETB);
+                        cOutStreamWriter.flush();
+                    }
+                    catch(IOException ex)
+                    {
+                        if(this.lk_cErrorMessage != null)
+                        {
+                            this.lk_cErrorMessage.write("Send After Conn: " +
+                                "IOException: " + ex.getMessage());
+                        }
+                        if(this.lk_cErrorFile != null)
+                        {
+                            this.lk_cErrorMessage.write("Send After Conn: " +
+                                "IOException: " + ex.getMessage());
+                        }
+                    }
+                }
+            }
         }
         else
         {

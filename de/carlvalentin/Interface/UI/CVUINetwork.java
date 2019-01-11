@@ -78,6 +78,10 @@ public class CVUINetwork extends JFrame
     //--------------------------------------------------------------------------
     // TCP
     //--------------------------------------------------------------------------
+    private JCheckBox   jCheckBoxTCPKeepAlive = null;
+    private JCheckBox   jCheckBoxTCPAutoReconn = null;
+    private JCheckBox   jCheckBoxTCPAutoSendAfterConn = null;
+    private JTextField  jTextFieldTCPAutoSendAfterConn = null;
 
     //--------------------------------------------------------------------------
     // UDP
@@ -160,6 +164,14 @@ public class CVUINetwork extends JFrame
             //------------------------------------------------------------------
             if(this.lk_cNetworkProtocol == CVNetworkProtocol.TCP)
             {
+                this.lk_cNetworkInterfaceSettings.setTCPKeepAlive(
+                        this.jCheckBoxTCPKeepAlive.isSelected());
+                this.lk_cNetworkInterfaceSettings.setTCPAutoReconn(
+                        this.jCheckBoxTCPAutoReconn.isSelected());
+                this.lk_cNetworkInterfaceSettings.setTCPAutoSendAfterConnOnOff(
+                        this.jCheckBoxTCPAutoSendAfterConn.isSelected());
+                this.lk_cNetworkInterfaceSettings.setTCPAutoSendAfterConn(
+                        this.jTextFieldTCPAutoSendAfterConn.getText());
                 this.lk_cTCPNetworkInterface.setInterfaceSettings(
                         (Object) this.lk_cNetworkInterfaceSettings);
                 this.lk_cConnectionManager.setTCPNetworkInterface(
@@ -372,7 +384,10 @@ public class CVUINetwork extends JFrame
             //------------------------------------------------------------------
             if(this.lk_cNetworkProtocol == CVNetworkProtocol.TCP)
             {
-
+                this.jPanelNetworkSettings.add(this.getJCheckBoxTCPKeepAlive());
+                this.jPanelNetworkSettings.add(this.getJCheckBoxTCPAutoReconn());
+                this.jPanelNetworkSettings.add(this.getJCheckBoxTCPAutoSendAfterConn());
+                this.jPanelNetworkSettings.add(this.getJTextFieldTCPAutoSendAfterConn());
             }
             //------------------------------------------------------------------
             // Einstellungen fuer UDP
@@ -459,6 +474,78 @@ public class CVUINetwork extends JFrame
             jCheckBoxUDPBroadcast.setVisible(false);
         }
         return this.jCheckBoxUDPBroadcast;
+    }
+
+    private JCheckBox getJCheckBoxTCPKeepAlive()
+    {
+        if(this.jCheckBoxTCPKeepAlive == null)
+        {
+            this.jCheckBoxTCPKeepAlive = new JCheckBox();
+            this.jCheckBoxTCPKeepAlive.setName("TCP Keep Alive");
+            this.jCheckBoxTCPKeepAlive.setSelected(
+                    this.lk_cNetworkInterfaceSettings.getTCPKeepAlive());
+            this.jCheckBoxTCPKeepAlive.setText("TCP Keep Alive");
+            this.jCheckBoxTCPKeepAlive.setHorizontalAlignment
+                    (SwingConstants.CENTER);
+            jCheckBoxTCPKeepAlive.setVisible(true);
+        }
+        return this.jCheckBoxTCPKeepAlive;
+    }
+
+    private JCheckBox getJCheckBoxTCPAutoReconn()
+    {
+        if(this.jCheckBoxTCPAutoReconn == null)
+        {
+            this.jCheckBoxTCPAutoReconn = new JCheckBox();
+            this.jCheckBoxTCPAutoReconn.setName("TCP Auto Reconnect");
+            this.jCheckBoxTCPAutoReconn.setSelected(
+                    this.lk_cNetworkInterfaceSettings.getTCPAutoReconn());
+            this.jCheckBoxTCPAutoReconn.setText("TCP Auto Reconnect");
+            this.jCheckBoxTCPAutoReconn.setHorizontalAlignment
+                    (SwingConstants.CENTER);
+            this.jCheckBoxTCPAutoReconn.addActionListener(new java.awt.event.ActionListener()
+            {
+                public void actionPerformed(java.awt.event.ActionEvent e)
+                {
+                    if (jCheckBoxTCPAutoReconn.isSelected())
+                    {
+                        jCheckBoxTCPKeepAlive.setSelected(true);
+                    }
+                }
+            });
+            jCheckBoxTCPAutoReconn.setVisible(true);
+        }
+        return this.jCheckBoxTCPAutoReconn;
+    }
+
+    private JCheckBox getJCheckBoxTCPAutoSendAfterConn()
+    {
+        if(this.jCheckBoxTCPAutoSendAfterConn == null)
+        {
+            this.jCheckBoxTCPAutoSendAfterConn = new JCheckBox();
+            this.jCheckBoxTCPAutoSendAfterConn.setName("Auto Send Command After Connection:");
+            this.jCheckBoxTCPAutoSendAfterConn.setSelected(
+                    this.lk_cNetworkInterfaceSettings.getTCPAutoSendAfterConnOnOff());
+            this.jCheckBoxTCPAutoSendAfterConn.setText("Auto Send Command After Connection:");
+            this.jCheckBoxTCPAutoSendAfterConn.setHorizontalAlignment
+                    (SwingConstants.CENTER);
+            jCheckBoxTCPAutoSendAfterConn.setVisible(true);
+        }
+        return this.jCheckBoxTCPAutoSendAfterConn;
+    }
+
+    private JTextField getJTextFieldTCPAutoSendAfterConn()
+    {
+        if (this.jTextFieldTCPAutoSendAfterConn == null)
+        {
+            this.jTextFieldTCPAutoSendAfterConn = new JTextField();
+            this.jTextFieldTCPAutoSendAfterConn.setHorizontalAlignment(
+                    javax.swing.JTextField.CENTER);
+            this.jTextFieldTCPAutoSendAfterConn.setText(
+                    this.lk_cNetworkInterfaceSettings.getTCPAutoSendAfterConn());
+            this.jTextFieldTCPAutoSendAfterConn.setToolTipText("data to send after conn has established (without SOH/ETB)");
+        }
+        return this.jTextFieldTCPAutoSendAfterConn;
     }
 
     public void SetIPAddr(String sIP)

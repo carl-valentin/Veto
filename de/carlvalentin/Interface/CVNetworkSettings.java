@@ -16,12 +16,12 @@ public class CVNetworkSettings extends CVInterfaceSettings
      */
     private static final String IP_PATTERN = "^((\\d{1,2}|1\\d\\d|2[0-4]\\" +
             "d|25[0-5])\\.){3}(\\d{1,2}|1\\d\\d|2[0-4]\\d|25[0-5])$";
-    
+
     /**
      * Verwendetes Netzwerkprotokoll
      */
     private CVNetworkProtocol lk_cNetworkProtocol = null;
-    
+
     /**
      * IP-Adresse des Druckers.
      */
@@ -29,9 +29,9 @@ public class CVNetworkSettings extends CVInterfaceSettings
     /**
      * Token zum Speichern der ausgewaehlten IP-Adresse in Konfigurationsdatei
      */
-    private final String lk_szConfigTokenTCPUDPPrinterIPAddress = 
-        "NetworkSettingsPrinterIPAddress";
-    
+    private final String lk_szConfigTokenTCPUDPPrinterIPAddress =
+            "NetworkSettingsPrinterIPAddress";
+
     /**
      * Netzwerkport des Druckers
      */
@@ -39,9 +39,9 @@ public class CVNetworkSettings extends CVInterfaceSettings
     /**
      * Token zum Speichern des ausgewaehlten Ports in Konfigurationsdatei
      */
-    private final String lk_szConfigTokenTCPUDPPrinterPort = 
-        "NetworkSettingsPrinterPort";
-    
+    private final String lk_szConfigTokenTCPUDPPrinterPort =
+            "NetworkSettingsPrinterPort";
+
     /**
      * UDP-Pakete als Broadcast verschicken
      */
@@ -50,9 +50,24 @@ public class CVNetworkSettings extends CVInterfaceSettings
      * Token zum Spechern ob UDP-Pakete als Broadcast gesendet werden
      */
     private final String lk_szConfigTokenUDPBroadcast =
-    	"NetworkSettingsUDPBroadcast";
-    
-    
+            "NetworkSettingsUDPBroadcast";
+
+    private final String lk_szConfigTokenTCPKeepAlive =
+            "NetworkSettingsTCPKeepAlive";
+    private boolean      lk_bTCPKeepAlive = false;
+
+    private final String lk_szConfigTokenTCPAutoReconn =
+            "NetworkSettingsTCPAutoReconn";
+    private boolean      lk_bTCPAutoReconn = false;
+
+    private final String lk_szConfigTokenTCPSendAfterConnOnOff =
+            "NetworkSettingsTCPSendAfterConnOnOff";
+    private boolean      lk_bTCPAutoSendAfterConnOnOff = false;
+
+    private final String lk_szConfigTokenTCPSendAfterConn =
+            "NetworkSettingsTCPSendAfterConn";
+    private String      lk_szTCPAutoSendAfterConn = "";
+
     /**
      * Konstruktor der Klasse CVNetworkSettings.
      *
@@ -70,16 +85,16 @@ public class CVNetworkSettings extends CVInterfaceSettings
             CVNetworkProtocol cNetworkProtocol)
     {
         super(cErrorMessage, cErrorFile, cStatusMessage, cConfigFile);
-        
+
         this.lk_cNetworkProtocol = cNetworkProtocol;
-        
+
         this.setDefaults();
-        
+
         this.initData();
-        
+
 		return;
     }
-    
+
     /**
      * Werte fuer Datenstrukturen der Klasse aus Konfigurationsdatei einlesen.
      *
@@ -89,7 +104,7 @@ public class CVNetworkSettings extends CVInterfaceSettings
         if(this.lk_cConfigFile != null)
         {
         	String configValue = null;
-        
+
         	//------------------------------------------------------------------
         	// TCP und UDP
         	//------------------------------------------------------------------
@@ -100,22 +115,73 @@ public class CVNetworkSettings extends CVInterfaceSettings
         		this.lk_szTCPUDPPrinterIPAddress = configValue;
         	}
         	configValue = null;
-        
+
         	configValue = this.lk_cConfigFile.getConfig(
                 this.lk_szConfigTokenTCPUDPPrinterPort);
         	if(configValue != null)
         	{
         		this.lk_iTCPUDPPrinterPort = Integer.parseInt(configValue);
         	}
-        	
+
         	//------------------------------------------------------------------
         	// TCP
         	//------------------------------------------------------------------
         	if(this.lk_cNetworkProtocol == CVNetworkProtocol.TCP)
         	{
-        		
+                configValue = this.lk_cConfigFile.getConfig(
+                        this.lk_szConfigTokenTCPKeepAlive);
+                if(configValue != null)
+                {
+                    if(configValue.equals((String)"true"))
+                    {
+                        this.lk_bTCPKeepAlive = true;
+                    }
+                    else
+                    {
+                        this.lk_bTCPKeepAlive = false;
+                    }
+                }
+                configValue = null;
+
+                configValue = this.lk_cConfigFile.getConfig(
+                        this.lk_szConfigTokenTCPAutoReconn);
+                if(configValue != null)
+                {
+                    if(configValue.equals((String)"true"))
+                    {
+                        this.lk_bTCPAutoReconn = true;
+                    }
+                    else
+                    {
+                        this.lk_bTCPAutoReconn = false;
+                    }
+                }
+                configValue = null;
+
+                configValue = this.lk_cConfigFile.getConfig(
+                        this.lk_szConfigTokenTCPSendAfterConnOnOff);
+                if(configValue != null)
+                {
+                    if(configValue.equals((String)"true"))
+                    {
+                        this.lk_bTCPAutoSendAfterConnOnOff = true;
+                    }
+                    else
+                    {
+                        this.lk_bTCPAutoSendAfterConnOnOff = false;
+                    }
+                }
+                configValue = null;
+
+                configValue = this.lk_cConfigFile.getConfig(
+                        this.lk_szConfigTokenTCPSendAfterConn);
+                    if(configValue != null)
+                    {
+                        this.lk_szTCPAutoSendAfterConn = configValue;
+                    }
+                    configValue = null;
         	}
-        	
+
         	//------------------------------------------------------------------
         	// UDP
         	//------------------------------------------------------------------
@@ -134,15 +200,16 @@ public class CVNetworkSettings extends CVInterfaceSettings
         				this.lk_bUDPBroadcast = false;
         			}
         		}
+        		configValue = null;
         	}
         }
-        
+
         return;
     }
-    
+
     /**
      * Ueberprueft Einstellungen fuer die Netzwerkschnittstelle.
-     * 
+     *
      * @return true, wenn Einstellungen korrekt sind.
      */
     public boolean validateSettings()
@@ -150,55 +217,64 @@ public class CVNetworkSettings extends CVInterfaceSettings
     	//----------------------------------------------------------------------
     	// TCP und UDP
     	//----------------------------------------------------------------------
-        if(isValidIp(this.lk_szTCPUDPPrinterIPAddress) != true)
+        if (isValidIp(this.lk_szTCPUDPPrinterIPAddress) != true)
         {
             /*if(this.lk_cErrorMessage != null)
             {
             	this.lk_cErrorMessage.write(
                     "CVNetworkSettings: no a valid IP address");
             }*/
-            
-        	return false; 
+
+        	return false;
         }
-        
+
         //----------------------------------------------------------------------
         // TCP
         //----------------------------------------------------------------------
-        if(this.lk_cNetworkProtocol == CVNetworkProtocol.TCP)
+        if (this.lk_cNetworkProtocol == CVNetworkProtocol.TCP)
         {
-        	if(this.lk_bUDPBroadcast == true)
+        	if (this.lk_bUDPBroadcast == true)
         	{
         		/*if(this.lk_cErrorMessage != null)
                 {
                 	this.lk_cErrorMessage.write(
                         "CVNetworkSettings: UDP broadcast in TCP protocol");
                 }*/
-            	
+
             	return false;
         	}
         }
-        
+
         //----------------------------------------------------------------------
         // UDP
         //----------------------------------------------------------------------
-        if(this.lk_cNetworkProtocol == CVNetworkProtocol.UDP)
+        if (this.lk_cNetworkProtocol == CVNetworkProtocol.UDP)
         {
-        	
+            if ( (this.lk_bTCPKeepAlive == true) || (this.lk_bTCPAutoReconn == true) )
+            {
+                /*if(this.lk_cErrorMessage != null)
+                {
+                    this.lk_cErrorMessage.write(
+                        "CVNetworkSettings: TCP KeepAlive in UDP protocol");
+                }*/
+
+                return false;
+            }
         }
-        
+
         return true;
     }
-    
+
     /**
      * Fragt das verwendete Netzwerkprotokoll ab
-     *  
+     *
      * @return verwendetes Netzwerkprotokoll (null - keines eingestellt)
      */
     public CVNetworkProtocol getNetworkProtocol()
     {
     	return this.lk_cNetworkProtocol;
     }
-    
+
     /**
      * Setzte Defaulteinstellungen fuer die Netzwerkschnittstelle.
      */
@@ -209,58 +285,62 @@ public class CVNetworkSettings extends CVInterfaceSettings
     	//----------------------------------------------------------------------
         this.lk_szTCPUDPPrinterIPAddress = "192.168.0.21";
         this.lk_iTCPUDPPrinterPort       = 9100;
-        
+
         //----------------------------------------------------------------------
         // TCP
         //----------------------------------------------------------------------
-        
+        this.lk_bTCPKeepAlive            = false;
+        this.lk_bTCPAutoReconn           = false;
+        this.lk_bTCPAutoSendAfterConnOnOff = false;
+        this.lk_szTCPAutoSendAfterConn   = "";
+
         //----------------------------------------------------------------------
         // UDP
         //----------------------------------------------------------------------
         this.lk_bUDPBroadcast            = false;
-        
+
         return;
     }
-    
+
     /**
      * Setzen der zu verwendenden IP-Adresse.
-     * 
+     *
      * @param ip IP-Adresse in Textform.
      */
     public void setIPAdress(String ip)
     {
     	this.lk_szTCPUDPPrinterIPAddress = ip;
-        
+
         // Speichern in Konfigurationsdatei
         if(this.lk_cConfigFile != null)
         {
         	this.lk_cConfigFile.setConfig(
-        			this.lk_szConfigTokenTCPUDPPrinterIPAddress, 
+        			this.lk_szConfigTokenTCPUDPPrinterIPAddress,
                     this.lk_szTCPUDPPrinterIPAddress);
         }
-        
+
         return;
     }
-    
+
     /**
      * Abfrage der aktuell verwendeten IP-Adresse.
-     * 
+     *
      * @return IP-Adresse in Textform.
      */
     public String getIPAdress()
     {
     	return this.lk_szTCPUDPPrinterIPAddress;
     }
-    
+
     /**
      * Setzen des zu verwendenden Netzwerkports.
-     * 
+     *
      * @param port Netzwerkport.
      */
     public void setPort(int port)
     {
     	this.lk_iTCPUDPPrinterPort = port;
-        
+
         // Speichern in Konfigurationsdatei
         if(this.lk_cConfigFile != null)
         {
@@ -268,29 +348,29 @@ public class CVNetworkSettings extends CVInterfaceSettings
                     this.lk_szConfigTokenTCPUDPPrinterPort,
         			Integer.toString(this.lk_iTCPUDPPrinterPort));
         }
-        
+
         return;
     }
-    
+
     /**
-     * Abfrage des aktuell verwendeten Netzwerkports 
-     * 
+     * Abfrage des aktuell verwendeten Netzwerkports
+     *
      * @return Netzwerkport.
      */
     public int getPort()
     {
     	return this.lk_iTCPUDPPrinterPort;
     }
-    
+
     /**
      * UDP-Broadcast ein- bzw. ausschalten
-     * 
+     *
      * @param bUDPBroadcast true - Broadcast ein, false - Broadcast aus
      */
     public void setUDPBroadcast(boolean bUDPBroadcast)
     {
     	this.lk_bUDPBroadcast = bUDPBroadcast;
-    	
+
     	// Speichern in Konfigurationsdatei
     	if(this.lk_cConfigFile != null)
     	{
@@ -307,23 +387,124 @@ public class CVNetworkSettings extends CVInterfaceSettings
     					"false");
     		}
     	}
-    	
+
     	return;
     }
-    
+
     /**
      * Abfrage UDP-Broadcast
-     * 
+     *
      * @return true - Broadcast ein, false - Broadcast aus
      */
     public boolean getUDPBroadcast()
     {
     	return this.lk_bUDPBroadcast;
     }
-    
+
+    public void setTCPKeepAlive(boolean b)
+    {
+        lk_bTCPKeepAlive = b;
+
+        // Speichern in Konfigurationsdatei
+        if(this.lk_cConfigFile != null)
+        {
+            if(this.lk_bTCPKeepAlive == true)
+            {
+                this.lk_cConfigFile.setConfig(
+                        this.lk_szConfigTokenTCPKeepAlive,
+                        "true");
+            }
+            else
+            {
+                this.lk_cConfigFile.setConfig(
+                        this.lk_szConfigTokenTCPKeepAlive,
+                        "false");
+            }
+        }
+    }
+
+    public boolean getTCPKeepAlive()
+    {
+        return lk_bTCPKeepAlive;
+    }
+
+    public void setTCPAutoReconn(boolean b)
+    {
+        lk_bTCPAutoReconn = b;
+
+        // Speichern in Konfigurationsdatei
+        if(this.lk_cConfigFile != null)
+        {
+            if(this.lk_bTCPAutoReconn == true)
+            {
+                this.lk_cConfigFile.setConfig(
+                        this.lk_szConfigTokenTCPAutoReconn,
+                        "true");
+            }
+            else
+            {
+                this.lk_cConfigFile.setConfig(
+                        this.lk_szConfigTokenTCPAutoReconn,
+                        "false");
+            }
+        }
+    }
+
+    public boolean getTCPAutoReconn()
+    {
+        return lk_bTCPAutoReconn;
+    }
+
+    public void setTCPAutoSendAfterConnOnOff(boolean b)
+    {
+        lk_bTCPAutoSendAfterConnOnOff = b;
+
+        // Speichern in Konfigurationsdatei
+        if(this.lk_cConfigFile != null)
+        {
+            if(this.lk_bTCPAutoSendAfterConnOnOff == true)
+            {
+                this.lk_cConfigFile.setConfig(
+                        this.lk_szConfigTokenTCPSendAfterConnOnOff,
+                        "true");
+            }
+            else
+            {
+                this.lk_cConfigFile.setConfig(
+                        this.lk_szConfigTokenTCPSendAfterConnOnOff,
+                        "false");
+            }
+        }
+    }
+
+    public boolean getTCPAutoSendAfterConnOnOff()
+    {
+        return lk_bTCPAutoSendAfterConnOnOff;
+    }
+
+    public void setTCPAutoSendAfterConn(String ip)
+    {
+        this.lk_szTCPAutoSendAfterConn = ip;
+
+        // Speichern in Konfigurationsdatei
+        if(this.lk_cConfigFile != null)
+        {
+            this.lk_cConfigFile.setConfig(
+                    this.lk_szConfigTokenTCPSendAfterConn,
+                    this.lk_szTCPAutoSendAfterConn);
+        }
+
+        return;
+    }
+
+    public String getTCPAutoSendAfterConn()
+    {
+        return this.lk_szTCPAutoSendAfterConn;
+    }
+
     /**
      * Ueberprueft String auf gueltige IP-Adresse
-     * 
+     *
      * @param ip IP-Adresse.
      * @return true, wenn Adresse gueltig.
      */

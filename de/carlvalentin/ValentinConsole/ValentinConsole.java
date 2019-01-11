@@ -23,6 +23,8 @@ import javax.swing.JMenu;
  */
 public class ValentinConsole extends JFrame {
 
+    private static ValentinConsole vc;
+
     /**
      * Ausgabe von Fehlermeldungen in Form von Dialogen
      */
@@ -148,6 +150,8 @@ public class ValentinConsole extends JFrame {
     private JMenu     jMenuConsole          = null;
     private JMenuItem jMenuItemClearConsole = null;
 
+    private boolean bAutoReconnectRunning = false;
+
      /**
      * main-Funktion des Programms
      *
@@ -207,8 +211,8 @@ public class ValentinConsole extends JFrame {
             }
         }
 
-        ValentinConsole rc = new ValentinConsole(sIP, iPort, sScript, bRunScript);
-        rc.show();
+        vc = new ValentinConsole(sIP, iPort, sScript, bRunScript);
+        vc.show();
     }
 
     /**
@@ -464,6 +468,25 @@ public class ValentinConsole extends JFrame {
         return this.lk_cConnectionManager.disconnect(connectionInterface);
     }
 
+    public static void doAutoReconnect()
+    {
+        CVNetworkTCP sNetworkTCPItf =
+                vc.lk_cConnectionManager.getTCPNetworkInterface();
+        CVNetworkSettings cNetworkSettingsTCP =
+                (CVNetworkSettings)sNetworkTCPItf.getInterfaceSettings();
+        if (cNetworkSettingsTCP.getTCPAutoReconn())
+        {
+            sNetworkTCPItf.doAutoReconnect();
+            vc.bAutoReconnectRunning = true;
+            vc.jButtonConnectBarDisconnect.setEnabled(true);
+        }
+    }
+
+    public static void connect()
+    {
+        vc.jButtonConnectBarConnect.doClick();
+    }
+
     /**
      * Verbindung zum Drucker herstellen.
      *
@@ -471,6 +494,12 @@ public class ValentinConsole extends JFrame {
      */
     public boolean connectPrinter()
     {
+        if (bAutoReconnectRunning)
+        {
+            vc.lk_cConnectionManager.getTCPNetworkInterface().stopAutoReconnect();
+            bAutoReconnectRunning = false;
+        }
+
         if(this.lk_cConnectionManager.isConnected() == true)
         {
             // schon mit Drucker verbunden
@@ -488,12 +517,12 @@ public class ValentinConsole extends JFrame {
             if(sDescrInterface.equals((String)"TCP network"))
             {
                 cSelectedInterface = (CVInterface)
-                this.lk_cConnectionManager.getTCPNetworkInterface();
+                        this.lk_cConnectionManager.getTCPNetworkInterface();
             }
             else if(sDescrInterface.equals((String)"UDP network"))
             {
                 cSelectedInterface = (CVInterface)
-                this.lk_cConnectionManager.getUDPNetworkInterface();
+                        this.lk_cConnectionManager.getUDPNetworkInterface();
             }
             else if(sDescrInterface.equals((String)"serial port"))
             {
@@ -545,6 +574,11 @@ public class ValentinConsole extends JFrame {
         }
     }
 
+    public static void disconnect()
+    {
+        vc.jButtonConnectBarDisconnect.doClick();
+    }
+
     /**
      * Verbindung zum Drucker beenden.
      *
@@ -552,6 +586,13 @@ public class ValentinConsole extends JFrame {
      */
     public boolean disconnectPrinter()
     {
+        if (bAutoReconnectRunning)
+        {
+            vc.lk_cConnectionManager.getTCPNetworkInterface().stopAutoReconnect();
+            bAutoReconnectRunning = false;
+            return true;
+        }
+
         if(this.lk_cConnectionManager.isConnected() == false)
         {
             // mit keinem Drucker verbunden
@@ -969,12 +1010,6 @@ public class ValentinConsole extends JFrame {
         return jComboBoxConnectBarChooseEncoding;
     }
 
-    public void setButtonsOnConnect(String s) {
-        jComboBoxConnectBarChooseInterface.setSelectedItem(s);
-        jButtonConnectBarConnect.setEnabled(false);
-        jButtonConnectBarDisconnect.setEnabled(true);
-    }
-
     /**
      * This method initializes jButton
      *
@@ -1010,11 +1045,6 @@ public class ValentinConsole extends JFrame {
             });
         }
         return jButtonConnectBarConnect;
-    }
-
-    public void setButtonsOnDisconnect() {
-        jButtonConnectBarConnect.setEnabled(true);
-        jButtonConnectBarDisconnect.setEnabled(false);
     }
 
     /**

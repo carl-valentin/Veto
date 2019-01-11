@@ -4,6 +4,8 @@ import java.io.*;
 
 import de.carlvalentin.Common.UI.CVErrorMessage;
 import de.carlvalentin.Common.UI.CVStatusLine;
+import de.carlvalentin.Interface.CVNetworkSettings;
+import de.carlvalentin.ValentinConsole.ValentinConsole;
 import de.carlvalentin.Common.CVLogging;
 
 /**
@@ -13,14 +15,17 @@ import de.carlvalentin.Common.CVLogging;
  * unerheblich. Die Klasse verpackt die Daten in die geforderten Start- und
  * Stopzeichen der CVPL.
  */
-public class CVProtocolRecvThread extends CVProtocolThread 
+public class CVProtocolRecvThread extends CVProtocolThread
 {
     /**
      * Binaerer Eingabestrom des Threads - Durchleitung aller Daten
      */
     private InputStream lk_cBinaryInput = null;
-    private OutputStream lk_cBinaryOutput = null;    
-    
+    private OutputStream lk_cBinaryOutput = null;
+
+    private Writer lk_cKeepAliveItfWriter = null;
+    private boolean lk_bKeepAliveErrorOnFail = true;
+
     /**
      * Konstruktor der Klasse CVProtocolRecvThread
      *
@@ -29,15 +34,15 @@ public class CVProtocolRecvThread extends CVProtocolThread
      * @param statusMessage Ausgabe von Statusmeldungen auf Statuszeile.
      */
 	public CVProtocolRecvThread(
-            CVErrorMessage errorMessage, 
+            CVErrorMessage errorMessage,
             CVLogging      errorFile,
             CVStatusLine   statusMessage)
     {
 		super(errorMessage, errorFile, statusMessage);
-        
+
         return;
     }
-    
+
     /**
      * Aufurf durch den Garbage Collector
      */
@@ -46,37 +51,50 @@ public class CVProtocolRecvThread extends CVProtocolThread
         if(this.lk_cBinaryInput != null)
         {
         	this.lk_cBinaryInput.close();
-        }       
-        
+        }
+
         super.finalize();
-        
+
     	return;
     }
-    
+
     /**
-     * Setzen des binaeren Eingabestrom des Threads - Daten werden nicht 
+     * Setzen des binaeren Eingabestrom des Threads - Daten werden nicht
      * bearbeitet.
-     * 
+     *
      * @param in Binaerer Eingabestrom.
      */
     public void setBinaryInput(InputStream in)
     {
     	this.lk_cBinaryInput = in;
-        
+
         return;
-    }    
-    
+    }
+
     /**
-     * Abfrage des binaeren Eingabestrom des Thread - Daten werden nicht 
+     * Abfrage des binaeren Eingabestrom des Thread - Daten werden nicht
      * bearbeitet.
-     * 
+     *
      * @return Binaerer Eingabestrom.
      */
     public InputStream getBinaryInput()
     {
     	return this.lk_cBinaryInput;
     }
-    
+
+
+    /**
+     * Interface Write fuer Keep live
+     */
+    public void setKeepAliveItfWriter(Writer itfWriter, boolean bError)
+    {
+        this.lk_cKeepAliveItfWriter = itfWriter;
+        lk_bKeepAliveErrorOnFail = bError;
+
+        return;
+    }
+
+
     /**
      * Beendet die Verarbeitung des Threads
      */
@@ -84,9 +102,9 @@ public class CVProtocolRecvThread extends CVProtocolThread
     {
     	this.lk_cIsStoppedSemaphore.grab();
     	this.lk_bIsStopped = true;
-    	
-        this.stop();
-        
+
+        this.interrupt();
+
         if(this.lk_cInputReader != null)
     	{
     		this.lk_cInputReader = null;
@@ -95,12 +113,12 @@ public class CVProtocolRecvThread extends CVProtocolThread
     	{
     		this.lk_cVectorOutputWriter = null;
     	}
-        
+
         this.lk_cIsStoppedSemaphore.release();
-        
+
     	return;
     }
-    
+
     /**
      * Ausfuehrungsfunktion des Threads.
      */
@@ -124,22 +142,25 @@ public class CVProtocolRecvThread extends CVProtocolThread
                         }
                         catch(IOException ex)
                         {
+                            if (this.lk_cInputReader == null)
+                                return;
+
                             if (!this.lk_cInputReader.ready())
                             {
                                 continue;
                             }
-                            
-                            if(this.lk_cErrorMessage != null)
+
+                            if (this.lk_cErrorMessage != null)
                             {
                                 this.lk_cErrorMessage.write(
-                                    "CVProtocolRecvThread: I/O Exception run");
+                                    "RecvThread: IOException: " + ex.getMessage());
                             }
-                            if(this.lk_cErrorFile != null)
+                            if (this.lk_cErrorFile != null)
                             {
                                 this.lk_cErrorFile.write( "CVPLRecvThread: " +
-                                        "I/O Exception run: " + ex.getMessage());
+                                        "I/O Exception: " + ex.getMessage());
                             }
-                            
+
                             return; // Thread verlassen
                         }
                     	for(int i=0; i<this.lk_cVectorOutputWriter.size(); i++)
@@ -150,17 +171,17 @@ public class CVProtocolRecvThread extends CVProtocolThread
                     }
                     catch(IOException ex)
                     {
-                        if(this.lk_cErrorMessage != null)
+                        if (this.lk_cErrorMessage != null)
                         {
-                        	this.lk_cErrorMessage.write(
-                                "CVProtocolRecvThread: I/O Exception run: ");
+                            this.lk_cErrorMessage.write(
+                                "RecvThread: IOException: " + ex.getMessage());
                         }
-                        if(this.lk_cErrorFile != null)
+                        if (this.lk_cErrorFile != null)
                         {
-                        	this.lk_cErrorFile.write( "CVPLRecvThread: " +
-                        			"I/O Exception run: " + ex.getMessage());
+                            this.lk_cErrorFile.write( "CVPLRecvThread: " +
+                                    "I/O Exception: " + ex.getMessage());
                         }
-                        
+
                         return; // Thread verlassen
                     }
                 }
@@ -180,31 +201,61 @@ public class CVProtocolRecvThread extends CVProtocolThread
                             }
                             catch(IOException ex)
                             {
+                                if (this.lk_cInputReader == null)
+                                    return;
+
                                 if (!this.lk_cInputReader.ready())
                                 {
+                                    if (this.lk_cKeepAliveItfWriter != null)
+                                    {
+                                        try
+                                        {
+                                            this.lk_cKeepAliveItfWriter.write(" ");
+                                            this.lk_cKeepAliveItfWriter.flush();
+                                        }
+                                        catch(IOException iex)
+                                        {
+                                            if (lk_bKeepAliveErrorOnFail)
+                                            {
+                                                if (this.lk_cErrorMessage != null)
+                                                {
+                                                    this.lk_cErrorMessage.write(
+                                                        "RecvThread: KeepAlive: " + ex.getMessage());
+                                                }
+                                                if (this.lk_cErrorFile != null)
+                                                {
+                                                    this.lk_cErrorFile.write( "CVPLRecvThread: " +
+                                                            "KeepAlive: " + ex.getMessage());
+                                                }
+                                            }
+                                            ValentinConsole.disconnect();
+                                            ValentinConsole.doAutoReconnect();
+                                            return;
+                                        }
+                                    }
                                     continue;
                                 }
-                                
-                                if(this.lk_cErrorMessage != null)
+
+                                if (this.lk_cErrorMessage != null)
                                 {
                                     this.lk_cErrorMessage.write(
-                                        "CVProtocolRecvThread: I/O Exception run");
+                                        "RecvThread: IOException: " + ex.getMessage());
                                 }
-                                if(this.lk_cErrorFile != null)
+                                if (this.lk_cErrorFile != null)
                                 {
                                     this.lk_cErrorFile.write( "CVPLRecvThread: " +
-                                            "I/O Exception run: " + ex.getMessage());
+                                            "I/O Exception: " + ex.getMessage());
                                 }
-                                
+
                                 return; // Thread verlassen
                             }
                         	if(iC == this.lk_cSohEtb.gl_iSOH)
                         	{
                         		break;
                         	}
-                        	
+
                         	// Alles bis zum Startzeichen einlesen
-                        	for(int i=0; i<this.lk_cVectorOutputWriter.size(); 
+                        	for(int i=0; i<this.lk_cVectorOutputWriter.size();
                         		i++)
                         	{
                         		((Writer)this.lk_cVectorOutputWriter.get(i)).
@@ -230,17 +281,17 @@ public class CVProtocolRecvThread extends CVProtocolThread
                     }
                     catch(IOException ex)
                     {
-                        if(this.lk_cErrorMessage != null)
+                        if (this.lk_cErrorMessage != null)
                         {
-                        	this.lk_cErrorMessage.write(
-                                "CVProtocolRecvThread: I/O Exception run");
+                            this.lk_cErrorMessage.write(
+                                "RecvThread: IOException: " + ex.getMessage());
                         }
-                        if(this.lk_cErrorFile != null)
+                        if (this.lk_cErrorFile != null)
                         {
-                        	this.lk_cErrorFile.write( "CVPLRecvThread: " +
-                        			"I/O Exception run: " + ex.getMessage());
+                            this.lk_cErrorFile.write( "CVPLRecvThread: " +
+                                    "I/O Exception: " + ex.getMessage());
                         }
-                        
+
                         return; // Thread verlassen
                     }
                 }
