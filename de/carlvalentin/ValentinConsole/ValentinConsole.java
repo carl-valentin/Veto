@@ -1131,7 +1131,7 @@ public class ValentinConsole extends JFrame {
                 public void actionPerformed(java.awt.event.ActionEvent e)
                 {
                     JOptionPane.showMessageDialog(null,
-                            "Valentin Embedded Test Office\nVersion 0.9",
+                            "Valentin Embedded Test Office\nVersion 1.0",
                             "Info",
                             JOptionPane.OK_OPTION);
                 }

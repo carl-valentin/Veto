@@ -11,7 +11,7 @@ import javax.swing.JOptionPane;
 public class CVConfigFile
 {
     private final String strConfigVersionID = "Cfg-File Version";
-    private final String strConfigVersion = "0.1";
+    private final String strConfigVersion = "1.0";
 
     private String strConfigFileName;
     private List list = Collections.synchronizedList(new LinkedList());
