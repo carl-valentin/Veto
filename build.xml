@@ -1,4 +1,4 @@
-<project name="Valentin Embedded Test Office V0.9" default="dist.win32" basedir=".">
+<project name="Valentin Embedded Test Office V1.0" default="dist.win32" basedir=".">
     <description>
         Ant build file for the Valentin Embedded Test Office
     </description>
@@ -71,6 +71,10 @@
         <jar jarfile="${ODIR_PACKAGE}/Veto.jar"
            basedir="${ODIR_CLASSES}"
            manifest="de/carlvalentin/ValentinConsole/manifest.mf"/>
+        <!-- Copy icon in package dir -->
+        <copy todir="${ODIR_PACKAGE}">
+            <fileset dir="." includes="icon.png"/>
+        </copy>
         <!-- Copy the rest needed for dist in package dir -->
         <copy todir="${ODIR_PACKAGE}">
             <fileset dir="bsh" excludes="**/*.pj"/>
@@ -95,6 +99,10 @@
         <jar jarfile="${ODIR_PACKAGE}/Veto.jar"
              basedir="${ODIR_CLASSES}"
              manifest="de/carlvalentin/ValentinConsole/manifest.mf"/>
+        <!-- Copy icon in package dir -->
+        <copy todir="${ODIR_PACKAGE}">
+            <fileset dir="." includes="icon.png"/>
+        </copy>
         <!-- Copy the rest needed for dist in package dir -->
         <copy todir="${ODIR_PACKAGE}">
             <fileset dir="javax.comm/mfz-rxtx-2.2-20081207-win-x86" includes="**/*.jar,**/*.dll"/>
@@ -115,6 +123,7 @@
         <copy todir="${ODIR_PACKAGE}">
             <fileset dir="." includes="*.doc"/>
             <fileset dir="." includes="VetoStart.bat"/>
+        	<fileset dir="." includes="VetoStart32BitJava.bat"/>
         </copy>
     </target>
 
@@ -125,6 +134,10 @@
         <jar jarfile="${ODIR_PACKAGE}/Veto.jar"
              basedir="${ODIR_CLASSES}"
              manifest="de/carlvalentin/ValentinConsole/manifest.mf"/>
+        <!-- Copy icon in package dir -->
+        <copy todir="${ODIR_PACKAGE}">
+            <fileset dir="." includes="icon.png"/>
+        </copy>
         <!-- Copy the rest needed for dist in package dir -->
         <copy todir="${ODIR_PACKAGE}">
             <fileset dir="javax.comm/mfz-rxtx-2.2-20081207-win-x64" includes="**/*.jar,**/*.dll"/>
@@ -155,6 +168,10 @@
         <jar jarfile="${ODIR_PACKAGE}/Veto.jar"
              basedir="${ODIR_CLASSES}"
              manifest="de/carlvalentin/ValentinConsole/manifest.mf"/>
+        <!-- Copy icon in package dir -->
+        <copy todir="${ODIR_PACKAGE}">
+            <fileset dir="." includes="icon.png"/>
+        </copy>
         <!-- Copy the rest needed for dist in package dir -->
         <copy todir="${ODIR_PACKAGE}">
             <fileset dir="javax.comm/rxtx-2.2pre2-bins" includes="**/*.jar"/>

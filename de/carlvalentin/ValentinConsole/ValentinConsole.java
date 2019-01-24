@@ -738,6 +738,7 @@ public class ValentinConsole extends JFrame {
         this.setJMenuBar(getJMenuBarMain());
         this.setContentPane(getJPanelMain());
         this.setTitle("VETO - Valentin Embedded Test Office");
+        this.setIconImage(Toolkit.getDefaultToolkit().getImage("icon.png"));
         this.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
     }
 
