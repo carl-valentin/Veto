@@ -74,6 +74,7 @@
         <!-- Copy icon in package dir -->
         <copy todir="${ODIR_PACKAGE}">
             <fileset dir="." includes="icon.png"/>
+        	<fileset dir="." includes="veto.ico"/>
         </copy>
         <!-- Copy the rest needed for dist in package dir -->
         <copy todir="${ODIR_PACKAGE}">
@@ -102,6 +103,7 @@
         <!-- Copy icon in package dir -->
         <copy todir="${ODIR_PACKAGE}">
             <fileset dir="." includes="icon.png"/>
+        	<fileset dir="." includes="veto.ico"/>
         </copy>
         <!-- Copy the rest needed for dist in package dir -->
         <copy todir="${ODIR_PACKAGE}">
@@ -137,6 +139,7 @@
         <!-- Copy icon in package dir -->
         <copy todir="${ODIR_PACKAGE}">
             <fileset dir="." includes="icon.png"/>
+        	<fileset dir="." includes="veto.ico"/>
         </copy>
         <!-- Copy the rest needed for dist in package dir -->
         <copy todir="${ODIR_PACKAGE}">
