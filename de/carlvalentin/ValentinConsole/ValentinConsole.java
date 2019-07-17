@@ -76,11 +76,11 @@ public class ValentinConsole extends JFrame {
 	 * Token zum Speichern des Dateipfades zuletzt geöffneter Dateien in
 	 * Konfigurationsdatei
 	 */
-	private final String lk_szConfigTokenPathRecent0 = "ValentinConsoleSettingsPathRecent0";
-	private final String lk_szConfigTokenPathRecent1 = "ValentinConsoleSettingsPathRecent1";
-	private final String lk_szConfigTokenPathRecent2 = "ValentinConsoleSettingsPathRecent2";
-	private final String lk_szConfigTokenPathRecent3 = "ValentinConsoleSettingsPathRecent3";
-	private final String lk_szConfigTokenPathRecent4 = "ValentinConsoleSettingsPathRecent4";
+	private final String lk_szConfigTokenFilePathRecent0 = "ValentinConsoleSettingsFilePathRecent0";
+	private final String lk_szConfigTokenFilePathRecent1 = "ValentinConsoleSettingsFilePathRecent1";
+	private final String lk_szConfigTokenFilePathRecent2 = "ValentinConsoleSettingsFilePathRecent2";
+	private final String lk_szConfigTokenFilePathRecent3 = "ValentinConsoleSettingsFilePathRecent3";
+	private final String lk_szConfigTokenFilePathRecent4 = "ValentinConsoleSettingsFilePathRecent4";
 
 	/**
 	 * Token zum Speichern des Dateinamens zuletzt geöffneter Dateien in
@@ -91,6 +91,15 @@ public class ValentinConsole extends JFrame {
 	private final String lk_szConfigTokenFileNameRecent2 = "ValentinConsoleSettingsFileNameRecent2";
 	private final String lk_szConfigTokenFileNameRecent3 = "ValentinConsoleSettingsFileNameRecent3";
 	private final String lk_szConfigTokenFileNameRecent4 = "ValentinConsoleSettingsFileNameRecent4";
+
+	/**
+	 * Token zum Speichern zuletzt verwendeter Dateipfade in Konfigurationsdatei
+	 */
+	String lk_szConfigTokenPathRecent0 = "ValentinConsoleSettingsPathRecent0";
+	String lk_szConfigTokenPathRecent1 = "ValentinConsoleSettingsPathRecent1";
+	String lk_szConfigTokenPathRecent2 = "ValentinConsoleSettingsPathRecent2";
+	String lk_szConfigTokenPathRecent3 = "ValentinConsoleSettingsPathRecent3";
+	String lk_szConfigTokenPathRecent4 = "ValentinConsoleSettingsPathRecent4";
 
 	/**
 	 * Grafische Oberflaeche fuer Einstellung Start-/Stopzeichen CVPL
@@ -243,28 +252,47 @@ public class ValentinConsole extends JFrame {
 		this.initialize();
 
 		if (this.lk_cConfigFile != null) {
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent0) == null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent0, "null");
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent0, "null");
+			} else {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenPath,
+						lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent0));
+			}
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent1) == null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent1, "null");
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent1, "null");
+			}
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent2) == null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent2, "null");
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent2, "null");
+			}
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent3) == null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent3, "null");
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent3, "null");
+			}
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent4) == null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent4, "null");
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent4, "null");
+			}
+
 			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0) == null) {
 				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent0, "null");
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent0, "null");
 			} else {
 				lk_cConfigFile.setConfig(this.lk_szConfigTokenPath,
 						lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0));
 			}
 			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1) == null) {
 				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent1, "null");
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent1, "null");
 			}
 			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2) == null) {
 				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent2, "null");
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent2, "null");
 			}
 			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent3) == null) {
 				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent3, "null");
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent3, "null");
 			}
 			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent4) == null) {
 				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent4, "null");
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent4, "null");
 			}
 		}
 
@@ -620,6 +648,7 @@ public class ValentinConsole extends JFrame {
 			if (this.lk_cConfigFile != null) {
 				String absolutePath = fileTransmit.getAbsolutePath().toString();
 				sortRecentItems(absolutePath);
+				sortRecentItemsPath(absolutePath,true);
 				this.lk_cConfigFile.setConfig(this.lk_szConfigTokenPath, absolutePath);
 			}
 
@@ -1034,119 +1063,11 @@ public class ValentinConsole extends JFrame {
 		return jMenuItemTransmitFile;
 	}
 
-	private void sortRecentItems(String path) {
-		File fileTransmit = new File(path);
-		if (path.equals(this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent4).toString())) {
-			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent3) != null) {
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent4,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent3));
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent4,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent3));
-			}
-			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2) != null) {
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent3,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2));
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent3,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent2));
-			}
-			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1) != null) {
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent2,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1));
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent2,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent1));
-			}
-			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0) != null) {
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent1,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0));
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent1,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent0));
-			}
-			lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent0, fileTransmit.getAbsolutePath());
-			lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent0, fileTransmit.getName());
-		} else if (path.equals(this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent3).toString())) {
-			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2) != null) {
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent3,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2));
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent3,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent2));
-			}
-			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1) != null) {
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent2,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1));
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent2,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent1));
-			}
-			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0) != null) {
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent1,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0));
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent1,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent0));
-			}
-			lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent0, fileTransmit.getAbsolutePath());
-			lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent0, fileTransmit.getName());
-		} else if (path.equals(this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2).toString())) {
-			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1) != null) {
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent2,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1));
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent2,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent1));
-			}
-			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0) != null) {
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent1,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0));
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent1,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent0));
-			}
-			lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent0, fileTransmit.getAbsolutePath());
-			lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent0, fileTransmit.getName());
-		} else if (path.equals(this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1).toString())) {
-			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0) != null) {
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent1,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0));
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent1,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent0));
-			}
-			lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent0, fileTransmit.getAbsolutePath());
-			lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent0, fileTransmit.getName());
-		} else if (path.equals(this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0).toString())) {
-			lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent0, fileTransmit.getAbsolutePath());
-			lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent0, fileTransmit.getName());
-		} else {
-			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent3) != null) {
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent4,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent3));
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent4,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent3));
-			}
-			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2) != null) {
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent3,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2));
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent3,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent2));
-			}
-			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1) != null) {
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent2,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1));
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent2,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent1));
-			}
-			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0) != null) {
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent1,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0));
-				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent1,
-						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent0));
-			}
-			lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent0, fileTransmit.getAbsolutePath());
-			lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent0, fileTransmit.getName());
-		}
-	}
-
 	private JMenuItem getJMenuItemOpenRecentPath0() {
 		if (this.lk_cConfigFile != null) {
 			String filePath = null;
 			filePath = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0);
 			if (filePath != null && !filePath.equals("null") && !filePath.equals("")) {
-				filePath = filePath.substring(0, filePath.lastIndexOf('\\'));
 				if (jMenuItemOpenRecentPath0 == null) {
 					jMenuItemOpenRecentPath0 = new JMenuItem();
 				}
@@ -1177,9 +1098,6 @@ public class ValentinConsole extends JFrame {
 	private JMenuItem getJMenuItemOpenRecentPath1() {
 		String filePath = null;
 		filePath = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1);
-		if (filePath != null && !filePath.equals("null") && !filePath.equals("")) {
-			filePath = filePath.substring(0, filePath.lastIndexOf('\\'));
-		}
 		if (jMenuItemOpenRecentPath1 == null) {
 			jMenuItemOpenRecentPath1 = new JMenuItem();
 		}
@@ -1196,9 +1114,6 @@ public class ValentinConsole extends JFrame {
 	private JMenuItem getJMenuItemOpenRecentPath2() {
 		String filePath = null;
 		filePath = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2);
-		if (filePath != null && !filePath.equals("null") && !filePath.equals("")) {
-			filePath = filePath.substring(0, filePath.lastIndexOf('\\'));
-		}
 		if (jMenuItemOpenRecentPath2 == null) {
 			jMenuItemOpenRecentPath2 = new JMenuItem();
 		}
@@ -1215,9 +1130,6 @@ public class ValentinConsole extends JFrame {
 	private JMenuItem getJMenuItemOpenRecentPath3() {
 		String filePath = null;
 		filePath = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent3);
-		if (filePath != null && !filePath.equals("null") && !filePath.equals("")) {
-			filePath = filePath.substring(0, filePath.lastIndexOf('\\'));
-		}
 		if (jMenuItemOpenRecentPath3 == null) {
 			jMenuItemOpenRecentPath3 = new JMenuItem();
 		}
@@ -1234,9 +1146,6 @@ public class ValentinConsole extends JFrame {
 	private JMenuItem getJMenuItemOpenRecentPath4() {
 		String filePath = null;
 		filePath = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent4);
-		if (filePath != null && !filePath.equals("null") && !filePath.equals("")) {
-			filePath = filePath.substring(0, filePath.lastIndexOf('\\'));
-		}
 		if (jMenuItemOpenRecentPath4 == null) {
 			jMenuItemOpenRecentPath4 = new JMenuItem();
 		}
@@ -1252,28 +1161,155 @@ public class ValentinConsole extends JFrame {
 
 	private void openRecentPath(int i) {
 		String filePath = null;
-		if (i == 0) {
-			filePath = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0);
-		} else if (i == 1) {
-			filePath = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1);
-		} else if (i == 2) {
-			filePath = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2);
-		} else if (i == 3) {
-			filePath = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent3);
-		} else if (i == 4) {
-			filePath = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent4);
-		}
+		String lk_szConfigTokenPathRecent = "ValentinConsoleSettingsPathRecent";
+		filePath = this.lk_cConfigFile.getConfig(lk_szConfigTokenPathRecent + i);
 
-		lk_cConfigFile.setConfig(this.lk_szConfigTokenPath, filePath);
-		// sortRecentItems(this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPath));
+		this.lk_cConfigFile.setConfig(lk_szConfigTokenPath, filePath);
+		sortRecentItemsPath(filePath, false);
 		transmitFile();
+		if (jMenuItemOpenRecentPath0 != null) {
+			jMenuFileSubmenuRecentPath.remove(jMenuItemOpenRecentPath0);
+			jMenuItemOpenRecentPath0 = null;
+		}
+		if (jMenuItemOpenRecentPath1 != null) {
+			jMenuFileSubmenuRecentPath.remove(jMenuItemOpenRecentPath1);
+			jMenuItemOpenRecentPath1 = null;
+		}
+		if (jMenuItemOpenRecentPath2 != null) {
+			jMenuFileSubmenuRecentPath.remove(jMenuItemOpenRecentPath2);
+			jMenuItemOpenRecentPath2 = null;
+		}
+		if (jMenuItemOpenRecentPath3 != null) {
+			jMenuFileSubmenuRecentPath.remove(jMenuItemOpenRecentPath3);
+			jMenuItemOpenRecentPath3 = null;
+		}
+		if (jMenuItemOpenRecentPath4 != null) {
+			jMenuFileSubmenuRecentPath.remove(jMenuItemOpenRecentPath4);
+			jMenuItemOpenRecentPath4 = null;
+		}
 		refeshOpenRecentItems();
+	}
+
+	private void sortRecentItemsPath(String path, Boolean cutPath) {
+		if (cutPath) {
+			if (path.contains("\\")) {
+				path = path.substring(0, path.lastIndexOf('\\'));
+			}
+		}
+		if (path.equals(this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent4).toString())) {
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent3) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent4,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent3));
+			}
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent3,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2));
+			}
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent2,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1));
+			}
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent1,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0));
+			}
+			lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent0, path);
+		} else if (path.equals(this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent3).toString())) {
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent3,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2));
+			}
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent2,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1));
+			}
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent1,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0));
+			}
+			lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent0, path);
+		} else if (path.equals(this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2).toString())) {
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent2,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1));
+			}
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent1,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0));
+			}
+			lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent0, path);
+		} else if (path.equals(this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1).toString())) {
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent1,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0));
+			}
+			lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent0, path);
+		} else if (path.equals(this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0).toString())) {
+			lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent0, path);
+		} else {
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent3) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent4,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent3));
+			}
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent3,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2));
+			}
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent2,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1));
+			}
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent1,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0));
+			}
+			lk_cConfigFile.setConfig(this.lk_szConfigTokenPathRecent0, path);
+		}
 	}
 
 	/**
 	 * This method refreshes the recently opened files
 	 */
 	private void refeshOpenRecentItems() {
+
+		String filePath = null;
+		if (!this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0).toString().equals("null")) {
+			if (jMenuItemOpenRecentPath0 == null) {
+				jMenuFileSubmenuRecentPath.add(getJMenuItemOpenRecentPath0());
+			}
+			filePath = lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0);
+			jMenuItemOpenRecentPath0.setText("1: " + filePath);
+			jMenuItemOpenRecentPath0.setEnabled(true);
+		}
+
+		if (!this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1).toString().equals("null")) {
+			if (jMenuItemOpenRecentPath1 == null) {
+				jMenuFileSubmenuRecentPath.add(getJMenuItemOpenRecentPath1());
+			}
+			filePath = lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1);
+			jMenuItemOpenRecentPath1.setText("2: " + filePath);
+		}
+		if (!this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2).toString().equals("null")) {
+			if (jMenuItemOpenRecentPath2 == null) {
+				jMenuFileSubmenuRecentPath.add(getJMenuItemOpenRecentPath2());
+			}
+			filePath = lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2);
+			jMenuItemOpenRecentPath2.setText("3: " + filePath);
+		}
+		if (!this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent3).toString().equals("null")) {
+			if (jMenuItemOpenRecentPath3 == null) {
+				jMenuFileSubmenuRecentPath.add(getJMenuItemOpenRecentPath3());
+			}
+			filePath = lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent3);
+			jMenuItemOpenRecentPath3.setText("4: " + filePath);
+		}
+		if (!this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent4).toString().equals("null")) {
+			if (jMenuItemOpenRecentPath4 == null) {
+				jMenuFileSubmenuRecentPath.add(getJMenuItemOpenRecentPath4());
+			}
+			filePath = lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent4);
+			jMenuItemOpenRecentPath4.setText("5: " + filePath);
+		}
 
 		String fileName = null;
 		if (!this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent0).toString().equals("null")) {
@@ -1310,193 +1346,123 @@ public class ValentinConsole extends JFrame {
 			fileName = lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent4);
 			jMenuItemOpenRecent4.setText("5: " + fileName);
 		}
-
-		String pRec = null;
-		String pRec0 = null;
-		String pRec1 = null;
-		String pRec2 = null;
-		String pRec3 = null;
-		String pRec4 = null;
-
-		pRec0 = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0).toString();
-		if (pRec0 != null && !pRec0.equals("null") && !pRec0.equals("")) {
-			pRec0 = pRec0.substring(0, pRec0.lastIndexOf('\\'));
-		}
-		pRec1 = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1).toString();
-		if (pRec1 != null && !pRec1.equals("null") && !pRec1.equals("")) {
-			pRec1 = pRec1.substring(0, pRec1.lastIndexOf('\\'));
-		}
-		pRec2 = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2).toString();
-		if (pRec2 != null && !pRec2.equals("null") && !pRec2.equals("")) {
-			pRec2 = pRec2.substring(0, pRec2.lastIndexOf('\\'));
-		}
-		pRec3 = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent3).toString();
-		if (pRec3 != null && !pRec3.equals("null") && !pRec3.equals("")) {
-			pRec3 = pRec3.substring(0, pRec3.lastIndexOf('\\'));
-		}
-		pRec4 = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent4).toString();
-		if (pRec4 != null && !pRec4.equals("null") && !pRec4.equals("")) {
-			pRec4 = pRec4.substring(0, pRec4.lastIndexOf('\\'));
-		}
-
-		pRec = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0).toString();
-		if (pRec != null && !pRec.equals("null") && !pRec.equals("")) {
-			pRec = pRec.substring(0, pRec.lastIndexOf('\\'));
-		}
-		if (!pRec.equals("null")) {
-			jMenuItemOpenRecentPath0.setText(pRec);
-		}
-		if (!pRec.equals("null") && !pRec.equals(pRec1) && !pRec.equals(pRec2) && !pRec.equals(pRec3)
-				&& !pRec.equals(pRec4)) {
-			jMenuItemOpenRecentPath0.setText(pRec);
-			jMenuItemOpenRecentPath0.setEnabled(true);
-		} else {
-			if (jMenuItemOpenRecentPath0 != null) {
-				// System.out.println("Remove Item 0");
-				// jMenuFileSubmenuRecentPath.remove(jMenuItemOpenRecentPath0);
-			}
-		}
-
-		pRec = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1).toString();
-		if (pRec != null && !pRec.equals("null") && !pRec.equals("")) {
-			pRec = pRec.substring(0, pRec.lastIndexOf('\\'));
-		}
-		if (!pRec.equals("null") && jMenuItemOpenRecentPath1 != null) {
-			jMenuItemOpenRecentPath1.setText(pRec);
-		}
-		if (!pRec.equals("null") && !pRec.equals(pRec0) && !pRec.equals(pRec2) && !pRec.equals(pRec3)
-				&& !pRec.equals(pRec4)) {
-			if (jMenuItemOpenRecentPath1 == null) {
-				jMenuFileSubmenuRecentPath.add(getJMenuItemOpenRecentPath1());
-			}
-			jMenuItemOpenRecentPath1.setText(pRec);
-		} else {
-			if (jMenuItemOpenRecentPath1 != null) {
-				remove(pRec);
-			}
-		}
-		pRec = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2).toString();
-		if (pRec != null && !pRec.equals("null") && !pRec.equals("")) {
-			pRec = pRec.substring(0, pRec.lastIndexOf('\\'));
-		}
-		if (!pRec.equals("null") && jMenuItemOpenRecentPath2 != null) {
-			jMenuItemOpenRecentPath2.setText(pRec);
-		}
-		if (!pRec.equals("null") && !pRec.equals(pRec0) && !pRec.equals(pRec1) && !pRec.equals(pRec3)
-				&& !pRec.equals(pRec4)) {
-			if (jMenuItemOpenRecentPath2 == null) {
-				jMenuFileSubmenuRecentPath.add(getJMenuItemOpenRecentPath2());
-			}
-			jMenuItemOpenRecentPath2.setText(pRec);
-		} else {
-			if (jMenuItemOpenRecentPath2 != null) {
-				remove(pRec);
-			}
-		}
-		pRec = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent3).toString();
-		if (pRec != null && !pRec.equals("null") && !pRec.equals("")) {
-			pRec = pRec.substring(0, pRec.lastIndexOf('\\'));
-		}
-		if (!pRec.equals("null") && jMenuItemOpenRecentPath3 != null) {
-			jMenuItemOpenRecentPath3.setText(pRec);
-		}
-		if (!pRec.equals("null") && !pRec.equals(pRec0) && !pRec.equals(pRec1) && !pRec.equals(pRec2)
-				&& !pRec.equals(pRec4)) {
-			if (jMenuItemOpenRecentPath3 == null) {
-				jMenuFileSubmenuRecentPath.add(getJMenuItemOpenRecentPath3());
-			}
-			jMenuItemOpenRecentPath3.setText(pRec);
-		} else {
-			if (jMenuItemOpenRecentPath3 != null) {
-				remove(pRec);
-			}
-		}
-		pRec = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent4).toString();
-		if (pRec != null && !pRec.equals("null") && !pRec.equals("")) {
-			pRec = pRec.substring(0, pRec.lastIndexOf('\\'));
-		}
-		if (!pRec.equals("null") && jMenuItemOpenRecentPath4 != null) {
-			jMenuItemOpenRecentPath4.setText(pRec);
-		}
-		if (!pRec.equals("null") && !pRec.equals(pRec0) && !pRec.equals(pRec1) && !pRec.equals(pRec2)
-				&& !pRec.equals(pRec3)) {
-			if (jMenuItemOpenRecentPath4 == null) {
-				jMenuFileSubmenuRecentPath.add(getJMenuItemOpenRecentPath4());
-			}
-			jMenuItemOpenRecentPath4.setText(pRec);
-		} else {
-			if (jMenuItemOpenRecentPath4 != null) {
-				remove(pRec);
-			}
-		}
-		pRec = null;
-		pRec0 = null;
-		pRec1 = null;
-		pRec2 = null;
-		pRec3 = null;
-		pRec4 = null;
 	}
 
-	public void remove(String removeTxt) {
-		System.out.println(removeTxt);
-		String pRec = null;
-
-		pRec = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1).toString();
-		if (pRec != null && !pRec.equals("null") && !pRec.equals("")) {
-			pRec = pRec.substring(0, pRec.lastIndexOf('\\'));
-			if (pRec != null && pRec.equals(removeTxt)) {
-				jMenuFileSubmenuRecentPath.remove(jMenuItemOpenRecentPath1);
-				System.out.println("Lösche Item 1");
-				return;
+	private void sortRecentItems(String path) {
+		File fileTransmit = new File(path);
+		if (path.equals(this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent4).toString())) {
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent3) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent4,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent3));
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent4,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent3));
 			}
-		}
-
-		pRec = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2).toString();
-		if (pRec != null && !pRec.equals("null") && !pRec.equals("")) {
-			pRec = pRec.substring(0, pRec.lastIndexOf('\\'));
-			if (pRec != null && pRec.equals(removeTxt)) {
-				jMenuFileSubmenuRecentPath.remove(jMenuItemOpenRecentPath2);
-				System.out.println("Lösche Item 2");
-				return;
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent2) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent3,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent2));
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent3,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent2));
 			}
-		}
-
-		pRec = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent3).toString();
-		if (pRec != null && !pRec.equals("null") && !pRec.equals("")) {
-			pRec = pRec.substring(0, pRec.lastIndexOf('\\'));
-			if (pRec != null && pRec.equals(removeTxt)) {
-				jMenuFileSubmenuRecentPath.remove(jMenuItemOpenRecentPath3);
-				System.out.println("Lösche Item 3");
-				return;
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent1) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent2,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent1));
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent2,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent1));
 			}
-		}
-
-		pRec = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent4).toString();
-		if (pRec != null && !pRec.equals("null") && !pRec.equals("")) {
-			pRec = pRec.substring(0, pRec.lastIndexOf('\\'));
-			if (pRec != null && pRec.equals(removeTxt)) {
-				jMenuFileSubmenuRecentPath.remove(jMenuItemOpenRecentPath4);
-				System.out.println("Lösche Item 4");
-				return;
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent0) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent1,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent0));
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent1,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent0));
 			}
+			lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent0, fileTransmit.getAbsolutePath());
+			lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent0, fileTransmit.getName());
+		} else if (path.equals(this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent3).toString())) {
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent2) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent3,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent2));
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent3,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent2));
+			}
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent1) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent2,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent1));
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent2,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent1));
+			}
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent0) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent1,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent0));
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent1,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent0));
+			}
+			lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent0, fileTransmit.getAbsolutePath());
+			lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent0, fileTransmit.getName());
+		} else if (path.equals(this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent2).toString())) {
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent1) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent2,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent1));
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent2,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent1));
+			}
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent0) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent1,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent0));
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent1,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent0));
+			}
+			lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent0, fileTransmit.getAbsolutePath());
+			lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent0, fileTransmit.getName());
+		} else if (path.equals(this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent1).toString())) {
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent0) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent1,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent0));
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent1,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent0));
+			}
+			lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent0, fileTransmit.getAbsolutePath());
+			lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent0, fileTransmit.getName());
+		} else if (path.equals(this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent0).toString())) {
+			lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent0, fileTransmit.getAbsolutePath());
+			lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent0, fileTransmit.getName());
+		} else {
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent3) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent4,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent3));
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent4,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent3));
+			}
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent2) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent3,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent2));
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent3,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent2));
+			}
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent1) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent2,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent1));
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent2,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent1));
+			}
+			if (this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent0) != null) {
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent1,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent0));
+				lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent1,
+						this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent0));
+			}
+			lk_cConfigFile.setConfig(this.lk_szConfigTokenFilePathRecent0, fileTransmit.getAbsolutePath());
+			lk_cConfigFile.setConfig(this.lk_szConfigTokenFileNameRecent0, fileTransmit.getName());
 		}
-
-		System.out.println("Keine Übereinstimmung?");
-
 	}
 
 	private void openRecentFile(int i) {
 		String filePath = null;
 		String fileName = null;
-		if (i == 0) {
-			filePath = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0);
-			fileName = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent0);
-		} else {
-			String lk_szConfigTokenPathRecent = "ValentinConsoleSettingsPathRecent";
-			String lk_szConfigTokenFileNameRecent = "ValentinConsoleSettingsFileNameRecent";
-			filePath = this.lk_cConfigFile.getConfig(lk_szConfigTokenPathRecent + i);
-			fileName = this.lk_cConfigFile.getConfig(lk_szConfigTokenFileNameRecent + i);
-		}
+
+		String lk_szConfigTokenFilePathRecent = "ValentinConsoleSettingsFilePathRecent";
+		String lk_szConfigTokenFileNameRecent = "ValentinConsoleSettingsFileNameRecent";
+		filePath = this.lk_cConfigFile.getConfig(lk_szConfigTokenFilePathRecent + i);
+		fileName = this.lk_cConfigFile.getConfig(lk_szConfigTokenFileNameRecent + i);
 
 		this.lk_cConfigFile.setConfig(lk_szConfigTokenPath, filePath);
 
@@ -1510,7 +1476,6 @@ public class ValentinConsole extends JFrame {
 		new Thread(new Runnable() {
 			public void run() {
 				CVFileTransmit fileTransmitUI = new CVFileTransmit(lk_cErrorMessage, lk_cErrorFile, lk_cStatusMessage);
-				System.out.println("Print file ");
 				fileTransmitUI.setFile(fileTransmit);
 				fileTransmitUI.setOutputStream(lk_cConnectionManager.getInterfaceBinaryOutput());
 				fileTransmitUI.setVisible(true);
@@ -1533,7 +1498,7 @@ public class ValentinConsole extends JFrame {
 			String fileName = null;
 			fileName = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent0);
 			String filePath = null;
-			filePath = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent0);
+			filePath = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent0);
 			if (fileName != null && filePath != null) {
 				if (jMenuItemOpenRecent0 == null) {
 					jMenuItemOpenRecent0 = new JMenuItem();
@@ -1565,7 +1530,7 @@ public class ValentinConsole extends JFrame {
 
 	private JMenuItem getJMenuItemOpenRecent1() {
 		String fileName = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent1);
-		String filePath = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent1);
+		String filePath = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent1);
 		if (fileName != null && filePath != null) {
 			if (jMenuItemOpenRecent1 == null) {
 				jMenuItemOpenRecent1 = new JMenuItem();
@@ -1583,7 +1548,7 @@ public class ValentinConsole extends JFrame {
 
 	private JMenuItem getJMenuItemOpenRecent2() {
 		String fileName = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent2);
-		String filePath = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent2);
+		String filePath = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent2);
 		if (fileName != null && filePath != null) {
 			if (jMenuItemOpenRecent2 == null) {
 				jMenuItemOpenRecent2 = new JMenuItem();
@@ -1601,7 +1566,7 @@ public class ValentinConsole extends JFrame {
 
 	private JMenuItem getJMenuItemOpenRecent3() {
 		String fileName = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent3);
-		String filePath = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent3);
+		String filePath = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent3);
 		if (fileName != null && filePath != null) {
 			if (jMenuItemOpenRecent3 == null) {
 				jMenuItemOpenRecent3 = new JMenuItem();
@@ -1619,7 +1584,7 @@ public class ValentinConsole extends JFrame {
 
 	private JMenuItem getJMenuItemOpenRecent4() {
 		String fileName = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFileNameRecent4);
-		String filePath = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenPathRecent4);
+		String filePath = this.lk_cConfigFile.getConfig(this.lk_szConfigTokenFilePathRecent4);
 		if (fileName != null && filePath != null) {
 			if (jMenuItemOpenRecent4 == null) {
 				jMenuItemOpenRecent4 = new JMenuItem();
