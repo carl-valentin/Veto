@@ -379,6 +379,7 @@ public class ValentinConsole extends JFrame {
 	private void showUINetworkTCPConfig() {
 		lk_cTCPNetworkUI = new CVUINetwork(this.lk_cErrorMessage, this.lk_cErrorFile, this.lk_cStatusMessage,
 				this.lk_cConnectionManager, CVNetworkProtocol.TCP);
+		lk_cTCPNetworkUI.setLocationRelativeTo(vc);
 		lk_cTCPNetworkUI.setVisible(true);
 
 		return;
@@ -391,6 +392,7 @@ public class ValentinConsole extends JFrame {
 	private void showUINetworkUDPConfig() {
 		CVUINetwork cUDPNetworkUI = new CVUINetwork(this.lk_cErrorMessage, this.lk_cErrorFile, this.lk_cStatusMessage,
 				this.lk_cConnectionManager, CVNetworkProtocol.UDP);
+		cUDPNetworkUI.setLocationRelativeTo(vc);
 		cUDPNetworkUI.setVisible(true);
 		return;
 	}
@@ -402,6 +404,7 @@ public class ValentinConsole extends JFrame {
 	private void showUISerialPortConfig() {
 		CVUISerial serialUI = new CVUISerial(this.lk_cErrorMessage, this.lk_cErrorFile, this.lk_cStatusMessage,
 				this.lk_cConnectionManager);
+		serialUI.setLocationRelativeTo(vc);
 		serialUI.setVisible(true);
 
 		return;
@@ -414,6 +417,7 @@ public class ValentinConsole extends JFrame {
 	private void showUIParallelPortConfig() {
 		CVUIParallel parallelUI = new CVUIParallel(this.lk_cErrorMessage, this.lk_cErrorFile, this.lk_cStatusMessage,
 				this.lk_cConnectionManager);
+		parallelUI.setLocationRelativeTo(vc);
 		parallelUI.setVisible(true);
 
 		return;
@@ -648,7 +652,7 @@ public class ValentinConsole extends JFrame {
 			if (this.lk_cConfigFile != null) {
 				String absolutePath = fileTransmit.getAbsolutePath().toString();
 				sortRecentItems(absolutePath);
-				sortRecentItemsPath(absolutePath,true);
+				sortRecentItemsPath(absolutePath, true);
 				this.lk_cConfigFile.setConfig(this.lk_szConfigTokenPath, absolutePath);
 			}
 
@@ -823,7 +827,7 @@ public class ValentinConsole extends JFrame {
 			jButtonConnectBarConfigInterface.setText("Configure");
 			jButtonConnectBarConfigInterface.setToolTipText("configure interface");
 			jButtonConnectBarConfigInterface.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
+				public void actionPerformed(java.awt.event.ActionEvent e) {					
 					String currentInterface = (String) jComboBoxConnectBarChooseInterface.getSelectedItem();
 					if (currentInterface.equals((String) "TCP network") == true) {
 						// TCP network
