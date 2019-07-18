@@ -834,7 +834,7 @@ public class ValentinConsole extends JFrame {
 						showUINetworkTCPConfig();
 					} else if (currentInterface.equals((String) "UDP network") == true) {
 						// UDP network
-						showUINetworkUDPConfig();
+						showUINetworkUDPConfig(); //TODO Searchbutton einbauen
 					} else if (currentInterface.equals((String) "serial port") == true) {
 						// serial port
 						showUISerialPortConfig();
