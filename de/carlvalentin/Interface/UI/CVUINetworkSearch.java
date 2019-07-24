@@ -1,5 +1,6 @@
 package de.carlvalentin.Interface.UI;
 
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -13,7 +14,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
 
-import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -21,7 +21,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ListModel;
 
 public class CVUINetworkSearch {
 
@@ -33,7 +32,6 @@ public class CVUINetworkSearch {
 	static ArrayList<String> printerIpWithName = new ArrayList<String>();
 	JList printerList = null;
 	static DefaultListModel listModel = new DefaultListModel();
-	JPanel panel = null;
 	static JLabel title = null;
 	static JButton btnOk = null;
 	static JButton btnSearchAgain = null;
@@ -54,7 +52,6 @@ public class CVUINetworkSearch {
 	}
 
 	public void searchPrinters() {
-		// TODO Neues Fenster mit überblick über gefundene Drucker, OK/Cancel Button
 		List<InetAddress> broadcastList = null;
 		try {
 			broadcastList = listAllBroadcastAddresses();
@@ -78,14 +75,14 @@ public class CVUINetworkSearch {
 		jFrameSelectPrinters = new JFrame();
 		jFrameSelectPrinters.setTitle("Druckersuche");
 		jFrameSelectPrinters.setBounds(0, 0, 400, 300);
-		panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		
+		jFrameSelectPrinters.setLayout(new BorderLayout());
 		title = new JLabel("Drucker werden gesucht... Bitte warten");
-		panel.add(title);
+		jFrameSelectPrinters.add(title, BorderLayout.NORTH);
 		JScrollPane scrollPane = new JScrollPane();
 		printerList = new JList(listModel);
 		scrollPane.setViewportView(printerList);
-		panel.add(scrollPane);
+		jFrameSelectPrinters.add(scrollPane, BorderLayout.CENTER);
 		btnOk = new JButton();
 		btnOk.setText("OK");
 		btnOk.setEnabled(false);
@@ -94,7 +91,9 @@ public class CVUINetworkSearch {
 				btnOk();
 			}
 		});
-		panel.add(btnOk);
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new FlowLayout());
+		buttonPanel.add(btnOk);
 		btnSearchAgain = new JButton();
 		btnSearchAgain.setText("Search again");
 		btnSearchAgain.setEnabled(false);
@@ -106,14 +105,15 @@ public class CVUINetworkSearch {
 				searchPrinters();
 			}
 		});
-		panel.add(btnSearchAgain);
-		jFrameSelectPrinters.setContentPane(panel);
+		buttonPanel.add(btnSearchAgain);
+		jFrameSelectPrinters.add(buttonPanel, BorderLayout.SOUTH);
+		jFrameSelectPrinters.pack();
+		jFrameSelectPrinters.setMinimumSize(jFrameSelectPrinters.getSize());
+		jFrameSelectPrinters.setBounds(0, 0, 400, 300);
 		jFrameSelectPrinters.setVisible(true);
 	}
 
 	private void btnOk() {
-		// TODO Funktionen anfügen
-		// Liste auslesen
 		int index = printerList.getSelectedIndex();
 		String selectedPrinter = printerIpWithName.get(index);
 		selectedPrinter = selectedPrinter.substring(selectedPrinter.lastIndexOf(':')+2);

@@ -66,7 +66,6 @@ public class CVFileManagement
     	boolean bReturnValue = true;
         
         FileOutputStream cOutStreamWriteFile = null;
-        
         try
         {
             cOutStreamWriteFile = new FileOutputStream(cWriteFile, append);
