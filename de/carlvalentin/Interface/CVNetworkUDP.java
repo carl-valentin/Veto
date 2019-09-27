@@ -380,7 +380,7 @@ public class CVNetworkUDP extends CVInterface
     				lk_cDataSendThreadSemaphore.release();
     				
     				//----------------------------------------------------------
-    				// Daten auf Socket ausgeben
+    				// Daten auf Socket ausgeben 
     				//----------------------------------------------------------
     				try
     				{
