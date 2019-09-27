@@ -51,7 +51,8 @@ public class CVNetworkUDP extends CVInterface
 	 * @param statusMessage
 	 * @param configFile
 	 */
-	public CVNetworkUDP(
+    
+   	public CVNetworkUDP(
             CVErrorMessage errorMessage, 
             CVLogging      errorFile,
             CVStatusLine   statusMessage,
@@ -396,7 +397,7 @@ public class CVNetworkUDP extends CVInterface
     						cNetworkPacket = new DatagramPacket(
     												bDataBuffer,
     												iDataPointer);
-    						cNetworkPacket.setAddress(InetAddress.getByName(
+    						cNetworkPacket.setAddress(Inet6Address.getByName(
     									lk_cNetworkSettingsUDP.getIPAdress()));
     						cNetworkPacket.setPort(
     									lk_cNetworkSettingsUDP.getPort());

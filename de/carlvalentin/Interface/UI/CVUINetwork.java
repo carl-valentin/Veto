@@ -310,7 +310,7 @@ public class CVUINetwork extends JFrame {
 			// Beschriftung IP-Adresse
 			// ------------------------------------------------------------------
 			this.jLabelTCPUDPIPAddress = new JLabel();
-			this.jLabelTCPUDPIPAddress.setText("IP address:");
+			this.jLabelTCPUDPIPAddress.setText("IPv4 or IPv6 address:");
 			this.jLabelTCPUDPIPAddress.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 			this.jLabelTCPUDPIPAddress.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 			this.jLabelTCPUDPIPAddress.setToolTipText("printer ip address");
