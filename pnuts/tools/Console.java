@@ -114,7 +114,7 @@ public class Console {
         return out;
     }
 
-    synchronized void write(String str) {
+    public synchronized void write(String str) {
     textarea.insert(str, mark);
     mark += str.length();
     int pos = textarea.getDocument().getLength();

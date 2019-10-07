@@ -9,6 +9,8 @@ import de.carlvalentin.Protocol.UI.*;
 import de.carlvalentin.Scripting.UI.*;
 
 import java.util.*;
+import java.util.List;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
@@ -52,6 +54,9 @@ public class ValentinConsole extends JFrame {
 	 * Datei zum Speichern der akutellen Konfiguration
 	 */
 	private CVConfigFile lk_cConfigFile = null;
+
+	// Datei zum speichern der favorisierten Kommandos
+	private CVCommandFile lk_cCommandFile = null;
 
 	/**
 	 * Einstellung Start-/Stopzeichen CVPL
@@ -188,6 +193,9 @@ public class ValentinConsole extends JFrame {
 	 */
 	private JMenu jMenuConsole = null;
 	private JMenuItem jMenuItemClearConsole = null;
+
+	// Item fuer Favoriten Commands
+	private JMenu jMenuCommandSelection = null;
 
 	private boolean bAutoReconnectRunning = false;
 
@@ -348,6 +356,7 @@ public class ValentinConsole extends JFrame {
 
 		// Anlegen der Konfigurationsdatei
 		this.lk_cConfigFile = new CVConfigFile("ValentinConsole", "0.1");
+		this.lk_cCommandFile = new CVCommandFile("ValentinFavCommands");
 
 		// Hexadezimale Ausgabe der Konsolendaten
 		this.lk_cConsoleInputHEX = new CVTextDisplay(this.lk_cErrorMessage, this.lk_cErrorFile, this.lk_cStatusMessage);
@@ -827,14 +836,14 @@ public class ValentinConsole extends JFrame {
 			jButtonConnectBarConfigInterface.setText("Configure");
 			jButtonConnectBarConfigInterface.setToolTipText("configure interface");
 			jButtonConnectBarConfigInterface.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {					
+				public void actionPerformed(java.awt.event.ActionEvent e) {
 					String currentInterface = (String) jComboBoxConnectBarChooseInterface.getSelectedItem();
 					if (currentInterface.equals((String) "TCP network") == true) {
 						// TCP network
 						showUINetworkTCPConfig();
 					} else if (currentInterface.equals((String) "UDP network") == true) {
 						// UDP network
-						showUINetworkUDPConfig(); //TODO Searchbutton einbauen
+						showUINetworkUDPConfig(); // TODO Searchbutton einbauen
 					} else if (currentInterface.equals((String) "serial port") == true) {
 						// serial port
 						showUISerialPortConfig();
@@ -980,6 +989,7 @@ public class ValentinConsole extends JFrame {
 			jMenuBarMain.add(getJMenuFile());
 			jMenuBarMain.add(getJMenuInterface());
 			jMenuBarMain.add(getJMenuConsole());
+			jMenuBarMain.add(getCommandsSelection());
 			jMenuBarMain.add(getJMenuInfo());
 		}
 
@@ -1712,6 +1722,50 @@ public class ValentinConsole extends JFrame {
 			jMenuConsole.add(getJMenuItemClearConsole());
 		}
 		return jMenuConsole;
+	}
+
+	private JMenuItem getJMenuItemCmd(String cmd, String desc) {
+		JMenuItem jMenuItemCmd = new JMenuItem();
+		jMenuItemCmd.setText(cmd+" - "+desc);
+		jMenuItemCmd.setToolTipText(desc);
+		jMenuItemCmd.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent e) {
+				System.out.println(cmd);
+				// TODO in textfeld setzen
+				lk_cConsoleInput.write(cmd);
+			}
+		});
+		return jMenuItemCmd;
+	}
+
+	List commandFileListCmd = null;
+	List commandFileListDescr = null;
+
+	private JMenu getCommandsSelection() {
+		if (jMenuCommandSelection == null) {
+			jMenuCommandSelection = new JMenu();
+			jMenuCommandSelection.setText("Commands");
+			jMenuCommandSelection.setMnemonic(java.awt.event.KeyEvent.VK_C);
+			getJMenuItemsCommandSelection();
+			Object cmdElements[] = commandFileListCmd.toArray();
+			Object descrElements[] = commandFileListDescr.toArray();
+			if(commandFileListCmd.size()>0) {
+				for (int i = 0; i < commandFileListCmd.size(); i++) {
+					jMenuCommandSelection.add(getJMenuItemCmd(cmdElements[i].toString(), descrElements[i].toString()));
+				}
+			}else {
+				JMenuItem jMenuItemNoItem = new JMenuItem();
+				jMenuItemNoItem.setText("No Favorites");
+				jMenuItemNoItem.setEnabled(false);
+				jMenuCommandSelection.add(jMenuItemNoItem);
+			}
+		}
+		return jMenuCommandSelection;
+	}
+
+	private void getJMenuItemsCommandSelection() {
+		commandFileListCmd = lk_cCommandFile.getCompleteConfigCmd();
+		commandFileListDescr = lk_cCommandFile.getCompleteConfigDescr();
 	}
 
 	/**
