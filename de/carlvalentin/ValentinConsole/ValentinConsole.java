@@ -7,6 +7,7 @@ import de.carlvalentin.Interface.UI.*;
 import de.carlvalentin.Protocol.*;
 import de.carlvalentin.Protocol.UI.*;
 import de.carlvalentin.Scripting.UI.*;
+import de.carlvalentin.Updater.ValentinUpdater;
 
 import java.util.*;
 import java.util.List;
@@ -166,6 +167,7 @@ public class ValentinConsole extends JFrame {
 	 * Men&uuml zur Arbeit mit Dateien
 	 */
 	private JMenu jMenuFile = null;
+	private JMenuItem jMenuItemUpdate = null;
 	private JMenu jMenuFileSubmenuRecentFile = null;
 	private JMenu jMenuFileSubmenuRecentPath = null;
 	private JMenuItem jMenuItemTransmitFile = null;
@@ -1048,6 +1050,7 @@ public class ValentinConsole extends JFrame {
 			jMenuFileSubmenuRecentFile.setEnabled(false);
 			jMenuFileSubmenuRecentFile.add(getJMenuItemOpenRecent0());
 			jMenuFile.add(jMenuFileSubmenuRecentFile);
+			jMenuFile.add(getJMenuItemUpdate());
 			jMenuFileSubmenuRecentPath = new JMenu();
 			jMenuFileSubmenuRecentPath.setText("Open Recent Path");
 			jMenuFileSubmenuRecentPath.setEnabled(false);
@@ -1055,6 +1058,19 @@ public class ValentinConsole extends JFrame {
 			jMenuFile.add(jMenuFileSubmenuRecentPath);
 		}
 		return jMenuFile;
+	}
+	
+	private JMenuItem getJMenuItemUpdate() {
+		if (jMenuItemUpdate == null) {
+			jMenuItemUpdate = new JMenuItem();
+			jMenuItemUpdate.setText("Transmit Update");
+			jMenuItemUpdate.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					ValentinUpdater updater = new ValentinUpdater();
+				}
+			});
+		}
+		return jMenuItemUpdate;
 	}
 
 	/**
