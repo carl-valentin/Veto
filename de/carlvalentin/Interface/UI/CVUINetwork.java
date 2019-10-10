@@ -75,6 +75,7 @@ public class CVUINetwork extends JFrame {
 	private JLabel jLabelTCPUDPPort = null;
 	private JTextField jTextFieldTCPUDPPort = null;
 	private JButton jButtonSearchPrinter = null;
+	private JButton jButtonSearchPrinter6 = null;
 
 	// --------------------------------------------------------------------------
 	// TCP
@@ -91,6 +92,7 @@ public class CVUINetwork extends JFrame {
 	
 	//Druckersuche
 	CVUINetworkSearch pCVUINetworkSearch = null;
+	CVUINetworkSearch6 pCVUINetworkSearch6 = null;
 
 	/**
 	 * Konstruktor der Klasse CVUINetwork
@@ -125,7 +127,7 @@ public class CVUINetwork extends JFrame {
 		}
 		
 		pCVUINetworkSearch = new CVUINetworkSearch();
-
+		pCVUINetworkSearch6 = new CVUINetworkSearch6();
 		this.initialize();
 
 		return;
@@ -330,6 +332,7 @@ public class CVUINetwork extends JFrame {
 			this.jPanelNetworkSettings.add(jLabelTCPUDPPort, null);
 			this.jPanelNetworkSettings.add(getJTextFieldTCPUDPPort(), null);
 			this.jPanelNetworkSettings.add(getJButtonSearchPrinter(), null);
+			this.jPanelNetworkSettings.add(getJButtonSearchPrinter6(), null);
 			// ------------------------------------------------------------------
 			// Einstellungen fuer TCP
 			// ------------------------------------------------------------------
@@ -372,7 +375,30 @@ public class CVUINetwork extends JFrame {
     	}
     	return this.jButtonSearchPrinter;
     }
-
+    /**
+     * Initialisierung von jButtonSearchPrinter6
+     *
+     * @return javax.swing.JButton
+     */
+    private JButton getJButtonSearchPrinter6() {
+    	if(this.jButtonSearchPrinter6 == null) {
+    		this.jButtonSearchPrinter6 = new JButton();
+    		this.jButtonSearchPrinter6.setText("Search Printer IPv6");
+    		this.jButtonSearchPrinter6.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					if(!pCVUINetworkSearch6.windowExist()) {
+						pCVUINetworkSearch6.listModel.removeAllElements();
+						pCVUINetworkSearch6.printerIpWithName.clear();
+						pCVUINetworkSearch6.showPrinters();
+						pCVUINetworkSearch6.searchPrinters();
+					}
+				}
+			});
+    		
+    	}
+    	return this.jButtonSearchPrinter6;
+    }
+    
 	/**
 	 * Initialisierung von jPanelNetworkLogging
 	 *
