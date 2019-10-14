@@ -505,11 +505,20 @@ public class CVUINetwork extends JFrame {
 	}
 
 	private JTextField getJTextFieldTCPAutoSendAfterConn() {
-		if (this.jTextFieldTCPAutoSendAfterConn == null) {
-			this.jTextFieldTCPAutoSendAfterConn = new JTextField();
-			this.jTextFieldTCPAutoSendAfterConn.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-			this.jTextFieldTCPAutoSendAfterConn.setText(this.lk_cNetworkInterfaceSettings.getTCPAutoSendAfterConn());
-			this.jTextFieldTCPAutoSendAfterConn
+	    String sSaved;
+	    if (this.jTextFieldTCPAutoSendAfterConn == null) {
+	        this.jTextFieldTCPAutoSendAfterConn = new JTextField();
+	        this.jTextFieldTCPAutoSendAfterConn.setHorizontalAlignment(javax.swing.JTextField.CENTER);			
+	        sSaved = this.lk_cNetworkInterfaceSettings.getTCPAutoSendAfterConn();
+	        if (sSaved.isEmpty())
+	        {
+	            this.jTextFieldTCPAutoSendAfterConn.setText("FCMUA-werrlog");
+	        }
+	        else
+	        {
+	            this.jTextFieldTCPAutoSendAfterConn.setText(this.lk_cNetworkInterfaceSettings.getTCPAutoSendAfterConn());
+	        }
+	        this.jTextFieldTCPAutoSendAfterConn
 					.setToolTipText("data to send after conn has established (without SOH/ETB)");
 		}
 		return this.jTextFieldTCPAutoSendAfterConn;

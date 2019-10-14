@@ -357,7 +357,7 @@ public class ValentinConsole extends JFrame {
 		this.lk_cStatusMessage = new CVStatusLine();
 
 		// Anlegen der Konfigurationsdatei
-		this.lk_cConfigFile = new CVConfigFile("ValentinConsole", "0.1");
+		this.lk_cConfigFile = new CVConfigFile("ValentinConsole", "1.0");
 		this.lk_cCommandFile = new CVCommandFile("ValentinFavCommands");
 
 		// Hexadezimale Ausgabe der Konsolendaten
@@ -698,7 +698,7 @@ public class ValentinConsole extends JFrame {
 		this.setBounds(0, 0, 800, 600);
 		this.setJMenuBar(getJMenuBarMain());
 		this.setContentPane(getJPanelMain());
-		this.setTitle("VETO - Valentin Embedded Test Office");
+		this.setTitle("VETO - Valentin Embedded Test Office 1.1");
 		this.setIconImage(Toolkit.getDefaultToolkit().getImage("icon.png"));
 		this.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
 	}
@@ -1025,7 +1025,7 @@ public class ValentinConsole extends JFrame {
 			jMenuItemInfo.setEnabled(true);
 			jMenuItemInfo.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					JOptionPane.showMessageDialog(null, "Valentin Embedded Test Office\nVersion 1.0", "Info",
+					JOptionPane.showMessageDialog(null, "Valentin Embedded Test Office\nVersion 1.1", "Info",
 							JOptionPane.OK_OPTION);
 				}
 			});
@@ -1747,8 +1747,7 @@ public class ValentinConsole extends JFrame {
 		jMenuItemCmd.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				System.out.println(cmd);
-				// TODO in textfeld setzen
-				lk_cConsoleInput.write(cmd);
+				lk_cConsoleInput.getTextArea().append(cmd);
 			}
 		});
 		return jMenuItemCmd;

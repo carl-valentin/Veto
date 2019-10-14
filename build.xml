@@ -1,4 +1,4 @@
-<project name="Valentin Embedded Test Office V1.0" default="dist.win32" basedir=".">
+<project name="Valentin Embedded Test Office V1.1" default="dist.win32" basedir=".">
     <description>
         Ant build file for the Valentin Embedded Test Office
     </description>
@@ -81,6 +81,7 @@
             <fileset dir="bsh" excludes="**/*.pj"/>
             <fileset dir="com/sharkysoft" excludes="**/*.pj"/>
         	<fileset dir="rsyntaxtextarea-2.6.0" includes="rsyntaxtextarea-2.6.0.jar"/>
+        	<fileset dir="." includes="ValentinFavCommands.cfg"/>
         </copy>
         <!-- Copy BeanShell script files in package dir -->
         <mkdir dir="${ODIR_PACKAGE}\bshscripts"/>
@@ -111,6 +112,7 @@
             <fileset dir="bsh" excludes="**/*.pj"/>
             <fileset dir="com/sharkysoft" excludes="**/*.pj"/>
         	<fileset dir="rsyntaxtextarea-2.6.0" includes="rsyntaxtextarea-2.6.0.jar"/>
+        	<fileset dir="." includes="ValentinFavCommands.cfg"/>
         </copy>
         <!-- Copy BeanShell script files in package dir -->
         <mkdir dir="${ODIR_PACKAGE}\bshscripts"/>
@@ -147,6 +149,7 @@
             <fileset dir="bsh" excludes="**/*.pj"/>
             <fileset dir="com/sharkysoft" excludes="**/*.pj"/>
         	<fileset dir="rsyntaxtextarea-2.6.0" includes="rsyntaxtextarea-2.6.0.jar"/>
+        	<fileset dir="." includes="ValentinFavCommands.cfg"/>
         </copy>
         <!-- Copy BeanShell script files in package dir -->
         <mkdir dir="${ODIR_PACKAGE}\bshscripts"/>
@@ -182,6 +185,7 @@
             <fileset dir="bsh" excludes="**/*.pj"/>
             <fileset dir="com/sharkysoft" excludes="**/*.pj"/>
         	<fileset dir="rsyntaxtextarea-2.6.0" includes="rsyntaxtextarea-2.6.0.jar"/>
+        	<fileset dir="." includes="ValentinFavCommands.cfg"/>
         </copy>
         <!-- Copy BeanShell script files in package dir -->
         <mkdir dir="${ODIR_PACKAGE}\bshscripts"/>

@@ -114,34 +114,34 @@ public class Console {
         return out;
     }
 
-    public synchronized void write(String str) {
-    textarea.insert(str, mark);
-    mark += str.length();
-    int pos = textarea.getDocument().getLength();
-    textarea.select(pos, pos);
+    synchronized void write(String str) {
+    	textarea.insert(str, mark);
+    	mark += str.length();
+    	int pos = textarea.getDocument().getLength();
+    	textarea.select(pos, pos);
     }
 
     synchronized void enter(){
-    Document doc = textarea.getDocument();
-    int len = doc.getLength();
-    Segment segment = new Segment();
-    try {
-        doc.getText(mark, len - mark, segment);
-    } catch (BadLocationException ble) {
-        ble.printStackTrace();
-    }
-    if (segment.count > 0) {
-        history.addElement(segment.toString());
-    }
-    historyIndex = history.size();
-    try {
-        enter(segment.array, segment.offset, segment.count);
-        textarea.append("\n");
-        mark = doc.getLength();
-        out.flush();
-    } catch (IOException ioe){
-        /* ignore */
-    }
+    	Document doc = textarea.getDocument();
+    	int len = doc.getLength();
+    	Segment segment = new Segment();
+    	try {
+    		doc.getText(mark, len - mark, segment);
+    	} catch (BadLocationException ble) {
+    		ble.printStackTrace();
+    	}
+    	if (segment.count > 0) {
+    		history.addElement(segment.toString());
+    	}
+    	historyIndex = history.size();
+    	try {
+    		enter(segment.array, segment.offset, segment.count);
+    		textarea.append("\n");
+    		mark = doc.getLength();
+    		out.flush();
+    	} catch (IOException ioe){
+    		/* ignore */
+    	}
     }
 
     public void enter(String str) throws IOException {
