@@ -19,6 +19,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import de.carlvalentin.Common.CVConfigFile;
+
 public class ValentinUpdater {
 
 	Network network;
@@ -33,10 +35,17 @@ public class ValentinUpdater {
 	JButton btConnect;
 	JButton btDisConnect;
 	JFileChooser fc;
+	
+	CVConfigFile configFile;
 
 	String folderPath = "P:\\Firmware\\Freigaben";
+	String KEYLASTUPDATEIP = "lastupdateip";
 
 	public ValentinUpdater() {
+		updaterMain();
+	}
+	public ValentinUpdater(CVConfigFile cfgFile) {
+		configFile = cfgFile;
 		updaterMain();
 	}
 
@@ -57,8 +66,6 @@ public class ValentinUpdater {
 		showGUI();
 		updateFrame.add(GUI, BorderLayout.CENTER);
 		updateFrame.setVisible(true);
-		// updateFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // TODO evtl
-		// auskommentieren oder aendern
 	}
 
 	private void showGUI() {
@@ -70,6 +77,12 @@ public class ValentinUpdater {
 		}
 		if (tfIp == null) {
 			tfIp = new JTextField(18);
+			if(configFile!= null) {
+				String lastIp = configFile.getConfig(KEYLASTUPDATEIP);
+				if(lastIp != null && lastIp != "") {
+					tfIp.setText(lastIp);
+				}
+			}
 		}
 		if (tfPort == null) {
 			tfPort = new JTextField(5);
@@ -81,6 +94,9 @@ public class ValentinUpdater {
 			btConnect.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
+					if(configFile!= null) {
+						configFile.setConfig(KEYLASTUPDATEIP, tfIp.getText());
+					}
 					connect();
 				}
 			});
@@ -111,7 +127,7 @@ public class ValentinUpdater {
 		GUI.add(lbPort);
 		GUI.add(tfPort);
 		GUI.add(btConnect);
-		GUI.add(fc);
+		//GUI.add(fc);
 	}
 
 	protected void disconnect() {
@@ -127,7 +143,7 @@ public class ValentinUpdater {
 				tfPort.setEditable(false);
 				btConnect.setEnabled(false);
 				btDisConnect.setEnabled(true);
-				fc.setVisible(true);
+				//fc.setVisible(true);
 				fc.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -142,7 +158,7 @@ public class ValentinUpdater {
 						}
 					}
 				});
-				GUI.remove(fc);
+				//GUI.remove(fc);
 				GUI.add(btDisConnect);
 				GUI.add(fc);
 				updateFrame.revalidate();

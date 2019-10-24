@@ -1066,7 +1066,11 @@ public class ValentinConsole extends JFrame {
 			jMenuItemUpdate.setText("Transmit Update");
 			jMenuItemUpdate.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					ValentinUpdater updater = new ValentinUpdater();
+					if (lk_cConfigFile != null) {
+						ValentinUpdater updater = new ValentinUpdater(lk_cConfigFile);
+					}else {
+						ValentinUpdater updater = new ValentinUpdater();
+					}
 				}
 			});
 		}
