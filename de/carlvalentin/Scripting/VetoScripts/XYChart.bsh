@@ -11,8 +11,8 @@ import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.title.*;
 import org.apache.commons.io.FileUtils;
 
-// String sSaveFolder = "D:\\BTisler\\temp\\PrintProfile\\";
-String sSaveFolder = System.getProperty("java.io.tmpdir",".") + "\\PrintProfile\\";
+String sSaveFolder = "D:\\Ben\\ungesichert\\PrtProfile\\";
+//String sSaveFolder = System.getProperty("java.io.tmpdir",".") + "\\PrintProfile\\";
 
 int i;
 
@@ -20,6 +20,7 @@ String sCfgChartName  = "PrtProfile";
 String sCfgResolution = "2";
 String sCfgFieldName  = "1";
 
+String sFileHeader;
 String sChartName;
 String sXNameAndUnit;
 String sYUnit;
@@ -347,8 +348,8 @@ if (msg.length() > 0) {
 
         fileOut = openFile(sSaveFolder + iFileNum + ".txt");
         fileOut.delete();
-        s =  msg + "\n";
-        write(fileOut, s.getBytes());
+        sFileHeader = msg + "\n";
+        write(fileOut, sFileHeader.getBytes());
         close(fileOut);
         iFileNum++;
     	
@@ -522,6 +523,7 @@ do {
 
                     fileOut = openFile(sSaveFolder + iFileNum + ".txt");
                     fileOut.delete();
+                    write(fileOut, sFileHeader.getBytes());
                     s =  msg + "\n";
                     write(fileOut, s.getBytes());
                     bFileOutIsOpen = true;

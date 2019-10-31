@@ -1,5 +1,6 @@
 addClassPath(ScriptPath + "jfreechart-1.0.19.jar");
 addClassPath(ScriptPath + "jcommon-1.0.23.jar"); 
+addClassPath(ScriptPath + "commons-io-2.6.jar"); 
 
 import javax.swing.JFrame;
 import org.jfree.chart.*;
@@ -11,8 +12,8 @@ import org.jfree.chart.title.*;
 
 int i;
 
-//String sSaveFolder = "D:\\BTisler\\temp\\PrintProfile\\";
-String sSaveFolder = System.getProperty("java.io.tmpdir",".") + "\\PrintProfile\\";
+String sSaveFolder = "D:\\Ben\\ungesichert\\PrtProfile\\";
+//String sSaveFolder = System.getProperty("java.io.tmpdir",".") + "\\PrintProfile\\";
 
 String sChartName;
 String sXNameAndUnit;
@@ -72,11 +73,13 @@ boolean bFileOutIsOpen = false;
 String s;
 int x = 0;
 int iFileNumOld = 0;
+int iFileDir = 1;
 
 ActionListener alPrev = new ActionListener() {
     public void actionPerformed( ActionEvent e ) {
-    	   if (iFileNum > 0) {    	   
-            iFileNum--;
+    	   if (iFileNum > 0) { 
+    	   	  iFileDir=-1;
+            iFileNum=iFileNum+iFileDir;
             printf("File: " + iFileNum + "\n");
     	   }
     }
@@ -84,7 +87,8 @@ ActionListener alPrev = new ActionListener() {
 
 ActionListener alNext = new ActionListener() {
     public void actionPerformed( ActionEvent e ) {
-        iFileNum++;
+    	   iFileDir=1;
+        iFileNum=iFileNum+iFileDir;
         printf("File: " + iFileNum + "\n");
     }
 };
@@ -313,10 +317,13 @@ Scanner scanner;
 
 do {
 
+scanner = null;
+
 if (iFileNumOld != iFileNum) {
     fileOut = new File(sSaveFolder + iFileNum + ".txt");
+    printf(sSaveFolder + iFileNum + ".txt\n");
     if (!fileOut.exists()) {
-        iFileNum--;
+        iFileNum=iFileNum+iFileDir;
     }
     else {    
 	    s = read(fileOut);
@@ -329,7 +336,7 @@ else {
 }
 
 do {
-    if (scanner.hasNextLine())
+    if (scanner!=null && scanner.hasNextLine())
     {
         msg = scanner.nextLine();
         msg = msg.replaceAll(cConnectionManager.getSohEtb().gl_strSOH, "");
@@ -496,6 +503,6 @@ do {
         }
 
     }
-} while(scanner.hasNextLine());
+} while(scanner!=null && scanner.hasNextLine());
 
 } while(sFrameChart.isShowing());
