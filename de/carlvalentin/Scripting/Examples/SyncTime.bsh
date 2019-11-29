@@ -1,0 +1,22 @@
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+
+LocalDateTime date = LocalDateTime.now();
+String dayOfWeek = LocalDate.now().getDayOfWeek().getValue().toString();
+String complTimeString = date.toString();
+String dateString = complTimeString.substring(0, complTimeString.indexOf('T'));
+String timeString = complTimeString.substring(complTimeString.indexOf('T')+1, complTimeString.indexOf('.'));
+
+String year = dateString.substring(0, dateString.indexOf('-'));
+year = year.substring(2);
+String month = dateString.substring(dateString.indexOf('-')+1, dateString.lastIndexOf('-'));
+String day = dateString.substring(dateString.lastIndexOf('-')+1);
+String hour = timeString.substring(0, timeString.indexOf(':'));
+String minute = timeString.substring(timeString.indexOf(':')+1, timeString.lastIndexOf(':'));
+String secounds = timeString.substring(timeString.lastIndexOf(':')+1);
+String setDate = "FCIA--r"+day+month+year+"0"+dayOfWeek;
+String setTime = "FCIB--r"+hour+minute+secounds+"--";
+write(setDate);
+System.out.println(setDate);
+write(setTime);
+System.out.println(setTime);
