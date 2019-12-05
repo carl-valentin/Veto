@@ -14,6 +14,8 @@ import java.util.List;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 
 import javax.swing.JMenuItem;
@@ -198,6 +200,8 @@ public class ValentinConsole extends JFrame {
 
 	// Item fuer Favoriten Commands
 	private JMenu jMenuCommandSelection = null;
+	// Item fuer Scripte
+	private JMenu jMenuScriptSelection = null;
 
 	private boolean bAutoReconnectRunning = false;
 
@@ -984,17 +988,15 @@ public class ValentinConsole extends JFrame {
 	 * @return javax.swing.JMenuBar
 	 */
 	private JMenuBar getJMenuBarMain() {
-		if (jMenuBarMain == null) {
-			jMenuBarMain = new JMenuBar();
-			jMenuBarMain.setName("");
-			jMenuBarMain.setPreferredSize(new java.awt.Dimension(0, 30));
-			jMenuBarMain.add(getJMenuFile());
-			jMenuBarMain.add(getJMenuInterface());
-			jMenuBarMain.add(getJMenuConsole());
-			jMenuBarMain.add(getCommandsSelection());
-			jMenuBarMain.add(getJMenuInfo());
-		}
-
+		jMenuBarMain = new JMenuBar();
+		jMenuBarMain.setName("");
+		jMenuBarMain.setPreferredSize(new java.awt.Dimension(0, 30));
+		jMenuBarMain.add(getJMenuFile());
+		jMenuBarMain.add(getJMenuInterface());
+		jMenuBarMain.add(getJMenuConsole());
+		jMenuBarMain.add(getCommandsSelection());
+		jMenuBarMain.add(getScriptSelection());
+		jMenuBarMain.add(getJMenuInfo());
 		return jMenuBarMain;
 	}
 
@@ -1059,7 +1061,7 @@ public class ValentinConsole extends JFrame {
 		}
 		return jMenuFile;
 	}
-	
+
 	private JMenuItem getJMenuItemUpdate() {
 		if (jMenuItemUpdate == null) {
 			jMenuItemUpdate = new JMenuItem();
@@ -1068,7 +1070,7 @@ public class ValentinConsole extends JFrame {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					if (lk_cConfigFile != null) {
 						ValentinUpdater updater = new ValentinUpdater(lk_cConfigFile);
-					}else {
+					} else {
 						ValentinUpdater updater = new ValentinUpdater();
 					}
 				}
@@ -1744,9 +1746,95 @@ public class ValentinConsole extends JFrame {
 		return jMenuConsole;
 	}
 
+	/**
+	 * This method initializes jMenu for Scripts in set Folder
+	 * gets Folder path from cfg file and list all Scripts in this folder
+	 * on click run this script
+	 *
+	 * @return javax.swing.JMenu
+	 */
+	private JMenu getScriptSelection() {
+		jMenuScriptSelection = new JMenu();
+		jMenuScriptSelection.setText("Scripts");
+		jMenuScriptSelection.setMnemonic(java.awt.event.KeyEvent.VK_C);
+		String path = null;
+		if (lk_cConfigFile != null) {
+			path = lk_cConfigFile.getConfig("ScriptFolder");
+		}
+		if (path != null) {
+			File folder = new File(path);
+			File[] listOfFiles = folder.listFiles((dir, name) -> name.endsWith(".bsh"));
+			if (listOfFiles != null) {
+				if (listOfFiles.length > 0) {
+					for (int i = 0; i < listOfFiles.length; i++) {
+						JMenuItem jMenuItem = new JMenuItem();
+						jMenuItem.setText(listOfFiles[i].getName());
+						int j = i;
+						jMenuItem.addActionListener(new java.awt.event.ActionListener() {
+							public void actionPerformed(java.awt.event.ActionEvent e) {
+								lk_cBeanShellScriptingUI.loadScript(listOfFiles[j].getAbsolutePath());
+								lk_cBeanShellScriptingUI.processButtonRunScript(false);
+							}
+						});
+						jMenuScriptSelection.add(jMenuItem);
+					}
+				}
+			} else {
+				JMenuItem jMenuItemNoItem = new JMenuItem();
+				jMenuItemNoItem.setText("No Scripts");
+				jMenuItemNoItem.setEnabled(false);
+				jMenuScriptSelection.add(jMenuItemNoItem);
+			}
+		}
+		JMenuItem jMenuItemNoItem = new JMenuItem();
+		jMenuItemNoItem.setText("Change Path");
+		jMenuItemNoItem.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent e) {
+				JFrame skripPathFrame = new JFrame();
+				skripPathFrame.setVisible(true);
+				skripPathFrame.setLayout(new FlowLayout());
+				JLabel lbChangePath = new JLabel("Set Path to:");
+				JTextField tfNewPath = new JTextField(15);
+				JButton btSearchPath = new JButton("Open");
+				btSearchPath.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						JFileChooser chooser = new JFileChooser();
+						chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+						int returnVal = chooser.showOpenDialog(null);
+						if (returnVal == JFileChooser.APPROVE_OPTION) {
+							tfNewPath.setText(chooser.getSelectedFile().toString());
+						}
+					}
+				});
+				JButton btSetPath = new JButton("Set Path");
+				btSetPath.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						if (!tfNewPath.getText().trim().isEmpty()) {
+							lk_cConfigFile.setConfig("ScriptFolder", tfNewPath.getText().trim());
+							vc.setJMenuBar(getJMenuBarMain());
+							vc.validate();
+							vc.repaint();
+							skripPathFrame.dispose();
+						}
+					}
+				});
+				skripPathFrame.add(lbChangePath);
+				skripPathFrame.add(tfNewPath);
+				skripPathFrame.add(btSearchPath);
+				skripPathFrame.add(btSetPath);
+				skripPathFrame.pack();
+			}
+		});
+		jMenuScriptSelection.add(jMenuItemNoItem);
+
+		return jMenuScriptSelection;
+	}
+
 	private JMenuItem getJMenuItemCmd(String cmd, String desc) {
 		JMenuItem jMenuItemCmd = new JMenuItem();
-		jMenuItemCmd.setText(cmd+" - "+desc);
+		jMenuItemCmd.setText(cmd + " - " + desc);
 		jMenuItemCmd.setToolTipText(desc);
 		jMenuItemCmd.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -1768,11 +1856,11 @@ public class ValentinConsole extends JFrame {
 			getJMenuItemsCommandSelection();
 			Object cmdElements[] = commandFileListCmd.toArray();
 			Object descrElements[] = commandFileListDescr.toArray();
-			if(commandFileListCmd.size()>0) {
+			if (commandFileListCmd.size() > 0) {
 				for (int i = 0; i < commandFileListCmd.size(); i++) {
 					jMenuCommandSelection.add(getJMenuItemCmd(cmdElements[i].toString(), descrElements[i].toString()));
 				}
-			}else {
+			} else {
 				JMenuItem jMenuItemNoItem = new JMenuItem();
 				jMenuItemNoItem.setText("No Favorites");
 				jMenuItemNoItem.setEnabled(false);
