@@ -340,11 +340,9 @@ public class CVBeanShell
             this.lk_cBeanShellInterpreter.eval(
                     "import de.carlvalentin.Interface.*;");
             this.lk_cBeanShellInterpreter.eval(
-                      "importCommands(\"/bshscripts\");");
-            /*this.lk_cBeanShellInterpreter.eval(
-                "addClassPath(\"D:\\Eclipse\\de.carlvalentin.java.veto\\de\\carlvalentin\\\");");
+                    "importCommands(\"/bshscripts\");");
             this.lk_cBeanShellInterpreter.eval(
-                "importCommands(\"/Scripting\");");*/
+                      "importCommands(\"/de/carlvalentin/Scriptng\");");
             this.lk_cBeanShellInterpreter.eval("" +
                     "bsh.system.shutdownOnExit = false;");
 
