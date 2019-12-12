@@ -17,6 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 
 import de.carlvalentin.Common.CVConfigFile;
@@ -35,6 +36,7 @@ public class ValentinUpdater {
 	JButton btConnect;
 	JButton btDisConnect;
 	JFileChooser fc;
+	JProgressBar progressBar;
 	
 	CVConfigFile configFile;
 
@@ -59,7 +61,7 @@ public class ValentinUpdater {
 			network = new Network(this);
 		}
 		updateFrame = new JFrame();
-		updateFrame.setSize(600, 400);
+		updateFrame.setSize(700, 400);
 		updateFrame.setTitle("Valentin Updater");
 		updateFrame.setLayout(new BorderLayout());
 		GUI = new JPanel();
@@ -118,6 +120,11 @@ public class ValentinUpdater {
 				fc.setCurrentDirectory(testPath);
 			}
 		}
+		if (progressBar == null) {
+			progressBar = new JProgressBar(0, 100);
+			progressBar.setValue(0);
+			progressBar.setStringPainted(true);
+		}
 
 		lbIp.setText("IP:");
 		lbPort.setText("Port:");
@@ -127,7 +134,6 @@ public class ValentinUpdater {
 		GUI.add(lbPort);
 		GUI.add(tfPort);
 		GUI.add(btConnect);
-		//GUI.add(fc);
 	}
 
 	protected void disconnect() {
@@ -143,7 +149,6 @@ public class ValentinUpdater {
 				tfPort.setEditable(false);
 				btConnect.setEnabled(false);
 				btDisConnect.setEnabled(true);
-				//fc.setVisible(true);
 				fc.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -158,8 +163,8 @@ public class ValentinUpdater {
 						}
 					}
 				});
-				//GUI.remove(fc);
 				GUI.add(btDisConnect);
+				GUI.add(progressBar);
 				GUI.add(fc);
 				updateFrame.revalidate();
 			} else {
@@ -181,10 +186,20 @@ public class ValentinUpdater {
 
 	private void updateSelected(File selectedFile) {
 		System.out.println("File selected: " + selectedFile);
-		if (!network.sendUpdate(selectedFile)) {
-			disconnect();
-			connect();
-		}
+		btDisConnect.setEnabled(false);
+		new Thread()
+		{
+		    public void run() {
+		    	if (!network.sendUpdate(selectedFile)) {
+					disconnect();
+					connect();
+				}
+		    }
+		}.start();
+	}
+	
+	public void setProcess(int percentage) {
+		progressBar.setValue(percentage);
 	}
 }
 
@@ -226,15 +241,20 @@ class Network {
 			byte[] mybytearray = new byte[(int) updateFile.length()];
 			FileInputStream fis = new FileInputStream(updateFile);
 			BufferedInputStream bis = new BufferedInputStream(fis);
-			bis.read(mybytearray, 0, mybytearray.length);
 			OutputStream os = socket.getOutputStream();
 			System.out.println("Sending " + updateFile + "(" + mybytearray.length + " bytes)");
-			os.write(mybytearray, 0, mybytearray.length);
+			System.out.println(Math.round(updateFile.length()/100));
+			byte[] buffer = new byte[Math.round(updateFile.length()/100)];
+		    int n;
+		    int i=0;
+		    while ((n = bis.read(buffer)) >= 0) {
+		      os.write(buffer, 0, n);
+		      valentinUpdater.setProcess(i);
+		      i++;
+		    }
 			os.flush();
 			System.out.println("Flushed");
 			valentinUpdater.disconnect();
-			// valentinUpdater.updateFrame.dispatchEvent(new
-			// WindowEvent(valentinUpdater.updateFrame, WindowEvent.WINDOW_CLOSING));
 			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
