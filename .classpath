@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="lib" path="javax.comm/rxtx-2.2pre2-bins/RXTXcomm.jar"/>
+	<classpathentry kind="lib" path="bsh/bsh-2.0b4.jar"/>
+	<classpathentry kind="lib" path="com/sharkysoft/lava3-core.jar"/>
+	<classpathentry kind="lib" path="com/sharkysoft/lava3-printf.jar"/>
+	<classpathentry kind="lib" path="rsyntaxtextarea-2.6.0/rsyntaxtextarea-2.6.0.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
