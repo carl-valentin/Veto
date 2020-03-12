@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowAdapter;
 import java.io.*;
 import java.net.*;
 
@@ -44,19 +45,28 @@ public class ValentinUpdater {
 	JLabel lbStatus;
 	JLabel lbRemConLine1;
 	JLabel lbRemConLine2;
-	
+
 	boolean bStop = false;
-	
+
 	CVConfigFile configFile;
 
-	String folderPath = "P:\\Firmware\\Freigaben";
+    String folderPathDfltWindows = "P:\\Firmware\\Freigaben";
+    String folderPathDfltLinux   = "/mnt/" + System.getProperty("user.name") + "/p/Firmware/Freigaben";
+
+	private static String OS = System.getProperty("os.name").toLowerCase();
+	String folderPath = folderPathDfltWindows;
 	String KEYLASTUPDATEIP = "lastupdateip";
 
 	public ValentinUpdater() {
+	    setFolderPathDefault();
 		updaterMain();
 	}
-	public ValentinUpdater(CVConfigFile cfgFile) {
+	public ValentinUpdater(CVConfigFile cfgFile, String folderPath) {
 		configFile = cfgFile;
+		setFolderPathDefault();
+		if (folderPath != null) {
+		    this.folderPath = folderPath;
+		}
 		updaterMain();
 	}
 
@@ -65,28 +75,43 @@ public class ValentinUpdater {
 		updaterMain();
 	}
 
+	private void setFolderPathDefault() {
+	    if (OS.indexOf("nux") >= 0) {
+	        folderPath = folderPathDfltLinux;
+	    }
+	}
+
 	public void updaterMain() {
 		updateFrame = new JFrame();
 		updateFrame.setTitle("Valentin Updater");
 		updateFrame.setLayout(new BorderLayout());
+		updateFrame.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                if(configFile!= null) {
+                    configFile.setConfig(KEYLASTUPDATEIP, tfIp.getText());
+                }
+                System.out.println("Closing Updater");
+            }
+        });
+
 		top = new JPanel();
 		bottom = new JPanel();
-		createUIElements();	
-		
+		createUIElements();
+
         fileChooser.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 fileChooserAction(e);
             }
-        }); 
-		
+        });
+
 		updateFrame.add(top, BorderLayout.NORTH);
 		updateFrame.add(fileChooser, BorderLayout.CENTER);
 		bottom.setLayout(new BoxLayout(bottom, BoxLayout.PAGE_AXIS));
 		lbRemConLine1.setAlignmentX( Component.LEFT_ALIGNMENT );
 		lbRemConLine2.setAlignmentX( Component.LEFT_ALIGNMENT );
 		progressBar.setAlignmentX( Component.LEFT_ALIGNMENT );
-		bottom.add(lbRemConLine1, BorderLayout.SOUTH); 
-		bottom.add(lbRemConLine2, BorderLayout.SOUTH); 
+		bottom.add(lbRemConLine1, BorderLayout.SOUTH);
+		bottom.add(lbRemConLine2, BorderLayout.SOUTH);
 		bottom.add(progressBar, BorderLayout.SOUTH);
 		bottom.add(lbStatus, BorderLayout.SOUTH);
 		updateFrame.add(bottom, BorderLayout.SOUTH);
@@ -129,7 +154,7 @@ public class ValentinUpdater {
 		                public void run() {
 		                    connect(60000);
 		                }
-		            }.start(); 
+		            }.start();
 				}
 			});
 		}
@@ -139,7 +164,7 @@ public class ValentinUpdater {
 			btDisConnect.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					disconnect();
-				}    
+				}
 			});
             btDisConnect.setEnabled(false);
 		}
@@ -147,7 +172,7 @@ public class ValentinUpdater {
 		    checkUpdAll = new JCheckBox("Update Fw+Data");
 		    checkUpdAll.setSelected(true);
 		}
-		
+
 		if (fileChooser == null) {
 			fileChooser = new JFileChooser();
 			File testPath = new File(folderPath);
@@ -155,16 +180,16 @@ public class ValentinUpdater {
 				fileChooser.setCurrentDirectory(testPath);
 			}
 		}
-		
+
 		if (progressBar == null) {
 			progressBar = new JProgressBar(0, 100);
 			progressBar.setValue(0);
 			progressBar.setStringPainted(true);
-		}		
+		}
 		if (lbStatus == null) {
 		    lbStatus = new JLabel("Status line: disconnected");
 		}
-		
+
 		lbIp.setText("IP:");
 		lbPort.setText("Port:");
 
@@ -175,7 +200,7 @@ public class ValentinUpdater {
 		top.add(btConnect);
 		top.add(btDisConnect);
 		top.add(checkUpdAll);
-		
+
 		lbRemConLine1 = new JLabel(" ");
 		lbRemConLine2 = new JLabel(" ");
 		Font font = lbRemConLine1.getFont();
@@ -183,30 +208,30 @@ public class ValentinUpdater {
 		lbRemConLine2.setFont(new Font(Font.MONOSPACED, Font.PLAIN, font.getSize()));
 	}
 
-	private void setUIConnected() { 
+	private void setUIConnected() {
         tfIp.setEditable(false);
         tfPort.setEditable(false);
         btConnect.setEnabled(false);
         btDisConnect.setEnabled(true);
 	}
-	
+
 	private void setUIDisconnected() {
         tfIp.setEditable(true);
         tfPort.setEditable(true);
         btConnect.setEnabled(true);
-        btDisConnect.setEnabled(false);  
+        btDisConnect.setEnabled(false);
         progressBar.setValue(0);
         lbRemConLine1.setText(" ");
         lbRemConLine2.setText(" ");
 	}
-	
+
 	private void fileChooserAction(ActionEvent e) {
         if (e.getActionCommand().equals(JFileChooser.CANCEL_SELECTION)) {
             System.out.println("Cancel");
             disconnect();
             updateFrame.dispatchEvent(new WindowEvent(updateFrame, WindowEvent.WINDOW_CLOSING));
         }
-        if (e.getActionCommand().equals(JFileChooser.APPROVE_SELECTION)) {                   
+        if (e.getActionCommand().equals(JFileChooser.APPROVE_SELECTION)) {
             System.out.println("File selected: " + fileChooser.getSelectedFile());
             new Thread()
             {
@@ -219,9 +244,9 @@ public class ValentinUpdater {
                     }
                     if (bStop)
                         return;
-                    sendUpdate(fileChooser.getSelectedFile());                    
+                    sendUpdate(fileChooser.getSelectedFile());
                     try {
-                        i = 60;
+                        i = 160;
                         OutputStream os = socket.getOutputStream();
                         while (i>0 && !bStop) {
                             Thread.sleep(1000);
@@ -233,23 +258,25 @@ public class ValentinUpdater {
                             return;
                         disconnect();
                         Thread.sleep(1000);
-                    } catch (SocketException e) { 
-                        if (!e.getMessage().equals("Connection reset by peer: socket write error")) {
+                    } catch (SocketException e) {
+/*
+                        if (!e.getMessage().startsWith("Connection reset")) {
                             e.printStackTrace();
-                            JOptionPane.showMessageDialog(updateFrame, 
+                            JOptionPane.showMessageDialog(updateFrame,
                                     "Unknown error, see console output");
                             disconnect();
                             return;
                         }
+*/
                         disconnect();
                     } catch (Exception e) {
-                        JOptionPane.showMessageDialog(updateFrame, 
+                        JOptionPane.showMessageDialog(updateFrame,
                                 "Unknown error, see console output");
                         e.printStackTrace();
                         disconnect();
                         return;
                     }
-                   
+
                     if (fileChooser.getSelectedFile().getName().endsWith("firmware.prn")
                             && checkUpdAll.isSelected())
                     {
@@ -257,7 +284,7 @@ public class ValentinUpdater {
                         bStop = false;
                         connect(60000);
                         String fFw = fileChooser.getSelectedFile().getAbsolutePath();
-                        String fData = fFw.replaceAll("firmware.prn", "data.prn");                        
+                        String fData = fFw.replaceAll("firmware.prn", "data.prn");
                         sendUpdate(new File(fData));
                         try {
                             i = 60;
@@ -268,16 +295,18 @@ public class ValentinUpdater {
                                 lbStatus.setText("Wait till fin: " + i + "s");
                                 i--;
                             }
-                        } catch (SocketException e) { 
-                            if (!e.getMessage().equals("Connection reset by peer: socket write error")) {
+                        } catch (SocketException e) {
+/*
+                            if (!e.getMessage().startsWith("Connection reset")) {
                                 e.printStackTrace();
-                                JOptionPane.showMessageDialog(updateFrame, 
+                                JOptionPane.showMessageDialog(updateFrame,
                                         "Unknown error, see console output");
                                 disconnect();
                                 return;
                             }
+*/
                         } catch (Exception e) {
-                            JOptionPane.showMessageDialog(updateFrame, 
+                            JOptionPane.showMessageDialog(updateFrame,
                                     "Unknown error, see console output");
                             e.printStackTrace();
                             disconnect();
@@ -288,73 +317,74 @@ public class ValentinUpdater {
                             return;
                         disconnect();
                     }
-                    
+
                     System.out.println("Update finished!");
                     lbStatus.setText("Update finished!");
                 }
-            }.start();  
+            }.start();
         }
 	}
-	
+
 	private static boolean ipValidate(final String ip) {
 	    String PATTERN = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
 	    return ip.matches(PATTERN);
 	}
-	
+
 	private void connect(int iTimeout) {
 	    int iNumSocketTimeout = 5000;
 	    int iNumOfTrys = iTimeout/iNumSocketTimeout;
 	    int i;
 	    boolean bTimeout;
-	       
-	    String ip = tfIp.getText(); 	    
-	    int port = 0;	   	    
-	    
+
+	    String ip = tfIp.getText();
+	    int port = 0;
+
 	    try {
 	        port = Integer.parseInt(tfPort.getText());
-	    } 
-	    catch (NumberFormatException e) {	        
+	    }
+	    catch (NumberFormatException e) {
 	    }
 	    catch (Exception e)
 	    {
-            JOptionPane.showMessageDialog(updateFrame, 
+            JOptionPane.showMessageDialog(updateFrame,
                     "Unknown error, see console output");
 	        e.printStackTrace();
 	    }
-	    
+
 	    if (ip.isEmpty() || port==0 || !ipValidate(ip))
 	    {
-	        JOptionPane.showMessageDialog(updateFrame, 
+	        JOptionPane.showMessageDialog(updateFrame,
 	                "Please enter a valid IP-Address and Port Number");
 	        return;
 	    }
-	    
-	    i = 0;	    
+
+	    i = 0;
 	    do {
 	        i++;
 	        lbStatus.setText("Connection attempt No " + i + "...");
-    	    try {   
+    	    try {
     	        bTimeout = false;
     	        socket = new Socket();
+    	        socket.setKeepAlive(true);
         	    socket.connect(new InetSocketAddress(ip, port), iNumSocketTimeout);
         	    connected = true;
-        	    
+
                 startRecvTask();
-                
+
                 setUIConnected();
-                                
+
                 System.out.println("connected");
                 lbStatus.setText("connected");
         	    break;
-            } 
+            }
     	    catch (SocketTimeoutException e) {
     	        bTimeout = true;
-            } 
+            }
     	    catch (IOException e) {
     	        if (socket != null)
     	        {
                     e.printStackTrace();
-                    JOptionPane.showMessageDialog(updateFrame, 
+                    JOptionPane.showMessageDialog(updateFrame,
                             "Unknown error, see console output");
     	        }
                 System.out.println("disconnected");
@@ -362,12 +392,12 @@ public class ValentinUpdater {
                 setUIDisconnected();
                 socket = null;
                 return;
-            }    	    
+            }
 	    } while (i<iNumOfTrys && !bStop);
-	    
+
 	    if (bTimeout) {
 	        if (!bStop) {
-    	        JOptionPane.showMessageDialog(updateFrame, 
+    	        JOptionPane.showMessageDialog(updateFrame,
     	                "Timeout! No connection established");
 	        }
             System.out.println("disconnected");
@@ -376,15 +406,15 @@ public class ValentinUpdater {
             socket = null;
 	    }
 	}
-	
-	private void startRecvTask() {        
+
+	private void startRecvTask() {
         try {
-            OutputStream os = socket.getOutputStream();                
+            OutputStream os = socket.getOutputStream();
             byte[] oByte;
             oByte = "^RCRA--r2_".getBytes();
             oByte[0] = 0x01;
             oByte[9] = 0x17;
-            os.write(oByte);                
+            os.write(oByte);
             oByte = "^RCRB--r1_".getBytes();
             oByte[0] = 0x01;
             oByte[9] = 0x17;
@@ -396,13 +426,13 @@ public class ValentinUpdater {
             oByte = "^TD_".getBytes();
             oByte[0] = 0x01;
             oByte[3] = 0x17;
-            os.write(oByte);                
+            os.write(oByte);
             os.flush();
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(updateFrame, 
+            JOptionPane.showMessageDialog(updateFrame,
                     "Unknown error, see console output");
             e.printStackTrace();
-        }       
+        }
 
         new Thread()
         {
@@ -415,14 +445,14 @@ public class ValentinUpdater {
     public boolean isConnected() {
         return connected;
     }
-	
+
 	protected void disconnect() {
 	    bStop = true;
         if (socket != null) {
             try {
                 socket.close();
             } catch (IOException e) {
-                JOptionPane.showMessageDialog(updateFrame, 
+                JOptionPane.showMessageDialog(updateFrame,
                         "Unknown error, see console output");
                 e.printStackTrace();
             }
@@ -433,7 +463,7 @@ public class ValentinUpdater {
         lbStatus.setText("disconnected");
         connected = false;
     }
-	
+
 	public void sendUpdate(File updateFile) {
 	    try {
 	        byte[] mybytearray = new byte[(int) updateFile.length()];
@@ -455,22 +485,24 @@ public class ValentinUpdater {
 	        os.flush();
 	        System.out.println("Flushed");
 	        bis.close();
-        } 
-	    catch (SocketException e) { 
+        }
+	    catch (SocketException e) {
+/*
             if (!e.getMessage().equals("Socket closed")) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(updateFrame, 
+                JOptionPane.showMessageDialog(updateFrame,
                         "Unknown error, see console output");
             }
+*/
 	    }
 	    catch (Exception e) {
-            JOptionPane.showMessageDialog(updateFrame, 
+            JOptionPane.showMessageDialog(updateFrame,
                     "Unknown error, see console output");
 	        e.printStackTrace();
 	    }
 	}
-	
-	private void doRemConOutput(byte[] inBytes, CVPLSTATE sState, int iStartCmd, 
+
+	private void doRemConOutput(byte[] inBytes, CVPLSTATE sState, int iStartCmd,
 	                            int iEndCmd, int iRemConLineSep) {
         if (sState == CVPLSTATE.SEARCHSOH && iEndCmd>iStartCmd) {
             if (iRemConLineSep>iStartCmd) {
@@ -490,7 +522,7 @@ public class ValentinUpdater {
             }
         }
 	}
-	
+
     private void recvStatus() {
         byte[] inBytes = new byte[1024];
         CVPLSTATE sState = CVPLSTATE.SEARCHSOH;
@@ -501,16 +533,16 @@ public class ValentinUpdater {
         int iEndCmd = 0;
         int iRemConLineSep = 0;
         int i;
-        
+
         System.out.println("recvStatus started");
-        
+
         try {
             BufferedInputStream in = new BufferedInputStream(socket.getInputStream());
             while (!bStop) {
                 iLen = in.read(inBytes);
 
                 for (i=0; i<iLen; i++) {
-                                        
+
                     switch (sState)
                     {
                         case SEARCHSOH:
@@ -576,11 +608,11 @@ public class ValentinUpdater {
                             if (inBytes[i] == etb)
                             {
                                 sState = CVPLSTATE.SEARCHSOH;
-                                doRemConOutput(inBytes, sState, iStartCmd, 
+                                doRemConOutput(inBytes, sState, iStartCmd,
                                         iEndCmd, iRemConLineSep);
                             }
                             break;
-                            
+
                         case WAIT4ETB: // Wait for ETB
                             if (inBytes[i] == etb)
                             {
@@ -588,24 +620,26 @@ public class ValentinUpdater {
                                 iEndCmd = i+1;
                             }
                             break;
-                    }                    
-                    
+                    }
+
                 }
             }
-        } catch (SocketException e) { 
+        } catch (SocketException e) {
+/*
             if (!e.getMessage().equals("Socket closed")) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(updateFrame, 
+                JOptionPane.showMessageDialog(updateFrame,
                         "Unknown error, see console output");
             }
-        } catch (SocketTimeoutException e) { 
+*/
+        } catch (SocketTimeoutException e) {
 
-        } catch (IOException e) {            
+        } catch (IOException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(updateFrame, 
+            JOptionPane.showMessageDialog(updateFrame,
                     "Unknown error, see console output");
         }
-        
+
         System.out.println("recvStatus finished");
     }
 }

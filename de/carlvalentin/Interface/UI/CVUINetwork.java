@@ -11,7 +11,7 @@ import javax.swing.*;
 /**
  * Grafische Oberflaeche zur Konfiguration der Netzwerkschnittstelle
  */
-public class CVUINetwork extends JFrame {
+public class CVUINetwork extends JDialog {
 	/**
 	 * Ausgewaehltes Netzwerkprotokoll
 	 */
@@ -89,7 +89,7 @@ public class CVUINetwork extends JFrame {
 	// UDP
 	// --------------------------------------------------------------------------
 	private JCheckBox jCheckBoxUDPBroadcast = null;
-	
+
 	//Druckersuche
 	CVUINetworkSearch pCVUINetworkSearch = null;
 	CVUINetworkSearch6 pCVUINetworkSearch6 = null;
@@ -125,10 +125,11 @@ public class CVUINetwork extends JFrame {
 			this.lk_cUDPNetworkInterface = this.lk_cConnectionManager.getUDPNetworkInterface();
 			this.lk_cNetworkInterfaceSettings = (CVNetworkSettings) this.lk_cUDPNetworkInterface.getInterfaceSettings();
 		}
-		
+
 		pCVUINetworkSearch = new CVUINetworkSearch();
 		pCVUINetworkSearch6 = new CVUINetworkSearch6();
 		this.initialize();
+		this.pack();
 
 		return;
 	}
@@ -199,13 +200,13 @@ public class CVUINetwork extends JFrame {
 	 * @return void
 	 */
 	private void initialize() {
-		this.setBounds(0, 0, 408, 427);
+		//this.setBounds(0, 0, 408, 427);
 		this.setResizable(true);
 		this.setName("CVUINetworkFrame");
 		this.setContentPane(getJPanelMain());
 		this.setTitle("configure network settings");
+		this.setIconImage(Toolkit.getDefaultToolkit().getImage("icon.png"));
 		this.setVisible(false);
-
 	}
 
 	/**
@@ -217,9 +218,10 @@ public class CVUINetwork extends JFrame {
 		if (this.jPanelMain == null) {
 			this.jPanelMain = new JPanel();
 			this.jPanelMain.setLayout(new BorderLayout());
-			this.jPanelMain.setPreferredSize(new java.awt.Dimension(400, 400));
+			// this.jPanelMain.setPreferredSize(new java.awt.Dimension(400, 400));
 			this.jPanelMain.add(getJPanelButtonBar(), java.awt.BorderLayout.SOUTH);
-			this.jPanelMain.add(getJTabbedPaneMain(), java.awt.BorderLayout.CENTER);
+			// this.jPanelMain.add(getJTabbedPaneMain(), java.awt.BorderLayout.CENTER);
+			this.jPanelMain.add(getJPanelNetworkSettings(), java.awt.BorderLayout.CENTER);
 		}
 		return jPanelMain;
 	}
@@ -233,7 +235,7 @@ public class CVUINetwork extends JFrame {
 		if (this.jPanelButtonBar == null) {
 			this.jPanelButtonBar = new JPanel();
 			this.jPanelButtonBar.setLayout(new BorderLayout());
-			this.jPanelButtonBar.setPreferredSize(new java.awt.Dimension(30, 30));
+			// this.jPanelButtonBar.setPreferredSize(new java.awt.Dimension(30, 30));
 			this.jPanelButtonBar.add(getJButtonOK(), java.awt.BorderLayout.WEST);
 			this.jPanelButtonBar.add(getJButtonCancel(), java.awt.BorderLayout.EAST);
 		}
@@ -248,7 +250,7 @@ public class CVUINetwork extends JFrame {
 	private JButton getJButtonOK() {
 		if (this.jButtonOK == null) {
 			this.jButtonOK = new JButton();
-			this.jButtonOK.setPreferredSize(new java.awt.Dimension(100, 25));
+			// this.jButtonOK.setPreferredSize(new java.awt.Dimension(100, 25));
 			this.jButtonOK.setText("OK");
 			this.jButtonOK.setToolTipText("process settings");
 			this.jButtonOK.addActionListener(new java.awt.event.ActionListener() {
@@ -268,7 +270,7 @@ public class CVUINetwork extends JFrame {
 	private JButton getJButtonCancel() {
 		if (this.jButtonCancel == null) {
 			this.jButtonCancel = new JButton();
-			this.jButtonCancel.setPreferredSize(new java.awt.Dimension(100, 25));
+			// this.jButtonCancel.setPreferredSize(new java.awt.Dimension(100, 25));
 			this.jButtonCancel.setText("Cancel");
 			this.jButtonCancel.setToolTipText("do not process settings");
 			this.jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
@@ -312,7 +314,7 @@ public class CVUINetwork extends JFrame {
 			// Beschriftung IP-Adresse
 			// ------------------------------------------------------------------
 			this.jLabelTCPUDPIPAddress = new JLabel();
-			this.jLabelTCPUDPIPAddress.setText("IPv4 or IPv6 address:"); 
+			this.jLabelTCPUDPIPAddress.setText("IPv4 or IPv6 address:");
 			this.jLabelTCPUDPIPAddress.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 			this.jLabelTCPUDPIPAddress.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 			this.jLabelTCPUDPIPAddress.setToolTipText("printer ip address");
@@ -359,6 +361,7 @@ public class CVUINetwork extends JFrame {
      */
     private JButton getJButtonSearchPrinter() {
     	if(this.jButtonSearchPrinter == null) {
+    	    JDialog owner = this;
     		this.jButtonSearchPrinter = new JButton();
     		this.jButtonSearchPrinter.setText("Search Printer");
     		this.jButtonSearchPrinter.addActionListener(new java.awt.event.ActionListener() {
@@ -366,12 +369,12 @@ public class CVUINetwork extends JFrame {
 					if(!pCVUINetworkSearch.windowExist()) {
 						pCVUINetworkSearch.listModel.removeAllElements();
 						pCVUINetworkSearch.printerIpWithName.clear();
-						pCVUINetworkSearch.showPrinters();
+						pCVUINetworkSearch.showPrinters(owner);
 						pCVUINetworkSearch.searchPrinters();
 					}
 				}
 			});
-    		
+
     	}
     	return this.jButtonSearchPrinter;
     }
@@ -382,6 +385,7 @@ public class CVUINetwork extends JFrame {
      */
     private JButton getJButtonSearchPrinter6() {
     	if(this.jButtonSearchPrinter6 == null) {
+    	    JDialog owner = this;
     		this.jButtonSearchPrinter6 = new JButton();
     		this.jButtonSearchPrinter6.setText("Search Printer IPv6");
     		this.jButtonSearchPrinter6.addActionListener(new java.awt.event.ActionListener() {
@@ -389,16 +393,16 @@ public class CVUINetwork extends JFrame {
 					if(!pCVUINetworkSearch6.windowExist()) {
 						pCVUINetworkSearch6.listModel.removeAllElements();
 						pCVUINetworkSearch6.printerIpWithName.clear();
-						pCVUINetworkSearch6.showPrinters();
+						pCVUINetworkSearch6.showPrinters(owner);
 						pCVUINetworkSearch6.searchPrinters();
 					}
 				}
 			});
-    		
+
     	}
     	return this.jButtonSearchPrinter6;
     }
-    
+
 	/**
 	 * Initialisierung von jPanelNetworkLogging
 	 *
@@ -494,10 +498,10 @@ public class CVUINetwork extends JFrame {
 	private JCheckBox getJCheckBoxTCPAutoSendAfterConn() {
 		if (this.jCheckBoxTCPAutoSendAfterConn == null) {
 			this.jCheckBoxTCPAutoSendAfterConn = new JCheckBox();
-			this.jCheckBoxTCPAutoSendAfterConn.setName("Auto Send Command After Connection:");
+			this.jCheckBoxTCPAutoSendAfterConn.setName("Auto Send Command:");
 			this.jCheckBoxTCPAutoSendAfterConn
 					.setSelected(this.lk_cNetworkInterfaceSettings.getTCPAutoSendAfterConnOnOff());
-			this.jCheckBoxTCPAutoSendAfterConn.setText("Auto Send Command After Connection:");
+			this.jCheckBoxTCPAutoSendAfterConn.setText("Auto Send Command:");
 			this.jCheckBoxTCPAutoSendAfterConn.setHorizontalAlignment(SwingConstants.CENTER);
 			jCheckBoxTCPAutoSendAfterConn.setVisible(true);
 		}
@@ -508,7 +512,7 @@ public class CVUINetwork extends JFrame {
 	    String sSaved;
 	    if (this.jTextFieldTCPAutoSendAfterConn == null) {
 	        this.jTextFieldTCPAutoSendAfterConn = new JTextField();
-	        this.jTextFieldTCPAutoSendAfterConn.setHorizontalAlignment(javax.swing.JTextField.CENTER);			
+	        this.jTextFieldTCPAutoSendAfterConn.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 	        sSaved = this.lk_cNetworkInterfaceSettings.getTCPAutoSendAfterConn();
 	        if (sSaved.isEmpty())
 	        {

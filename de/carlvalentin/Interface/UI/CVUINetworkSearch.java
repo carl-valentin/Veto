@@ -14,17 +14,11 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 
 public class CVUINetworkSearch {
 
-	JFrame jFrameSelectPrinters = null;
+	JDialog jFrameSelectPrinters = null;
 	int port = 9100;
 	String bdcMessage = "\u0001RCLX---FF:FF:FF:FF:FF:FF UBB\u0017" + "\n\r" + "^RCLX---FF:FF:FF:FF:FF:FF UBB_";
 	String Adress = null;
@@ -71,15 +65,15 @@ public class CVUINetworkSearch {
 		}
 	}
 
-	public void showPrinters() {
-		jFrameSelectPrinters = new JFrame();
-		jFrameSelectPrinters.setTitle("Druckersuche");
-		jFrameSelectPrinters.setBounds(0, 0, 400, 300);
-		
+	public void showPrinters(JDialog owner) {
+		jFrameSelectPrinters = new JDialog(owner);
+		jFrameSelectPrinters.setTitle("Printer search");
+
 		jFrameSelectPrinters.setLayout(new BorderLayout());
-		title = new JLabel("Drucker werden gesucht... Bitte warten");
+		title = new JLabel("Searching for printers ... please wait");
 		jFrameSelectPrinters.add(title, BorderLayout.NORTH);
 		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setPreferredSize(new java.awt.Dimension(400, 400));
 		printerList = new JList(listModel);
 		scrollPane.setViewportView(printerList);
 		jFrameSelectPrinters.add(scrollPane, BorderLayout.CENTER);
@@ -99,7 +93,7 @@ public class CVUINetworkSearch {
 		btnSearchAgain.setEnabled(false);
 		btnSearchAgain.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
-				title.setText("Drucker werden gesucht... Bitte warten");
+				title.setText("Searching for printers ... please wait");
 				listModel.removeAllElements();
 				printerIpWithName.clear();
 				searchPrinters();
@@ -109,8 +103,9 @@ public class CVUINetworkSearch {
 		jFrameSelectPrinters.add(buttonPanel, BorderLayout.SOUTH);
 		jFrameSelectPrinters.pack();
 		jFrameSelectPrinters.setMinimumSize(jFrameSelectPrinters.getSize());
-		jFrameSelectPrinters.setBounds(0, 0, 400, 300);
+		// jFrameSelectPrinters.setBounds(0, 0, 400, 300);
 		jFrameSelectPrinters.setVisible(true);
+		jFrameSelectPrinters.setModal(true);
 	}
 
 	private void btnOk() {
@@ -189,12 +184,12 @@ class BroadcastThread extends Thread {
 			String sentence = new String(receivePacket.getData(), 0, receivePacket.getLength());
 			String recieved[] = sentence.split(";");
 			String name = recieved[2].substring(4);
-			name = "Name: "+name + ", IP-Adresse: " + receivePacket.getAddress().toString().substring(1);
+			name = "Name: "+name + ", IP-Address: " + receivePacket.getAddress().toString().substring(1);
 			CVUINetworkSearch.printerIpWithName.add(name);
 		}
 		socket.close();
 		//System.out.println("Socket geschlossen");
-		CVUINetworkSearch.title.setText("Mögliche Drucker: ");
+		CVUINetworkSearch.title.setText("Printer List: ");
 		if (!CVUINetworkSearch.printerIpWithName.isEmpty()) {
 			CVUINetworkSearch.listModel.removeAllElements();
 			for (int i = 0; i < CVUINetworkSearch.printerIpWithName.size(); i++) {

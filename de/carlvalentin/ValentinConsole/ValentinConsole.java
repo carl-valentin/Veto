@@ -81,7 +81,7 @@ public class ValentinConsole extends JFrame {
 	private final String lk_szConfigTokenPath = "ValentinConsoleSettingsPath";
 
 	/**
-	 * Token zum Speichern des Dateipfades zuletzt geöffneter Dateien in
+	 * Token zum Speichern des Dateipfades zuletzt geï¿½ffneter Dateien in
 	 * Konfigurationsdatei
 	 */
 	private final String lk_szConfigTokenFilePathRecent0 = "ValentinConsoleSettingsFilePathRecent0";
@@ -91,7 +91,7 @@ public class ValentinConsole extends JFrame {
 	private final String lk_szConfigTokenFilePathRecent4 = "ValentinConsoleSettingsFilePathRecent4";
 
 	/**
-	 * Token zum Speichern des Dateinamens zuletzt geöffneter Dateien in
+	 * Token zum Speichern des Dateinamens zuletzt geï¿½ffneter Dateien in
 	 * Konfigurationsdatei
 	 */
 	private final String lk_szConfigTokenFileNameRecent0 = "ValentinConsoleSettingsFileNameRecent0";
@@ -355,7 +355,7 @@ public class ValentinConsole extends JFrame {
 		// Ausgabe von Fehelermeldungen als Dialog
 		this.lk_cErrorMessage = new CVErrorMessage(this);
 		// Ausgabe von Fehlermeldungen in Logdatei
-		this.lk_cErrorFile = new CVLogging(System.getProperty("java.io.tmpdir", ".") + "\\VetoErrorLog.txt",
+		this.lk_cErrorFile = new CVLogging(System.getProperty("java.io.tmpdir", ".") + "/VetoErrorLog.txt",
 				this.lk_cErrorMessage);
 		// Ausgabe von Fehlermeldungen in Statuszeile des Programms
 		this.lk_cStatusMessage = new CVStatusLine();
@@ -394,9 +394,9 @@ public class ValentinConsole extends JFrame {
 	private void showUINetworkTCPConfig() {
 		lk_cTCPNetworkUI = new CVUINetwork(this.lk_cErrorMessage, this.lk_cErrorFile, this.lk_cStatusMessage,
 				this.lk_cConnectionManager, CVNetworkProtocol.TCP);
+		lk_cTCPNetworkUI.setModal(true);
 		lk_cTCPNetworkUI.setLocationRelativeTo(vc);
 		lk_cTCPNetworkUI.setVisible(true);
-
 		return;
 	}
 
@@ -407,6 +407,9 @@ public class ValentinConsole extends JFrame {
 	private void showUINetworkUDPConfig() {
 		CVUINetwork cUDPNetworkUI = new CVUINetwork(this.lk_cErrorMessage, this.lk_cErrorFile, this.lk_cStatusMessage,
 				this.lk_cConnectionManager, CVNetworkProtocol.UDP);
+		cUDPNetworkUI.setPreferredSize(new java.awt.Dimension(400, 400));
+		cUDPNetworkUI.pack();
+		cUDPNetworkUI.setModal(true);
 		cUDPNetworkUI.setLocationRelativeTo(vc);
 		cUDPNetworkUI.setVisible(true);
 		return;
@@ -419,9 +422,9 @@ public class ValentinConsole extends JFrame {
 	private void showUISerialPortConfig() {
 		CVUISerial serialUI = new CVUISerial(this.lk_cErrorMessage, this.lk_cErrorFile, this.lk_cStatusMessage,
 				this.lk_cConnectionManager);
+		serialUI.setModal(true);
 		serialUI.setLocationRelativeTo(vc);
 		serialUI.setVisible(true);
-
 		return;
 	}
 
@@ -432,9 +435,9 @@ public class ValentinConsole extends JFrame {
 	private void showUIParallelPortConfig() {
 		CVUIParallel parallelUI = new CVUIParallel(this.lk_cErrorMessage, this.lk_cErrorFile, this.lk_cStatusMessage,
 				this.lk_cConnectionManager);
+		parallelUI.setModal(true);
 		parallelUI.setLocationRelativeTo(vc);
 		parallelUI.setVisible(true);
-
 		return;
 	}
 
@@ -674,12 +677,14 @@ public class ValentinConsole extends JFrame {
 			CVSohEtb cStoreCVSohEtb = this.lk_cConnectionManager.getSohEtb();
 			this.lk_cConnectionManager.setSohEtb(CVSohEtb.none);
 
+			JFrame owner = this;
 			new Thread(new Runnable() {
 				public void run() {
 					CVFileTransmit fileTransmitUI = new CVFileTransmit(lk_cErrorMessage, lk_cErrorFile,
-							lk_cStatusMessage);
+							lk_cStatusMessage, owner);
 					fileTransmitUI.setFile(fileTransmit);
 					fileTransmitUI.setOutputStream(lk_cConnectionManager.getInterfaceBinaryOutput());
+					fileTransmitUI.setLocationRelativeTo(owner);
 					fileTransmitUI.setVisible(true);
 					fileTransmitUI.startFileTransfer();
 				}
@@ -699,12 +704,13 @@ public class ValentinConsole extends JFrame {
 	 * @return void
 	 */
 	private void initialize() {
-		this.setBounds(0, 0, 800, 600);
+		// this.setBounds(0, 0, 800, 600);
 		this.setJMenuBar(getJMenuBarMain());
 		this.setContentPane(getJPanelMain());
 		this.setTitle("VETO - Valentin Embedded Test Office 1.1");
 		this.setIconImage(Toolkit.getDefaultToolkit().getImage("icon.png"));
 		this.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+		this.pack();
 	}
 
 	/**
@@ -749,7 +755,9 @@ public class ValentinConsole extends JFrame {
 			jScrollPaneConsole = new javax.swing.JScrollPane();
 			jScrollPaneConsole.setViewportView(lk_cConsoleInput.getTextArea());
 			lk_cConsoleInput.getTextArea().setEnabled(false);
+			lk_cConsoleInput.getTextArea().setRows(50);
 		}
+
 		return jScrollPaneConsole;
 	}
 
@@ -765,23 +773,25 @@ public class ValentinConsole extends JFrame {
 			FlowLayout ConnectBarFlowLayout = new FlowLayout();
 			jPanelConnectBar = new JPanel();
 			jPanelConnectBar.setLayout(ConnectBarFlowLayout);
-			jPanelConnectBar.setPreferredSize(new java.awt.Dimension(20, 36));
+			//jPanelConnectBar.setPreferredSize(new java.awt.Dimension(20, 36));
 			ConnectBarFlowLayout.setAlignment(java.awt.FlowLayout.LEFT);
 			jLabelConnectBarInterface.setText("Interface:");
 			jLabelConnectBarInterface.setToolTipText("choose interface for connection");
-			jLabelConnectBarInterface.setPreferredSize(new java.awt.Dimension(100, 26));
-			jLabelConnectBarInterface.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-			jLabelConnectBarInterface.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+			//jLabelConnectBarInterface.setPreferredSize(new java.awt.Dimension(100, 26));
+			//jLabelConnectBarInterface.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+			//jLabelConnectBarInterface.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 			jLabelConnectBarEncoding.setText("Encoding:");
-			jLabelConnectBarEncoding.setPreferredSize(new java.awt.Dimension(100, 26));
+			// jLabelConnectBarEncoding.setPreferredSize(new java.awt.Dimension(100, 26));
 			jLabelConnectBarEncoding.setToolTipText("encoding CVPL");
-			jLabelConnectBarEncoding.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-			jLabelConnectBarEncoding.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+			//jLabelConnectBarEncoding.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+			//jLabelConnectBarEncoding.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 			jPanelConnectBar.add(jLabelConnectBarInterface, null);
 			jPanelConnectBar.add(getJComboBoxConnectBarChooseInterface(), null);
 			jPanelConnectBar.add(getJButtonConnectBarConfigInterface(), null);
+			jPanelConnectBar.add(new JLabel("    "));
 			jPanelConnectBar.add(jLabelConnectBarEncoding, null);
 			jPanelConnectBar.add(getJComboBoxConnectBarChooseEncoding(), null);
+			jPanelConnectBar.add(new JLabel("    "));
 			jPanelConnectBar.add(getJButtonConnectBarConnect(), null);
 			jPanelConnectBar.add(getJButtonConnectBarDisconnect(), null);
 		}
@@ -796,7 +806,7 @@ public class ValentinConsole extends JFrame {
 	private JComboBox getJComboBoxConnectBarChooseInterface() {
 		if (jComboBoxConnectBarChooseInterface == null) {
 			jComboBoxConnectBarChooseInterface = new JComboBox();
-			jComboBoxConnectBarChooseInterface.setPreferredSize(new java.awt.Dimension(100, 26));
+			// jComboBoxConnectBarChooseInterface.setPreferredSize(new java.awt.Dimension(100, 26));
 			jComboBoxConnectBarChooseInterface.setToolTipText("choose interface for connection");
 			jComboBoxConnectBarChooseInterface.setBackground(Color.white);
 
@@ -838,7 +848,7 @@ public class ValentinConsole extends JFrame {
 	private JButton getJButtonConnectBarConfigInterface() {
 		if (jButtonConnectBarConfigInterface == null) {
 			jButtonConnectBarConfigInterface = new JButton();
-			jButtonConnectBarConfigInterface.setPreferredSize(new java.awt.Dimension(100, 26));
+			// jButtonConnectBarConfigInterface.setPreferredSize(new java.awt.Dimension(100, 26));
 			jButtonConnectBarConfigInterface.setText("Configure");
 			jButtonConnectBarConfigInterface.setToolTipText("configure interface");
 			jButtonConnectBarConfigInterface.addActionListener(new java.awt.event.ActionListener() {
@@ -871,7 +881,7 @@ public class ValentinConsole extends JFrame {
 	private JComboBox getJComboBoxConnectBarChooseEncoding() {
 		if (jComboBoxConnectBarChooseEncoding == null) {
 			jComboBoxConnectBarChooseEncoding = new JComboBox();
-			jComboBoxConnectBarChooseEncoding.setPreferredSize(new java.awt.Dimension(100, 26));
+			// jComboBoxConnectBarChooseEncoding.setPreferredSize(new java.awt.Dimension(100, 26));
 			jComboBoxConnectBarChooseEncoding.setBackground(Color.white);
 			jComboBoxConnectBarChooseEncoding.setToolTipText("encoding CVPL");
 
@@ -921,7 +931,7 @@ public class ValentinConsole extends JFrame {
 	private JButton getJButtonConnectBarConnect() {
 		if (jButtonConnectBarConnect == null) {
 			jButtonConnectBarConnect = new JButton();
-			jButtonConnectBarConnect.setPreferredSize(new java.awt.Dimension(100, 26));
+			// jButtonConnectBarConnect.setPreferredSize(new java.awt.Dimension(100, 26));
 			jButtonConnectBarConnect.setText("Connect");
 			jButtonConnectBarConnect.setToolTipText("connect to printer");
 			jButtonConnectBarConnect.addActionListener(new java.awt.event.ActionListener() {
@@ -934,6 +944,7 @@ public class ValentinConsole extends JFrame {
 						jButtonConnectBarConfigInterface.setEnabled(false);
 						jComboBoxConnectBarChooseInterface.setEnabled(false);
 						jMenuItemConfigureNetworkTCP.setEnabled(false);
+						jMenuItemConfigureNetworkUDP.setEnabled(false);
 						jMenuItemConfigureRS232.setEnabled(false);
 						jMenuItemConfigureParallel.setEnabled(false);
 
@@ -956,7 +967,7 @@ public class ValentinConsole extends JFrame {
 	private JButton getJButtonConnectBarDisconnect() {
 		if (jButtonConnectBarDisconnect == null) {
 			jButtonConnectBarDisconnect = new JButton();
-			jButtonConnectBarDisconnect.setPreferredSize(new java.awt.Dimension(100, 26));
+			// jButtonConnectBarDisconnect.setPreferredSize(new java.awt.Dimension(100, 26));
 			jButtonConnectBarDisconnect.setText("Disconnect");
 			jButtonConnectBarDisconnect.setToolTipText("disconnect printer");
 			jButtonConnectBarDisconnect.addActionListener(new java.awt.event.ActionListener() {
@@ -969,6 +980,7 @@ public class ValentinConsole extends JFrame {
 						jButtonConnectBarConfigInterface.setEnabled(true);
 						jComboBoxConnectBarChooseInterface.setEnabled(true);
 						jMenuItemConfigureNetworkTCP.setEnabled(true);
+						jMenuItemConfigureNetworkUDP.setEnabled(true);
 						jMenuItemConfigureRS232.setEnabled(true);
 						jMenuItemConfigureParallel.setEnabled(true);
 
@@ -1069,7 +1081,7 @@ public class ValentinConsole extends JFrame {
 			jMenuItemUpdate.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					if (lk_cConfigFile != null) {
-						ValentinUpdater updater = new ValentinUpdater(lk_cConfigFile);
+						ValentinUpdater updater = new ValentinUpdater(lk_cConfigFile, null);
 					} else {
 						ValentinUpdater updater = new ValentinUpdater();
 					}
@@ -1509,9 +1521,10 @@ public class ValentinConsole extends JFrame {
 		CVSohEtb cStoreCVSohEtb = this.lk_cConnectionManager.getSohEtb();
 
 		this.lk_cConnectionManager.setSohEtb(CVSohEtb.none);
+		JFrame owner = this;
 		new Thread(new Runnable() {
 			public void run() {
-				CVFileTransmit fileTransmitUI = new CVFileTransmit(lk_cErrorMessage, lk_cErrorFile, lk_cStatusMessage);
+				CVFileTransmit fileTransmitUI = new CVFileTransmit(lk_cErrorMessage, lk_cErrorFile, lk_cStatusMessage, owner);
 				fileTransmitUI.setFile(fileTransmit);
 				fileTransmitUI.setOutputStream(lk_cConnectionManager.getInterfaceBinaryOutput());
 				fileTransmitUI.setVisible(true);

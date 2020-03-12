@@ -10,17 +10,11 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 
 public class CVUINetworkSearch6 {
 
-	JFrame jFrameSelectPrinters = null;
+	JDialog jFrameSelectPrinters = null;
 	int port = 9101;
 	String bdcMessage = "\u0001RCLX---FF:FF:FF:FF:FF:FF UBB\u0017" + "\n\r" + "^RCLX---FF:FF:FF:FF:FF:FF UBB_";
 	String Adress = "ff02::1";
@@ -48,20 +42,20 @@ public class CVUINetworkSearch6 {
 	}
 
 	public void searchPrinters() {
-		
+
 		broadcast = new BroadcastThread6(Adress, port, bdcMessage, 5000);
-		broadcast.start();		
+		broadcast.start();
 	}
 
-	public void showPrinters() {
-		jFrameSelectPrinters = new JFrame();
-		jFrameSelectPrinters.setTitle("Druckersuche IPv6");
-		jFrameSelectPrinters.setBounds(0, 0, 400, 300);
-		
+	public void showPrinters(JDialog owner) {
+		jFrameSelectPrinters = new JDialog(owner);
+		jFrameSelectPrinters.setTitle("Printer search IPv6");
+
 		jFrameSelectPrinters.setLayout(new BorderLayout());
-		title = new JLabel("Drucker werden gesucht... Bitte warten");
+		title = new JLabel("Searching for printers ... please wait");
 		jFrameSelectPrinters.add(title, BorderLayout.NORTH);
 		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setPreferredSize(new java.awt.Dimension(400, 400));
 		printerList = new JList<String>(listModel);
 		scrollPane.setViewportView(printerList);
 		jFrameSelectPrinters.add(scrollPane, BorderLayout.CENTER);
@@ -81,7 +75,7 @@ public class CVUINetworkSearch6 {
 		btnSearchAgain.setEnabled(false);
 		btnSearchAgain.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
-				title.setText("Drucker werden gesucht... Bitte warten");
+				title.setText("Searching for printers ... please wait");
 				listModel.removeAllElements();
 				printerIpWithName.clear();
 				searchPrinters();
@@ -91,8 +85,9 @@ public class CVUINetworkSearch6 {
 		jFrameSelectPrinters.add(buttonPanel, BorderLayout.SOUTH);
 		jFrameSelectPrinters.pack();
 		jFrameSelectPrinters.setMinimumSize(jFrameSelectPrinters.getSize());
-		jFrameSelectPrinters.setBounds(0, 0, 400, 300);
+		// jFrameSelectPrinters.setBounds(0, 0, 400, 300);
 		jFrameSelectPrinters.setVisible(true);
+		jFrameSelectPrinters.setModal(true);
 	}
 
 	private void btnOk() {
@@ -101,8 +96,8 @@ public class CVUINetworkSearch6 {
 		selectedPrinter = selectedPrinter.substring(selectedPrinter.lastIndexOf(' ')+1);
 		if (CVUINetwork.jTextFieldTCPUDPIPAdress != null) {
 			if (selectedPrinter.lastIndexOf('%') != -1 && selectedPrinter.charAt(selectedPrinter.lastIndexOf('%')) == '%') {
-				selectedPrinter = 
-						selectedPrinter.substring(selectedPrinter.lastIndexOf(' ')+1, 
+				selectedPrinter =
+						selectedPrinter.substring(selectedPrinter.lastIndexOf(' ')+1,
 								selectedPrinter.length()-(selectedPrinter.length()-selectedPrinter.lastIndexOf('%')));
 			}
 			CVUINetwork.jTextFieldTCPUDPIPAdress.setText(selectedPrinter);
@@ -163,18 +158,18 @@ class BroadcastThread6 extends Thread {
 			String sentence = new String(receivePacket.getData(), 0, receivePacket.getLength());
 			String recieved[] = sentence.split(";");
 			String name = recieved[2].substring(4);
-			name = "Name: "+name + ", IP-Adresse: " + receivePacket.getAddress().toString().substring(1);
+			name = "Name: "+name + ", IP-Address: " + receivePacket.getAddress().toString().substring(1);
 			CVUINetworkSearch6.printerIpWithName.add(name);
 		}
 		socket.close();
 		//System.out.println("Socket geschlossen");
-		CVUINetworkSearch6.title.setText("Mögliche Drucker: ");
+		CVUINetworkSearch6.title.setText("Printer List: ");
 		if (!CVUINetworkSearch6.printerIpWithName.isEmpty()) {
 			//CVUINetworkSearch6.listModel.removeAllElements();
 			CVUINetworkSearch6.listModel.clear();
-			
+
 			for(String element : CVUINetworkSearch6.printerIpWithName){
-				
+
 				CVUINetworkSearch6.listModel.addElement(element);
 			}
 		}

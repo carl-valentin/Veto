@@ -8,49 +8,46 @@ import de.carlvalentin.Protocol.CVConnectionManager;
 import gnu.io.*;
 import java.util.*;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.awt.BorderLayout;
-import javax.swing.JButton;
-import javax.swing.JTabbedPane;
 import java.awt.GridLayout;
-import javax.swing.JLabel;
-import javax.swing.JComboBox;
+import java.awt.Toolkit;
+
 /**
  * Grafische Oberflaeche zur Konfiguration der seriellen Schnittstelle
  */
-public class CVUISerial extends JFrame
+public class CVUISerial extends JDialog
 {
     /**
      * Serielle Schnittstelle.
      */
     private CVSerial           lk_cSerialInterface;
-    
+
     /**
      * Einstellungen serielle Schnittstelle.
      */
     private CVSerialSettings   lk_cSerialInterfaceSettings;
-    
+
     /**
      * Verwaltet die Verbindungen zum Drucker
      */
     private CVConnectionManager lk_cConnectionManager;
-    
+
 	/**
      * Ausgabe von Fehlermeldungen in Dialogform.
      */
     private CVErrorMessage     lk_cErrorMessage;
-    
+
     /**
      * Ausgabe von Fehlermeldungen in eine Logdatei
      */
     private CVLogging          lk_cErrorFile;
-    
+
     /**
      * Ausgabe von Statusmeldungen auf Statuszeile
      */
     private CVStatusLine       lk_cStatusMessage;
-    
+
 	private JPanel jPanelMain = null;
 	private JPanel jPanelButtonBar = null;
 	private JButton jButtonOK = null;
@@ -71,14 +68,14 @@ public class CVUISerial extends JFrame
 	private JLabel jLabelHandshake = null;
 	private JComboBox jComboBoxHandshake = null;
     /**
-     * 
+     *
      * @param cErrorMessage Ausgabe von Fehlermeldungen als Dialog.
      * @param cErrorFile Ausgabe von Fehlermeldungen in Logdatei.
      * @param cStatusMessage Ausgabe von Statusmeldungen auf Statuszeile.
      * @param cConnectionManager Verwaltet Verbindungen zum Drucker
      */
     public CVUISerial(
-            CVErrorMessage      cErrorMessage, 
+            CVErrorMessage      cErrorMessage,
             CVLogging           cErrorFile,
             CVStatusLine        cStatusMessage,
             CVConnectionManager cConnectionManager)
@@ -87,20 +84,20 @@ public class CVUISerial extends JFrame
         this.lk_cErrorFile         = cErrorFile;
         this.lk_cStatusMessage     = cStatusMessage;
         this.lk_cConnectionManager = cConnectionManager;
-        
+
         this.lk_cSerialInterface         =
                 this.lk_cConnectionManager.getSerialInterface();
         this.lk_cSerialInterfaceSettings = (CVSerialSettings)
                 this.lk_cSerialInterface.getInterfaceSettings();
     	this.initialize();
-        
+
         return;
     }
 
-    
+
 	/**
 	 * This method initializes this
-	 * 
+	 *
 	 * @return void
 	 */
 	private void initialize() {
@@ -108,8 +105,9 @@ public class CVUISerial extends JFrame
         this.setName("CVUISerialFrame");
         this.setContentPane(getJPanelMain());
         this.setTitle("configure serial port");
+        this.setIconImage(Toolkit.getDefaultToolkit().getImage("icon.png"));
         this.setVisible(false);
-			
+
 	}
     /**
      * Aufraeumen, bevor Objekt geloescht wird.
@@ -118,7 +116,7 @@ public class CVUISerial extends JFrame
     {
     	return;
     }
-    
+
     /**
      * Button OK wurde gedrueckt, Einstellungen werden uebernommen.
      *
@@ -142,17 +140,17 @@ public class CVUISerial extends JFrame
         this.lk_cSerialInterfaceSettings.setHandshake(
                 CVSerialHandshake.fromString(
                         (String)this.jComboBoxHandshake.getSelectedItem()));
-        
+
         if(this.lk_cSerialInterfaceSettings.validateSettings() == true)
         {
         	this.lk_cSerialInterface.setInterfaceSettings(
         			(Object)this.lk_cSerialInterfaceSettings);
-            
+
             this.lk_cConnectionManager.setSerialInterface(
                     this.lk_cSerialInterface);
-            
+
             this.setVisible(false);
-            
+
             return;
         }
         else
@@ -162,11 +160,11 @@ public class CVUISerial extends JFrame
         		this.lk_cErrorMessage.write(this,
                         "CVUISerial: wrong serial port settings");
             }
-            
+
         	return;
         }
     }
-    
+
     /**
      * Button Cancel wurde gedrueckt, Einstellungen werden nicht uebernommen.
      *
@@ -177,10 +175,10 @@ public class CVUISerial extends JFrame
     	return;
     }
 	/**
-	 * This method initializes jPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
-	 */    
+	 * This method initializes jPanel
+	 *
+	 * @return javax.swing.JPanel
+	 */
 	private JPanel getJPanelMain() {
 		if (jPanelMain == null) {
 			jPanelMain = new JPanel();
@@ -192,10 +190,10 @@ public class CVUISerial extends JFrame
 		return jPanelMain;
 	}
 	/**
-	 * This method initializes jPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
-	 */    
+	 * This method initializes jPanel
+	 *
+	 * @return javax.swing.JPanel
+	 */
 	private JPanel getJPanelButtonBar() {
 		if (jPanelButtonBar == null) {
 			jPanelButtonBar = new JPanel();
@@ -207,20 +205,20 @@ public class CVUISerial extends JFrame
 		return jPanelButtonBar;
 	}
 	/**
-	 * This method initializes jButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */    
+	 * This method initializes jButton
+	 *
+	 * @return javax.swing.JButton
+	 */
 	private JButton getJButtonOK() {
 		if (jButtonOK == null) {
 			jButtonOK = new JButton();
 			jButtonOK.setPreferredSize(new java.awt.Dimension(100,25));
 			jButtonOK.setText("OK");
 			jButtonOK.setToolTipText("process settings");
-			jButtonOK.addActionListener(new java.awt.event.ActionListener() 
-            { 
-				public void actionPerformed(java.awt.event.ActionEvent e) 
-                {    
+			jButtonOK.addActionListener(new java.awt.event.ActionListener()
+            {
+				public void actionPerformed(java.awt.event.ActionEvent e)
+                {
 					processButtonOK();
 				}
 			});
@@ -228,20 +226,20 @@ public class CVUISerial extends JFrame
 		return jButtonOK;
 	}
 	/**
-	 * This method initializes jButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */    
+	 * This method initializes jButton
+	 *
+	 * @return javax.swing.JButton
+	 */
 	private JButton getJButtonCancel() {
 		if (jButtonCancel == null) {
 			jButtonCancel = new JButton();
 			jButtonCancel.setPreferredSize(new java.awt.Dimension(100,25));
 			jButtonCancel.setText("Cancel");
 			jButtonCancel.setToolTipText("do not process settings");
-			jButtonCancel.addActionListener(new java.awt.event.ActionListener() 
-            { 
-				public void actionPerformed(java.awt.event.ActionEvent e) 
-                {    
+			jButtonCancel.addActionListener(new java.awt.event.ActionListener()
+            {
+				public void actionPerformed(java.awt.event.ActionEvent e)
+                {
 					processButtonCancel();
 				}
 			});
@@ -249,10 +247,10 @@ public class CVUISerial extends JFrame
 		return jButtonCancel;
 	}
 	/**
-	 * This method initializes jTabbedPane	
-	 * 	
-	 * @return javax.swing.JTabbedPane	
-	 */    
+	 * This method initializes jTabbedPane
+	 *
+	 * @return javax.swing.JTabbedPane
+	 */
 	private JTabbedPane getJTabbedPaneMain() {
 		if (jTabbedPaneMain == null) {
 			jTabbedPaneMain = new JTabbedPane();
@@ -262,10 +260,10 @@ public class CVUISerial extends JFrame
 		return jTabbedPaneMain;
 	}
 	/**
-	 * This method initializes jPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
-	 */    
+	 * This method initializes jPanel
+	 *
+	 * @return javax.swing.JPanel
+	 */
 	private JPanel getJPanelSerialSettings() {
 		if (jPanelSerialSettings == null) {
 			jLabelHandshake = new JLabel();
@@ -310,10 +308,10 @@ public class CVUISerial extends JFrame
 		return jPanelSerialSettings;
 	}
 	/**
-	 * This method initializes jPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
-	 */    
+	 * This method initializes jPanel
+	 *
+	 * @return javax.swing.JPanel
+	 */
 	private JPanel getJPanelSerialLogging() {
 		if (jPanelSerialLogging == null) {
 			jPanelSerialLogging = new JPanel();
@@ -321,23 +319,23 @@ public class CVUISerial extends JFrame
 		return jPanelSerialLogging;
 	}
 	/**
-	 * This method initializes jComboBox	
-	 * 	
-	 * @return javax.swing.JComboBox	
-	 */    
+	 * This method initializes jComboBox
+	 *
+	 * @return javax.swing.JComboBox
+	 */
 	private JComboBox getJComboBoxSerialPort() {
 		if (jComboBoxSerialPort == null) {
 			jComboBoxSerialPort = new JComboBox();
 			jComboBoxSerialPort.setBackground(java.awt.Color.white);
 		}
         // Liste aller serieller Schnittstellen abfragen
-        Vector commPortsVector = 
+        Vector commPortsVector =
             this.lk_cSerialInterfaceSettings.getCommPortVector();
         CommPortIdentifier commPortSelected =
             this.lk_cSerialInterfaceSettings.getCommPort();
         for(int iCounter = 0; iCounter < commPortsVector.size(); iCounter++)
         {
-        	CommPortIdentifier commPortCurrent = 
+        	CommPortIdentifier commPortCurrent =
                 (CommPortIdentifier) commPortsVector.get(iCounter);
             jComboBoxSerialPort.addItem((String)commPortCurrent.getName());
             if(commPortCurrent.equals(commPortSelected) == true)
@@ -348,22 +346,22 @@ public class CVUISerial extends JFrame
 		return jComboBoxSerialPort;
 	}
 	/**
-	 * This method initializes jComboBox	
-	 * 	
-	 * @return javax.swing.JComboBox	
-	 */    
+	 * This method initializes jComboBox
+	 *
+	 * @return javax.swing.JComboBox
+	 */
 	private JComboBox getJComboBoxBaudrate() {
 		if (jComboBoxBaudrate == null) {
 			jComboBoxBaudrate = new JComboBox();
-			jComboBoxBaudrate.setBackground(java.awt.Color.white);   
+			jComboBoxBaudrate.setBackground(java.awt.Color.white);
 		}
         // Liste aller unterstuetzten Baudraten einf&uuml;gen
-        CVSerialBaudrate baudRateSelected = 
+        CVSerialBaudrate baudRateSelected =
             this.lk_cSerialInterfaceSettings.getBaudrate();
         for(Enumeration baudRateEnum = CVSerialBaudrate.elements();
             baudRateEnum.hasMoreElements(); )
         {
-        	CVSerialBaudrate baudRateCurrent = 
+        	CVSerialBaudrate baudRateCurrent =
                 (CVSerialBaudrate) baudRateEnum.nextElement();
             jComboBoxBaudrate.addItem((String)baudRateCurrent.toString());
         }
@@ -371,10 +369,10 @@ public class CVUISerial extends JFrame
         return jComboBoxBaudrate;
 	}
 	/**
-	 * This method initializes jComboBox	
-	 * 	
-	 * @return javax.swing.JComboBox	
-	 */    
+	 * This method initializes jComboBox
+	 *
+	 * @return javax.swing.JComboBox
+	 */
 	private JComboBox getJComboBoxDatabits() {
 		if (jComboBoxDatabits == null) {
 			jComboBoxDatabits = new JComboBox();
@@ -394,10 +392,10 @@ public class CVUISerial extends JFrame
 		return jComboBoxDatabits;
 	}
 	/**
-	 * This method initializes jComboBox	
-	 * 	
-	 * @return javax.swing.JComboBox	
-	 */    
+	 * This method initializes jComboBox
+	 *
+	 * @return javax.swing.JComboBox
+	 */
 	private JComboBox getJComboBoxStopbits() {
 		if (jComboBoxStopbits == null) {
 			jComboBoxStopbits = new JComboBox();
@@ -417,10 +415,10 @@ public class CVUISerial extends JFrame
 		return jComboBoxStopbits;
 	}
 	/**
-	 * This method initializes jComboBox	
-	 * 	
-	 * @return javax.swing.JComboBox	
-	 */    
+	 * This method initializes jComboBox
+	 *
+	 * @return javax.swing.JComboBox
+	 */
 	private JComboBox getJComboBoxParity() {
 		if (jComboBoxParity == null) {
 			jComboBoxParity = new JComboBox();
@@ -442,7 +440,7 @@ public class CVUISerial extends JFrame
 
 	/**
 	 * This method initializes jComboBox
-	 * 	
+	 *
 	 * @return javax.swing.JComboBox
 	 */
 	private JComboBox getJComboBoxHandshake() {
