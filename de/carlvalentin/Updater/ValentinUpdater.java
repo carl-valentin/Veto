@@ -153,6 +153,30 @@ public class ValentinUpdater {
 		            {
 		                public void run() {
 		                    connect(60000);
+/*
+                            try {
+                                int i = 160;
+                                OutputStream os = socket.getOutputStream();
+                                while (i>0 && !bStop) {
+                                    Thread.sleep(1000);
+                                    os.write(0);
+                                    lbStatus.setText("Wait till fin: " + i + "s");
+                                    i--;
+                                }
+                                if (bStop)
+                                    return;
+                            } catch (SocketException e) {
+
+                                disconnect();
+                            } catch (Exception e) {
+                                JOptionPane.showMessageDialog(updateFrame,
+                                        "Unknown error, see console output");
+                                e.printStackTrace();
+                                disconnect();
+                                return;
+                            }
+*/
+
 		                }
 		            }.start();
 				}
@@ -344,17 +368,16 @@ public class ValentinUpdater {
 	    }
 	    catch (NumberFormatException e) {
 	    }
-	    catch (Exception e)
-	    {
+	    catch (Exception e) {
             JOptionPane.showMessageDialog(updateFrame,
                     "Unknown error, see console output");
 	        e.printStackTrace();
 	    }
 
-	    if (ip.isEmpty() || port==0 || !ipValidate(ip))
-	    {
+	    if (ip.isEmpty() || port==0 || !ipValidate(ip)) {
 	        JOptionPane.showMessageDialog(updateFrame,
 	                "Please enter a valid IP-Address and Port Number");
+	        disconnect();
 	        return;
 	    }
 
@@ -365,7 +388,6 @@ public class ValentinUpdater {
     	    try {
     	        bTimeout = false;
     	        socket = new Socket();
-    	        socket.setKeepAlive(true);
         	    socket.connect(new InetSocketAddress(ip, port), iNumSocketTimeout);
         	    connected = true;
 
@@ -447,6 +469,7 @@ public class ValentinUpdater {
     }
 
 	protected void disconnect() {
+	    System.out.println("disconnecting ...");
 	    bStop = true;
         if (socket != null) {
             try {
@@ -465,28 +488,33 @@ public class ValentinUpdater {
     }
 
 	public void sendUpdate(File updateFile) {
+	    long lTransmitted = 0;
+	    long lFileLen = updateFile.length();
+
 	    try {
-	        byte[] mybytearray = new byte[(int) updateFile.length()];
-	        FileInputStream fis = new FileInputStream(updateFile);
-	        BufferedInputStream bis = new BufferedInputStream(fis);
+	        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(updateFile));
 	        OutputStream os = socket.getOutputStream();
-	        String str = "Sending " + updateFile + "(" + mybytearray.length + " bytes)";
+	        byte[] buffer = new byte[10240];
+            int n;
+
+	        String str = "Sending " + updateFile + "(" + lFileLen + " bytes)";
 	        System.out.println(str);
 	        lbStatus.setText(str);
-	        System.out.println(Math.round(updateFile.length()/100));
-	        byte[] buffer = new byte[Math.round(updateFile.length()/100)];
-	        int n;
-	        int i=0;
+
 	        while ( (n=bis.read(buffer))>=0 && !bStop) {
 	            os.write(buffer, 0, n);
-	            progressBar.setValue(i);
-	            i++;
+	            lTransmitted += n;
+	            progressBar.setValue((int)(lTransmitted*100/lFileLen));
 	        }
+
 	        os.flush();
 	        System.out.println("Flushed");
 	        bis.close();
         }
 	    catch (SocketException e) {
+	        if (lTransmitted < lFileLen) {
+	            System.out.println("Only " + lTransmitted + " Bytes of " + lFileLen + " Bytes transmitted!");
+	        }
 /*
             if (!e.getMessage().equals("Socket closed")) {
                 e.printStackTrace();
