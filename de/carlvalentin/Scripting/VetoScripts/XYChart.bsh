@@ -11,12 +11,12 @@ import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.title.*;
 import org.apache.commons.io.FileUtils;
 
-String sSaveFolder = "D:\\Ben\\ungesichert\\PrtProfile\\";
-//String sSaveFolder = System.getProperty("java.io.tmpdir",".") + "\\PrintProfile\\";
+// String sSaveFolder = "D:\\Ben\\ungesichert\\PrtProfile\\";
+String sSaveFolder = System.getProperty("java.io.tmpdir",".") + "\\XYChart\\";
 
 int i;
 
-String sCfgChartName  = "PrtProfile";
+String sCfgChartName  = "Test";
 String sCfgResolution = "2";
 String sCfgFieldName  = "1";
 
@@ -232,7 +232,7 @@ if (msg.length() > 0)
 	int iBuildNum;
 
 	String[] tokens = msg.split("[;]");
-	String[] tokens2 = tokens[2].split("[V .]");
+	String[] tokens2 = tokens[2].split("[V .*]");
 
 	iMajorVers = Integer.parseInt(tokens2[1]);
 	iMinorVers = Integer.parseInt(tokens2[2]);

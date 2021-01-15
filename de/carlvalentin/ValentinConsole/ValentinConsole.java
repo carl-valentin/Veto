@@ -755,7 +755,7 @@ public class ValentinConsole extends JFrame {
 			jScrollPaneConsole = new javax.swing.JScrollPane();
 			jScrollPaneConsole.setViewportView(lk_cConsoleInput.getTextArea());
 			lk_cConsoleInput.getTextArea().setEnabled(false);
-			lk_cConsoleInput.getTextArea().setRows(50);
+			lk_cConsoleInput.getTextArea().setRows(40);
 		}
 
 		return jScrollPaneConsole;
