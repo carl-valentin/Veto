@@ -342,7 +342,7 @@ public class CVBeanShell
             this.lk_cBeanShellInterpreter.eval(
                     "importCommands(\"/bshscripts\");");
             this.lk_cBeanShellInterpreter.eval(
-                      "importCommands(\"/de/carlvalentin/Scriptng\");");
+                      "importCommands(\"/de/carlvalentin/Scripting\");");
             this.lk_cBeanShellInterpreter.eval("" +
                     "bsh.system.shutdownOnExit = false;");
 

@@ -1039,7 +1039,7 @@ public class ValentinConsole extends JFrame {
 			jMenuItemInfo.setEnabled(true);
 			jMenuItemInfo.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					JOptionPane.showMessageDialog(null, "Valentin Embedded Test Office\nVersion 1.1", "Info",
+					JOptionPane.showMessageDialog(vc, "Valentin Embedded Test Office\nVersion 1.1", "Info",
 							JOptionPane.OK_OPTION);
 				}
 			});
@@ -1803,7 +1803,7 @@ public class ValentinConsole extends JFrame {
 		jMenuItemNoItem.setText("Change Path");
 		jMenuItemNoItem.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
-				JFrame skripPathFrame = new JFrame();
+				JDialog skripPathFrame = new JDialog(vc);
 				skripPathFrame.setVisible(true);
 				skripPathFrame.setLayout(new FlowLayout());
 				JLabel lbChangePath = new JLabel("Set Path to:");
@@ -1814,7 +1814,7 @@ public class ValentinConsole extends JFrame {
 					public void actionPerformed(ActionEvent e) {
 						JFileChooser chooser = new JFileChooser();
 						chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-						int returnVal = chooser.showOpenDialog(null);
+						int returnVal = chooser.showOpenDialog(vc);	
 						if (returnVal == JFileChooser.APPROVE_OPTION) {
 							tfNewPath.setText(chooser.getSelectedFile().toString());
 						}
@@ -1823,7 +1823,7 @@ public class ValentinConsole extends JFrame {
 				JButton btSetPath = new JButton("Set Path");
 				btSetPath.addActionListener(new ActionListener() {
 					@Override
-					public void actionPerformed(ActionEvent e) {
+					public void actionPerformed(ActionEvent e) {				    
 						if (!tfNewPath.getText().trim().isEmpty()) {
 							lk_cConfigFile.setConfig("ScriptFolder", tfNewPath.getText().trim());
 							vc.setJMenuBar(getJMenuBarMain());
@@ -1838,6 +1838,8 @@ public class ValentinConsole extends JFrame {
 				skripPathFrame.add(btSearchPath);
 				skripPathFrame.add(btSetPath);
 				skripPathFrame.pack();
+                //skripPathFrame.setModal(true);
+                skripPathFrame.setLocationRelativeTo(vc);
 			}
 		});
 		jMenuScriptSelection.add(jMenuItemNoItem);
