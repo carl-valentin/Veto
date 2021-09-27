@@ -220,7 +220,8 @@ public class ValentinConsole extends JFrame {
 		// ----------------------------------------------------------------------
 		// Classpath anpassen
 		// ----------------------------------------------------------------------
-		System.setProperty("java.class.path", "Veto.jar;" + ".\\RXTXcomm.jar;" + ".\\bsh-2.0b4.jar;"
+		System.setProperty("java.class.path", "Veto.jar;" + ".\\nrjavaserial-5.2.1.jar;"
+		        + ".\\bsh-2.0b4.jar;"
 				+ ".\\lava3-core.jar;" + ".\\lava3-printf.jar" + ".\\rsyntaxtextarea-2.6.0.jar");
 
 		while (i < args.length && args[i].startsWith("-")) {
@@ -431,14 +432,16 @@ public class ValentinConsole extends JFrame {
 	/**
 	 * Anzeige der grafischen Oberflaeche zur Konfiguration serieller Ports.
 	 *
-	 */
+	 */	
 	private void showUIParallelPortConfig() {
+/*	    
 		CVUIParallel parallelUI = new CVUIParallel(this.lk_cErrorMessage, this.lk_cErrorFile, this.lk_cStatusMessage,
 				this.lk_cConnectionManager);
 		parallelUI.setModal(true);
 		parallelUI.setLocationRelativeTo(vc);
 		parallelUI.setVisible(true);
 		return;
+*/
 	}
 
 	/**
@@ -548,10 +551,12 @@ public class ValentinConsole extends JFrame {
 				cSelectedInterface = (CVInterface) this.lk_cConnectionManager.getUDPNetworkInterface();
 			} else if (sDescrInterface.equals((String) "serial port")) {
 				cSelectedInterface = (CVInterface) this.lk_cConnectionManager.getSerialInterface();
-			} else {
+			}
+/*			
+			else {
 				cSelectedInterface = (CVInterface) this.lk_cConnectionManager.getParallelInterface();
 			}
-
+*/
 			// soll Console oder Scripting verbunden werden
 			int iSelTabIndex = this.jTabbedPaneMain.getSelectedIndex();
 			String sSelTabTitle = this.jTabbedPaneMain.getTitleAt(iSelTabIndex);
@@ -613,9 +618,12 @@ public class ValentinConsole extends JFrame {
 				cSelectedInterface = (CVInterface) this.lk_cConnectionManager.getUDPNetworkInterface();
 			} else if (sDescrInterface.equals((String) "serial port")) {
 				cSelectedInterface = (CVInterface) this.lk_cConnectionManager.getSerialInterface();
-			} else {
+			}
+/*			
+			else {
 				cSelectedInterface = (CVInterface) this.lk_cConnectionManager.getParallelInterface();
 			}
+*/
 
 			// soll Console oder Scripting beendet werden
 			int cSelTabIndex = this.jTabbedPaneMain.getSelectedIndex();

@@ -34,8 +34,9 @@
     <target name="compile.win32" depends="init"
             description="compile the source Win32-specific" >
         <!-- Compile the java code from ${src} into ${outputdir} -->
-        <javac compiler="javac1.7" target="1.7" srcdir="." destdir="${ODIR_CLASSES}"
-               classpath="javax.comm/mfz-rxtx-2.2-20081207-win-x86/RXTXcomm.jar;
+        <javac srcdir="." destdir="${ODIR_CLASSES}"
+        	   excludes="**/CVUIParallel.java **/CVParallel*.*"
+               classpath="javax.comm/nrjavaserial-5.2.1/nrjavaserial-5.2.1.jar;
         	              bsh/bsh-2.0b4.jar;
                           com/sharkysoft/lava3-core.jar;
         	              com/sharkysoft/lava3-printf.jar;
@@ -45,8 +46,9 @@
     <target name="compile.win64" depends="init"
             description="compile the source Win64-specific" >
         <!-- Compile the java code from ${src} into ${outputdir} -->
-        <javac srcdir="." destdir="${ODIR_CLASSES}"
-               classpath="javax.comm/mfz-rxtx-2.2-20081207-win-x64/RXTXcomm.jar;
+        <javac srcdir="." destdir="${ODIR_CLASSES}"    
+        	   excludes="**/CVUIParallel.java **/CVParallel*.*"
+               classpath="javax.comm/nrjavaserial-5.2.1/nrjavaserial-5.2.1.jar;
         	              bsh/bsh-2.0b4.jar;
                           com/sharkysoft/lava3-core.jar;
         	              com/sharkysoft/lava3-printf.jar;
@@ -57,7 +59,8 @@
             description="compile the source Linux64-specific" >
         <!-- Compile the java code from ${src} into ${outputdir} -->
         <javac srcdir="." destdir="${ODIR_CLASSES}"
-               classpath="javax.comm/rxtx-2.2pre2-bins/RXTXcomm.jar;
+        	   excludes="**/CVUIParallel.java **/CVParallel*.*"
+               classpath="javax.comm/nrjavaserial-5.2.1/nrjavaserial-5.2.1.jar;
         	              bsh/bsh-2.0b4.jar;
                           com/sharkysoft/lava3-core.jar;
         	              com/sharkysoft/lava3-printf.jar;
@@ -145,7 +148,7 @@
         </copy>
         <!-- Copy the rest needed for dist in package dir -->
         <copy todir="${ODIR_PACKAGE}">
-            <fileset dir="javax.comm/mfz-rxtx-2.2-20081207-win-x64" includes="**/*.jar,**/*.dll"/>
+            <fileset dir="javax.comm/nrjavaserial-5.2.1" includes="**/*.jar,**/*.dll"/>
             <fileset dir="bsh" excludes="**/*.pj"/>
             <fileset dir="com/sharkysoft" excludes="**/*.pj"/>
         	<fileset dir="rsyntaxtextarea-2.6.0" includes="rsyntaxtextarea-2.6.0.jar"/>
