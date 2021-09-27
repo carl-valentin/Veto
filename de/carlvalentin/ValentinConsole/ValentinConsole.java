@@ -1021,7 +1021,7 @@ public class ValentinConsole extends JFrame {
 		if (jMenuInfo == null) {
 			jMenuInfo = new JMenu();
 			jMenuInfo.setText("Info");
-			// jMenuInfo.setMnemonic(java.awt.event.KeyEvent.VK_C);
+			jMenuInfo.setMnemonic(java.awt.event.KeyEvent.VK_F);
 			jMenuInfo.add(getJMenuItemInfo());
 		}
 		return jMenuInfo;
@@ -1769,7 +1769,7 @@ public class ValentinConsole extends JFrame {
 	private JMenu getScriptSelection() {
 		jMenuScriptSelection = new JMenu();
 		jMenuScriptSelection.setText("Scripts");
-		jMenuScriptSelection.setMnemonic(java.awt.event.KeyEvent.VK_C);
+		jMenuScriptSelection.setMnemonic(java.awt.event.KeyEvent.VK_S);
 		String path = null;
 		if (lk_cConfigFile != null) {
 			path = lk_cConfigFile.getConfig("ScriptFolder");
@@ -1867,7 +1867,7 @@ public class ValentinConsole extends JFrame {
 		if (jMenuCommandSelection == null) {
 			jMenuCommandSelection = new JMenu();
 			jMenuCommandSelection.setText("Commands");
-			jMenuCommandSelection.setMnemonic(java.awt.event.KeyEvent.VK_C);
+			jMenuCommandSelection.setMnemonic(java.awt.event.KeyEvent.VK_O);
 			getJMenuItemsCommandSelection();
 			Object cmdElements[] = commandFileListCmd.toArray();
 			Object descrElements[] = commandFileListDescr.toArray();
