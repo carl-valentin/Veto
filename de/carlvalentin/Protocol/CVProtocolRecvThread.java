@@ -119,6 +119,38 @@ public class CVProtocolRecvThread extends CVProtocolThread
     	return;
     }
 
+    private boolean keepAliveCheck()
+    {
+        if (this.lk_cKeepAliveItfWriter != null)
+        {
+            try
+            {
+                this.lk_cKeepAliveItfWriter.write(" ");
+                this.lk_cKeepAliveItfWriter.flush();
+            }
+            catch(IOException iex)
+            {
+                if (lk_bKeepAliveErrorOnFail)
+                {
+                    if (this.lk_cErrorMessage != null)
+                    {
+                        this.lk_cErrorMessage.write(
+                            "RecvThread: KeepAlive: " + iex.getMessage());
+                    }
+                    if (this.lk_cErrorFile != null)
+                    {
+                        this.lk_cErrorFile.write( "CVPLRecvThread: " +
+                                "KeepAlive: " + iex.getMessage());
+                    }
+                }
+                ValentinConsole.disconnect();
+                ValentinConsole.doAutoReconnect();
+                return false;
+            }
+        }
+        return true;
+    }
+    
     /**
      * Ausfuehrungsfunktion des Threads.
      */
@@ -139,6 +171,14 @@ public class CVProtocolRecvThread extends CVProtocolThread
                         try
                         {
                             iC = this.lk_cInputReader.read();
+                            if (iC == -1) {
+                                if (!this.lk_cInputReader.ready())
+                                {
+                                	if (!keepAliveCheck())
+                                		return;
+                                    continue;
+                                }
+                            }
                         }
                         catch(IOException ex)
                         {
@@ -198,6 +238,14 @@ public class CVProtocolRecvThread extends CVProtocolThread
                             try
                             {
                                 iC = this.lk_cInputReader.read();
+                                if (iC == -1) {
+                                    if (!this.lk_cInputReader.ready())
+                                    {
+                                    	if (!keepAliveCheck())
+                                    		return;
+                                        continue;
+                                    }
+                                }
                             }
                             catch(IOException ex)
                             {
@@ -206,33 +254,8 @@ public class CVProtocolRecvThread extends CVProtocolThread
 
                                 if (!this.lk_cInputReader.ready())
                                 {
-                                    if (this.lk_cKeepAliveItfWriter != null)
-                                    {
-                                        try
-                                        {
-                                            this.lk_cKeepAliveItfWriter.write(" ");
-                                            this.lk_cKeepAliveItfWriter.flush();
-                                        }
-                                        catch(IOException iex)
-                                        {
-                                            if (lk_bKeepAliveErrorOnFail)
-                                            {
-                                                if (this.lk_cErrorMessage != null)
-                                                {
-                                                    this.lk_cErrorMessage.write(
-                                                        "RecvThread: KeepAlive: " + ex.getMessage());
-                                                }
-                                                if (this.lk_cErrorFile != null)
-                                                {
-                                                    this.lk_cErrorFile.write( "CVPLRecvThread: " +
-                                                            "KeepAlive: " + ex.getMessage());
-                                                }
-                                            }
-                                            ValentinConsole.disconnect();
-                                            ValentinConsole.doAutoReconnect();
-                                            return;
-                                        }
-                                    }
+                                	if (!keepAliveCheck())
+                                		return;
                                     continue;
                                 }
 
@@ -269,6 +292,14 @@ public class CVProtocolRecvThread extends CVProtocolThread
                         do
                         {
                             iC = this.lk_cInputReader.read();
+                            if (iC == -1) {
+                                if (!this.lk_cInputReader.ready())
+                                {
+                                	if (!keepAliveCheck())
+                                		return;
+                                    continue;
+                                }
+                            }
                             this.lk_szCurrentLine += (char)iC;
                         }while(iC != this.lk_cSohEtb.gl_iETB);
                         this.lk_szCurrentLine += '\n';

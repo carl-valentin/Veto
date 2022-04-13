@@ -1080,7 +1080,14 @@ public class ValentinConsole extends JFrame {
                         fileReaderScan.close();
                     }
                     catch (IOException ex) {
-                        ex.printStackTrace();
+                        if (lk_cErrorMessage != null)
+                        {
+                            lk_cErrorMessage.write("GetLog: " + ex.getMessage());
+                        }
+                        if (lk_cErrorFile != null)
+                        {
+                            lk_cErrorFile.write("GetLog: " + ex.getMessage());
+                        }
                     }                                                            
                     
                     JDialog dialog = new JDialog(vc);                   
