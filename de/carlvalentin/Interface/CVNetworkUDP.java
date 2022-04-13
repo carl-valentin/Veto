@@ -130,7 +130,7 @@ public class CVNetworkUDP extends CVInterface
             if(this.lk_cErrorFile != null)
             {
                 this.lk_cErrorFile.write("CVNetworkTCP->open: " +
-                	"SocketException: cannot create socket - " + 
+                	"SocketException: cannot create socket: " + 
                 	ex.getMessage());
             }
             this.lk_cStatusMessage.write("CVNetworkUDP: network port not open");
@@ -147,7 +147,7 @@ public class CVNetworkUDP extends CVInterface
             if(this.lk_cErrorFile != null)
             {
                 this.lk_cErrorFile.write("CVNetworkUDP->open : " +
-                	"SecurityException: not allowed to open TCP socket - " + 
+                	"SecurityException: not allowed to open TCP socket: " + 
                 	ex.getMessage());
             }
             this.lk_cStatusMessage.write("CVNetworkTCP: network port not open");
@@ -180,7 +180,7 @@ public class CVNetworkUDP extends CVInterface
             {
                 this.lk_cErrorFile.write(
                     "CVNetwork-UDP->open: IOException: " +
-                    "wrong streams network - " + ex.getMessage());
+                    "wrong streams network: " + ex.getMessage());
             }
             this.lk_cStatusMessage.write("CVNetworkUDP: network port not open");
             
@@ -208,7 +208,7 @@ public class CVNetworkUDP extends CVInterface
             {
                 this.lk_cErrorFile.write(
                     "CVNetwork-UDP->open: IOException: " +
-                    "wrong streams network - " + ex.getMessage());
+                    "wrong streams network: " + ex.getMessage());
             }
             this.lk_cStatusMessage.write("CVNetworkUDP: network port not open");
             
@@ -297,7 +297,7 @@ public class CVNetworkUDP extends CVInterface
 				            lk_cErrorFile.write(
 				            		"CVNetworkUDP->sendThread: " +
 				            		"PortUnreachableException: " +
-				            		"wrong target (printer) settings:" +
+				            		"wrong target (printer) settings: " +
 				            		ex.getMessage());
 				        }
 					}
@@ -315,7 +315,7 @@ public class CVNetworkUDP extends CVInterface
 				            lk_cErrorFile.write(
 				            		"CVNetworkUDP->sendThread: " +
 				            		"SecurityException: " +
-				            		"wrong security settings" +
+				            		"wrong security settings: " +
 				            		ex.getMessage());
 				        }
 					}
@@ -333,7 +333,7 @@ public class CVNetworkUDP extends CVInterface
 				            lk_cErrorFile.write(
 				            		"CVNetworkUDP->sendThread: " +
 				            		"IOException: " +
-				            		"problem during data transmission" +
+				            		"problem during data transmission: " +
 				            		ex.getMessage());
 				        }
 					}
@@ -419,7 +419,7 @@ public class CVNetworkUDP extends CVInterface
     				                lk_cErrorFile.write(
     				                	"CVNetworkUDP->sendThread: " +
         				                "PortUnreachableException: " +
-        				                "wrong target (printer) settings:" +
+        				                "wrong target (printer) settings: " +
         				                ex.getMessage());
     				            }
     						}
@@ -437,7 +437,7 @@ public class CVNetworkUDP extends CVInterface
     				                lk_cErrorFile.write(
     				                	"CVNetworkUDP->sendThread: " +
         				                "SecurityException: " +
-        				                "wrong security settings" +
+        				                "wrong security settings: " +
         				                ex.getMessage());
     				            }
     						}
@@ -455,7 +455,7 @@ public class CVNetworkUDP extends CVInterface
     				                lk_cErrorFile.write(
     				                	"CVNetworkUDP->sendThread: " +
         				                "IOException: " +
-        				                "problem during data transmission" +
+        				                "problem during data transmission: " +
         				                ex.getMessage());
     				            }
     						}
@@ -473,7 +473,7 @@ public class CVNetworkUDP extends CVInterface
 			            {
 			                lk_cErrorFile.write(
 			                	"CVNetworkUDP->sendThread: IOException: " +
-				                "problem working with data streams" +
+				                "problem working with data streams: " +
 				                ex.getMessage());
 			            }
     				}
@@ -572,7 +572,7 @@ public class CVNetworkUDP extends CVInterface
             if(this.lk_cErrorFile != null)
             {
                 this.lk_cErrorMessage.write("CVNetworkUDP->close: " +
-                	"IOException: could not close stream or socket- " + 
+                	"IOException: could not close stream or socket: " + 
                 	ex.getMessage());
             }
             this.lk_cStatusMessage.write(

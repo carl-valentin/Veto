@@ -155,6 +155,7 @@ public class CVLogging
     {
         Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
         String out = timeStamp.toString() + " - " + message + "\n";
+        System.out.println(out);
         try
         {
         	this.lk_cLogFileOutputStream.write(out.getBytes());

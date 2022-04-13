@@ -18,10 +18,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 
-import javax.swing.JMenuItem;
-import javax.swing.JTabbedPane;
-import javax.swing.JMenu;
-
 /**
  * Stellt eine Shell-&Auml;hnliche Konsole zur Verf&uuml;gung um im Carl
  * Valentin Printer Language-Format (CVPL) mit einem Device kommunizieren zu
@@ -184,6 +180,7 @@ public class ValentinConsole extends JFrame {
 	private JMenuItem jMenuItemOpenRecentPath3 = null;
 	private JMenuItem jMenuItemOpenRecentPath4 = null;
 	private JMenuItem jMenuItemInfo = null;
+	private JMenuItem jMenuItemLog = null;
 	/**
 	 * Men&uuml zur Konfiguration der verschiedenen Schnittstellen
 	 */
@@ -356,7 +353,7 @@ public class ValentinConsole extends JFrame {
 		// Ausgabe von Fehelermeldungen als Dialog
 		this.lk_cErrorMessage = new CVErrorMessage(this);
 		// Ausgabe von Fehlermeldungen in Logdatei
-		this.lk_cErrorFile = new CVLogging(System.getProperty("java.io.tmpdir", ".") + "/VetoErrorLog.txt",
+		this.lk_cErrorFile = new CVLogging(System.getProperty("java.io.tmpdir", ".") + "VetoErrorLog.txt",
 				this.lk_cErrorMessage);
 		// Ausgabe von Fehlermeldungen in Statuszeile des Programms
 		this.lk_cStatusMessage = new CVStatusLine();
@@ -1031,6 +1028,7 @@ public class ValentinConsole extends JFrame {
 			jMenuInfo.setText("Info");
 			jMenuInfo.setMnemonic(java.awt.event.KeyEvent.VK_F);
 			jMenuInfo.add(getJMenuItemInfo());
+			jMenuInfo.add(getJMenuItemLog());
 		}
 		return jMenuInfo;
 	}
@@ -1055,6 +1053,54 @@ public class ValentinConsole extends JFrame {
 		return jMenuItemInfo;
 	}
 
+   /**
+     * This method initializes jMenuItem
+     *
+     * @return javax.swing.JMenuItem
+     */
+    private JMenuItem getJMenuItemLog() {
+        if (jMenuItemLog == null) {
+            jMenuItemLog = new JMenuItem();
+            jMenuItemLog.setText("Show Log");
+            jMenuItemLog.setEnabled(true);
+            jMenuItemLog.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent e) {
+                    String strLog = null;
+                    
+                    try {
+                        FileReader readTextFile=new FileReader(
+                                System.getProperty("java.io.tmpdir", ".") + "VetoErrorLog.txt");
+                        Scanner fileReaderScan = new Scanner(readTextFile);
+                        strLog = "";
+                        while (fileReaderScan.hasNextLine())
+                        {
+                            String temp = fileReaderScan.nextLine()+"\n";                        
+                            strLog = strLog + temp;
+                        }
+                        fileReaderScan.close();
+                    }
+                    catch (IOException ex) {
+                        ex.printStackTrace();
+                    }                                                            
+                    
+                    JDialog dialog = new JDialog(vc);                   
+                    JTextArea textArea = new JTextArea(strLog);
+                    textArea.setEditable(false);
+                    JScrollPane scrollPane = new JScrollPane(textArea);
+                    JLabel jLabel =  new JLabel(
+                            System.getProperty("java.io.tmpdir", ".") + "VetoErrorLog.txt");
+                    dialog.add(jLabel, BorderLayout.NORTH);
+                    dialog.add(scrollPane, BorderLayout.CENTER);
+                    dialog.pack();
+                    dialog.setModal(true);
+                    dialog.setLocationRelativeTo(vc);
+                    dialog.setVisible(true);
+                }
+            });
+        }
+        return jMenuItemLog;
+    }
+	
 	/**
 	 * This method initializes jMenu
 	 *
