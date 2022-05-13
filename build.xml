@@ -25,7 +25,9 @@
             description="compile the source" >
         <!-- Compile the java code from ${src} into ${outputdir} -->
         <javac srcdir="." destdir="${ODIR_CLASSES}"
-               classpath="bsh/bsh-2.0b4.jar;
+        	   excludes="**/CVUIParallel.java **/CVParallel*.*"
+               classpath="javax.comm/nrjavaserial-5.2.1/nrjavaserial-5.2.1.jar;
+        	              bsh/bsh-2.0b4.jar;
         	              com/sharkysoft/lava3-core.jar;
                           com/sharkysoft/lava3-printf.jar;
         	              rsyntaxtextarea-2.6.0/rsyntaxtextarea-2.6.0.jar"/>
@@ -81,6 +83,7 @@
         </copy>
         <!-- Copy the rest needed for dist in package dir -->
         <copy todir="${ODIR_PACKAGE}">
+        	<fileset dir="javax.comm/nrjavaserial-5.2.1" includes="**/*.jar,**/*.dll"/>
             <fileset dir="bsh" excludes="**/*.pj"/>
             <fileset dir="com/sharkysoft" excludes="**/*.pj"/>
         	<fileset dir="rsyntaxtextarea-2.6.0" includes="rsyntaxtextarea-2.6.0.jar"/>

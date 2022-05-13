@@ -353,7 +353,7 @@ public class ValentinConsole extends JFrame {
 		// Ausgabe von Fehelermeldungen als Dialog
 		this.lk_cErrorMessage = new CVErrorMessage(this);
 		// Ausgabe von Fehlermeldungen in Logdatei
-		this.lk_cErrorFile = new CVLogging(System.getProperty("java.io.tmpdir", ".") + "VetoErrorLog.txt",
+		this.lk_cErrorFile = new CVLogging(System.getProperty("java.io.tmpdir", ".") + "/VetoErrorLog.txt",
 				this.lk_cErrorMessage);
 		// Ausgabe von Fehlermeldungen in Statuszeile des Programms
 		this.lk_cStatusMessage = new CVStatusLine();
@@ -1069,7 +1069,7 @@ public class ValentinConsole extends JFrame {
                     
                     try {
                         FileReader readTextFile=new FileReader(
-                                System.getProperty("java.io.tmpdir", ".") + "VetoErrorLog.txt");
+                                System.getProperty("java.io.tmpdir", ".") + "/VetoErrorLog.txt");
                         Scanner fileReaderScan = new Scanner(readTextFile);
                         strLog = "";
                         while (fileReaderScan.hasNextLine())
@@ -1095,7 +1095,7 @@ public class ValentinConsole extends JFrame {
                     textArea.setEditable(false);
                     JScrollPane scrollPane = new JScrollPane(textArea);
                     JLabel jLabel =  new JLabel(
-                            System.getProperty("java.io.tmpdir", ".") + "VetoErrorLog.txt");
+                            System.getProperty("java.io.tmpdir", ".") + "/VetoErrorLog.txt");
                     dialog.add(jLabel, BorderLayout.NORTH);
                     dialog.add(scrollPane, BorderLayout.CENTER);
                     dialog.pack();
