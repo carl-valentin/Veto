@@ -448,16 +448,21 @@ public class ValentinConsole extends JFrame {
 	 * @return true, wenn Verbindung hergestellt, sonst false
 	 */
 	private boolean connectConsole(CVInterface connectionInterface) {
+		int iRet;
 		this.lk_cConnectionManager.setSink(this.lk_cConsoleInput.getWriter(), true, false);
 		this.lk_cConnectionManager.setSink(this.lk_cConsoleInputHEX.getWriter(), true, true);
 		this.lk_cConnectionManager.setSource(this.lk_cConsoleInput.getReader());
 
 		this.lk_cConnectionManager.setSohEtb(this.lk_cSohEtb);
 
-		if (this.lk_cConnectionManager.connect(connectionInterface) == true) {
+		iRet = this.lk_cConnectionManager.connect(connectionInterface); 
+		if (iRet == 1) {
 			this.lk_cConsoleInput.getTextArea().setEnabled(true);
 			this.lk_cConsoleInput.setBinaryOutput(this.lk_cConnectionManager.getInterfaceBinaryOutput());
 			return true;
+		}
+		else if (iRet == -1){
+			this.lk_cConnectionManager.clear_connect(connectionInterface);
 		}
 		return false;
 	}

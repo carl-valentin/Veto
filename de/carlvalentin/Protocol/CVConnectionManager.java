@@ -570,7 +570,7 @@ public class CVConnectionManager
      * @param cInterface gewaehlte Schnittstelle
      * @return true, wenn Verbindung hergestellt, sonst false
      */
-    public boolean connect(CVInterface cInterface)
+    public int connect(CVInterface cInterface)
     {
     	if((this.lk_cIsConnected  == true)||
            (this.lk_cVectorSinkWriterRecvThread == null) ||
@@ -589,7 +589,7 @@ public class CVConnectionManager
                         "connect: allready connected to printer");
             }
 
-        	return false;
+        	return 0;
         }
 
     	//----------------------------------------------------------------------
@@ -608,7 +608,7 @@ public class CVConnectionManager
                         "connect: could not open interface");
             }
 
-        	return false;
+        	return -1;
         }
 
         //----------------------------------------------------------------------
@@ -659,7 +659,7 @@ public class CVConnectionManager
                         "connect: interface has no reader - no receive thread");
         		}
 
-        		return false;
+        		return -1;
         	}
         }
 
@@ -725,7 +725,7 @@ public class CVConnectionManager
                         "connect: interface has no writer - no send thread");
             }
 
-        	return false;
+        	return -1;
         }
 
         //----------------------------------------------------------------------
@@ -744,7 +744,7 @@ public class CVConnectionManager
 
         this.lk_cIsConnected = true;
 
-    	return true;
+    	return 1;
     }
 
     /**
@@ -850,5 +850,18 @@ public class CVConnectionManager
         this.lk_cIsConnected = false;
 
     	return true;
+    }
+    
+    public void clear_connect(CVInterface cInterface) {
+        if(this.lk_cVectorSinkWriterRecvThread != null)
+        {
+        	this.lk_cVectorSinkWriterRecvThread.clear();
+        	this.lk_cVectorSinkWriterRecvThread = null;
+        }
+        if(this.lk_cVectorSinkWriterSendThread != null)
+        {
+        	this.lk_cVectorSinkWriterSendThread.clear();
+        	this.lk_cVectorSinkWriterSendThread = null;
+        }
     }
 }
