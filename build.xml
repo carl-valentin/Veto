@@ -87,7 +87,7 @@
             <fileset dir="bsh" excludes="**/*.pj"/>
             <fileset dir="com/sharkysoft" excludes="**/*.pj"/>
         	<fileset dir="rsyntaxtextarea-2.6.0" includes="rsyntaxtextarea-2.6.0.jar"/>
-        	<fileset dir="." includes="ValentinFavCommands.cfg"/>
+        	<fileset dir="." includes="ValentinFavCommands.cfg VetoStart.bat VetoStart.sh"/>
         </copy>
         <!-- Copy BeanShell script files in package dir -->
         <mkdir dir="${ODIR_PACKAGE}\bshscripts"/>

@@ -717,7 +717,7 @@ public class ValentinConsole extends JFrame {
 		// this.setBounds(0, 0, 800, 600);
 		this.setJMenuBar(getJMenuBarMain());
 		this.setContentPane(getJPanelMain());
-		this.setTitle("VETO - Valentin Embedded Test Office 1.1");
+		this.setTitle("VETO - ValEnTin pOrt Office 1.1");
 		this.setIconImage(Toolkit.getDefaultToolkit().getImage("icon.png"));
 		this.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
 		this.pack();
@@ -1050,7 +1050,7 @@ public class ValentinConsole extends JFrame {
 			jMenuItemInfo.setEnabled(true);
 			jMenuItemInfo.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					JOptionPane.showMessageDialog(vc, "Valentin Embedded Test Office\nVersion 1.1", "Info",
+					JOptionPane.showMessageDialog(vc, "VETO - ValEnTin pOrt Office\nVersion 1.1", "Info",
 							JOptionPane.OK_OPTION);
 				}
 			});
@@ -1899,10 +1899,28 @@ public class ValentinConsole extends JFrame {
 						}
 					}
 				});
+				JButton btSetExamples = new JButton("Examples");
+				btSetExamples.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+					    File dirExamples = new File("bshscripts/Examples");					    
+					    tfNewPath.setText(dirExamples.getAbsolutePath());
+					}
+				});
+				JButton btSetScripts = new JButton("Scripts");
+				btSetScripts.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+					    File dirExamples = new File("bshscripts/VetoScripts");					    
+					    tfNewPath.setText(dirExamples.getAbsolutePath());
+					}
+				});
 				skripPathFrame.add(lbChangePath);
 				skripPathFrame.add(tfNewPath);
 				skripPathFrame.add(btSearchPath);
 				skripPathFrame.add(btSetPath);
+				skripPathFrame.add(btSetExamples);
+				skripPathFrame.add(btSetScripts);				
 				skripPathFrame.pack();
                 //skripPathFrame.setModal(true);
                 skripPathFrame.setLocationRelativeTo(vc);
