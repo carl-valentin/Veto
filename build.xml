@@ -1,4 +1,4 @@
-<project name="Valentin Embedded Test Office V1.1" default="dist.win32" basedir=".">
+<project name="ValEnTin pOrt Office V1.1" default="dist.win32" basedir=".">
     <description>
         Ant build file for the Valentin Embedded Test Office
     </description>

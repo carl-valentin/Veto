@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Veto
+Comment=Veto
+Exec=/opt/veto/bin/Veto
+Icon=/opt/veto/lib/Veto.png
+Terminal=false
+Type=Application
+Categories=Unknown
+MimeType=
+Path=/opt/veto/lib/app
