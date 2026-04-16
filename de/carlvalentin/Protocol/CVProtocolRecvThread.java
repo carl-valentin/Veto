@@ -160,9 +160,13 @@ public class CVProtocolRecvThread extends CVProtocolThread
         while(!lk_bIsStopped)
         {
             if((this.lk_cInputReader != null)&&
-               (this.lk_cVectorOutputWriter != null) ||
-               (this.lk_bIsStopped   == false))
+               (this.lk_cVectorOutputWriter != null))
             {
+                // Check interrupt status before blocking read
+                if (Thread.interrupted()) {
+                    return;
+                }
+                
                 if(this.lk_cSohEtb.equals(CVSohEtb.none) == true)
                 {
                     // keine Start-/Stopzeichen verarbeiten

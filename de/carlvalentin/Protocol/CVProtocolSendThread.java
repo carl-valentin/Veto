@@ -110,8 +110,7 @@ public class CVProtocolSendThread extends CVProtocolThread
         while(!lk_bIsStopped)
         {
         	if((this.lk_cInputReader != null)&&
-               (this.lk_cVectorOutputWriter != null) &&
-               (this.lk_bIsStopped   == false))
+               (this.lk_cVectorOutputWriter != null))
             {
         		if(this.lk_cSohEtb.equals(CVSohEtb.none) == true)
                 {
