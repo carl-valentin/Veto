@@ -588,7 +588,7 @@ public class CVBeanShell
         {
             if(this.lk_bStopScript == true)
             {
-                lk_tScript.stop();
+                lk_tScript.interrupt();
                 lk_cStatusMessage.write("Script ended");
                 lk_sScript = null;
                 lk_bScriptIsRunning = false;

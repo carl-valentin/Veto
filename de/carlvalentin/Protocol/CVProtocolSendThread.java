@@ -85,8 +85,6 @@ public class CVProtocolSendThread extends CVProtocolThread
     	this.lk_cIsStoppedSemaphore.grab();
     	this.lk_bIsStopped = true;
 
-    	this.stop();
-
         if(this.lk_cInputReader != null)
     	{
     		this.lk_cInputReader = null;
