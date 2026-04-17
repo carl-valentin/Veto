@@ -15,6 +15,8 @@ import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.transport.kex.KeyExchange;
 import net.schmizz.sshj.transport.kex.Curve25519SHA256;
 import net.schmizz.sshj.common.Factory;
+import net.schmizz.sshj.transport.verification.AlgorithmsVerifier;
+import net.schmizz.sshj.transport.NegotiatedAlgorithms;
 import java.io.*;
 import java.security.PublicKey;
 import java.security.Security;
@@ -171,6 +173,21 @@ public class CVNetworkSSH extends CVInterface
                 }
                 public List<String> findExistingAlgorithms(String host, int port) {
                     return new ArrayList<String>();
+                }
+            });
+
+            // Log negotiated algorithms
+            this.lk_cSSHClient.addAlgorithmsVerifier(new AlgorithmsVerifier() {
+                public boolean verify(NegotiatedAlgorithms algorithms) {
+                    if(lk_cErrorFile != null) {
+                        lk_cErrorFile.write("CVNetworkSSH->open: KeyExchange: " + algorithms.getKeyExchangeAlgorithm());
+                        lk_cErrorFile.write("CVNetworkSSH->open: Cipher client->server: " + algorithms.getClient2ServerCipherAlgorithm());
+                        lk_cErrorFile.write("CVNetworkSSH->open: Cipher server->client: " + algorithms.getServer2ClientCipherAlgorithm());
+                        lk_cErrorFile.write("CVNetworkSSH->open: MAC client->server: " + algorithms.getClient2ServerMACAlgorithm());
+                        lk_cErrorFile.write("CVNetworkSSH->open: MAC server->client: " + algorithms.getServer2ClientMACAlgorithm());
+                        lk_cErrorFile.write("CVNetworkSSH->open: HostKey: " + algorithms.getSignatureAlgorithm());
+                    }
+                    return true;
                 }
             });
 
