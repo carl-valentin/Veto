@@ -187,6 +187,7 @@ public class ValentinConsole extends JFrame {
 	private JMenu jMenuInterface = null;
 	private JMenuItem jMenuItemConfigureNetworkTCP = null;
 	private JMenuItem jMenuItemConfigureNetworkUDP = null;
+	private JMenuItem jMenuItemConfigureNetworkSSH = null;
 	private JMenuItem jMenuItemConfigureRS232 = null;
 	private JMenuItem jMenuItemConfigureParallel = null;
 	/**
@@ -410,6 +411,21 @@ public class ValentinConsole extends JFrame {
 		cUDPNetworkUI.setModal(true);
 		cUDPNetworkUI.setLocationRelativeTo(vc);
 		cUDPNetworkUI.setVisible(true);
+		return;
+	}
+
+	/**
+	 * Anzeige der grafischen Oberflaeche zur Konfiguration SSH-Netzwerk.
+	 *
+	 */
+	private void showUINetworkSSHConfig() {
+		CVUINetwork cSSHNetworkUI = new CVUINetwork(this.lk_cErrorMessage, this.lk_cErrorFile, this.lk_cStatusMessage,
+				this.lk_cConnectionManager, CVNetworkProtocol.SSH);
+		cSSHNetworkUI.setPreferredSize(new java.awt.Dimension(400, 450));
+		cSSHNetworkUI.pack();
+		cSSHNetworkUI.setModal(true);
+		cSSHNetworkUI.setLocationRelativeTo(vc);
+		cSSHNetworkUI.setVisible(true);
 		return;
 	}
 
@@ -1771,7 +1787,24 @@ public class ValentinConsole extends JFrame {
 		}
 		return jMenuItemConfigureNetworkUDP;
 	}
-
+	/**
+	 * This method initializes jMenuItem for SSH
+	 *
+	 * @return javax.swing.JMenuItem
+	 */
+	private JMenuItem getJMenuItemConfigureNetworkSSH() {
+		if (jMenuItemConfigureNetworkSSH == null) {
+			jMenuItemConfigureNetworkSSH = new JMenuItem();
+			jMenuItemConfigureNetworkSSH.setText("Configure Network SSH");
+			jMenuItemConfigureNetworkSSH.setToolTipText("configure SSH network interface");
+			jMenuItemConfigureNetworkSSH.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					showUINetworkSSHConfig();
+				}
+			});
+		}
+		return jMenuItemConfigureNetworkSSH;
+	}
 	/**
 	 * This method initializes jMenuItem
 	 *

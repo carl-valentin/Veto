@@ -30,7 +30,8 @@
         	              bsh/bsh-2.0b4.jar;
         	              com/sharkysoft/lava3-core.jar;
                           com/sharkysoft/lava3-printf.jar;
-        	              rsyntaxtextarea-2.6.0/rsyntaxtextarea-2.6.0.jar"/>
+        	              rsyntaxtextarea-2.6.0/rsyntaxtextarea-2.6.0.jar;
+                          jsch.jar"/>
     </target>
 
     <target name="compile.win32" depends="init"
@@ -42,7 +43,8 @@
         	              bsh/bsh-2.0b4.jar;
                           com/sharkysoft/lava3-core.jar;
         	              com/sharkysoft/lava3-printf.jar;
-    	                  rsyntaxtextarea-2.6.0/rsyntaxtextarea-2.6.0.jar"/>
+    	                  rsyntaxtextarea-2.6.0/rsyntaxtextarea-2.6.0.jar;
+                          jsch.jar"/>
     </target>
 
     <target name="compile.win64" depends="init"
@@ -54,7 +56,8 @@
         	              bsh/bsh-2.0b4.jar;
                           com/sharkysoft/lava3-core.jar;
         	              com/sharkysoft/lava3-printf.jar;
-    	                  rsyntaxtextarea-2.6.0/rsyntaxtextarea-2.6.0.jar"/>
+    	                  rsyntaxtextarea-2.6.0/rsyntaxtextarea-2.6.0.jar;
+                          jsch.jar"/>
     </target>
 
     <target name="compile.linux64" depends="init"
@@ -66,7 +69,8 @@
         	              bsh/bsh-2.0b4.jar;
                           com/sharkysoft/lava3-core.jar;
         	              com/sharkysoft/lava3-printf.jar;
-    	                  rsyntaxtextarea-2.6.0/rsyntaxtextarea-2.6.0.jar"/>
+    	                  rsyntaxtextarea-2.6.0/rsyntaxtextarea-2.6.0.jar;
+                          jsch.jar"/>
     </target>
 
     <target name="dist" depends="compile"
@@ -87,6 +91,7 @@
             <fileset dir="bsh" excludes="**/*.pj"/>
             <fileset dir="com/sharkysoft" excludes="**/*.pj"/>
         	<fileset dir="rsyntaxtextarea-2.6.0" includes="rsyntaxtextarea-2.6.0.jar"/>
+	        <fileset dir="." includes="jsch.jar"/>
         	<fileset dir="." includes="ValentinFavCommands.cfg VetoStart.bat VetoStart.sh"/>
         </copy>
         <!-- Copy BeanShell script files in package dir -->
@@ -118,6 +123,7 @@
             <fileset dir="bsh" excludes="**/*.pj"/>
             <fileset dir="com/sharkysoft" excludes="**/*.pj"/>
         	<fileset dir="rsyntaxtextarea-2.6.0" includes="rsyntaxtextarea-2.6.0.jar"/>
+	        <fileset dir="." includes="jsch.jar"/>
         	<fileset dir="." includes="ValentinFavCommands.cfg"/>
         </copy>
         <!-- Copy BeanShell script files in package dir -->
@@ -155,6 +161,7 @@
             <fileset dir="bsh" excludes="**/*.pj"/>
             <fileset dir="com/sharkysoft" excludes="**/*.pj"/>
         	<fileset dir="rsyntaxtextarea-2.6.0" includes="rsyntaxtextarea-2.6.0.jar"/>
+	        <fileset dir="." includes="jsch.jar"/>
         	<fileset dir="." includes="ValentinFavCommands.cfg"/>
         </copy>
         <!-- Copy BeanShell script files in package dir -->
@@ -191,6 +198,7 @@
             <fileset dir="bsh" excludes="**/*.pj"/>
             <fileset dir="com/sharkysoft" excludes="**/*.pj"/>
         	<fileset dir="rsyntaxtextarea-2.6.0" includes="rsyntaxtextarea-2.6.0.jar"/>
+	        <fileset dir="." includes="jsch.jar"/>
         	<fileset dir="." includes="ValentinFavCommands.cfg"/>
         </copy>
         <!-- Copy BeanShell script files in package dir -->
