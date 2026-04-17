@@ -145,6 +145,28 @@ public class CVNetworkSSH extends CVInterface
             java.util.Properties config = new java.util.Properties();
             config.put("StrictHostKeyChecking", "no");
             config.put("PreferredAuthentications", "password,publickey");
+            
+            // Algorithmus-Verhandlung verbessern fuer libssh und moderne Server
+            // Key Exchange - curve25519 hinzufuegen
+            config.put("kex", "curve25519-sha256,curve25519-sha256@libssh.org," +
+                "ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521," +
+                "diffie-hellman-group14-sha256,diffie-hellman-group14-sha1," +
+                "diffie-hellman-group-exchange-sha256");
+            
+            // Host Key - rsa-sha2 hinzufuegen
+            config.put("server_host_key", "rsa-sha2-512,rsa-sha2-256," +
+                "ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521," +
+                "ssh-ed25519,ssh-rsa");
+            
+            // Pubkey accepted algorithms
+            config.put("PubkeyAcceptedAlgorithms", "rsa-sha2-512,rsa-sha2-256," +
+                "ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521," +
+                "ssh-ed25519,ssh-rsa");
+            
+            // CheckSignatures - rsa-sha2 aktivieren
+            config.put("CheckSignatures", "ecdsa-sha2-nistp256,ecdsa-sha2-nistp384," +
+                "ecdsa-sha2-nistp521,rsa-sha2-512,rsa-sha2-256,ssh-ed25519");
+            
             this.lk_cSSHSession.setConfig(config);
 
             // Verbinden
