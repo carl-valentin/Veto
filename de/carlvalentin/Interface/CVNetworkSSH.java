@@ -109,6 +109,23 @@ public class CVNetworkSSH extends CVInterface
         //----------------------------------------------------------------------
         try
         {
+            // Debug-Logging fuer JSch aktivieren
+            JSch.setLogger(new com.jcraft.jsch.Logger() {
+                public boolean isEnabled(int level) { return true; }
+                public void log(int level, String message) {
+                    String prefix = "";
+                    if(level == DEBUG) prefix = "[JSch DEBUG] ";
+                    else if(level == INFO) prefix = "[JSch INFO] ";
+                    else if(level == WARN) prefix = "[JSch WARN] ";
+                    else if(level == ERROR) prefix = "[JSch ERROR] ";
+                    
+                    if(lk_cErrorFile != null) {
+                        lk_cErrorFile.write(prefix + message);
+                    }
+                    System.out.println(prefix + message);
+                }
+            });
+            
             JSch jsch = new JSch();
 
             // SSH-Session erstellen
@@ -154,11 +171,30 @@ public class CVNetworkSSH extends CVInterface
         }
         catch(JSchException ex)
         {
+            // Detaillierte Fehlerinformationen sammeln
+            String serverVersion = "unknown";
+            String clientVersion = "JSCH 2.28.0";
+            if(this.lk_cSSHSession != null) {
+                try { serverVersion = this.lk_cSSHSession.getServerVersion(); } catch(Exception e) {}
+            }
+            
+            StringBuilder details = new StringBuilder();
+            details.append("CVNetworkSSH->open: JSchException: ").append(ex.getMessage()).append("\n");
+            details.append("  Server: ").append(this.lk_cNetworkSettingsSSH.getIPAdress())
+                  .append(":").append(this.lk_cNetworkSettingsSSH.getPort()).append("\n");
+            details.append("  Server Version: ").append(serverVersion).append("\n");
+            details.append("  Client Version: ").append(clientVersion).append("\n");
+            details.append("  User: ").append(this.lk_cNetworkSettingsSSH.getSSHUsername()).append("\n");
+            
+            if(ex.getCause() != null) {
+                details.append("  Cause: ").append(ex.getCause().getMessage()).append("\n");
+            }
+            
             if(this.lk_cErrorFile != null)
             {
-                this.lk_cErrorFile.write("CVNetworkSSH->open: " +
-                    "JSchException: " + ex.getMessage());
+                this.lk_cErrorFile.write(details.toString());
             }
+            System.err.println(details.toString());
             this.lk_cStatusMessage.write("CVNetworkSSH: SSH connection failed");
 
             return false;
