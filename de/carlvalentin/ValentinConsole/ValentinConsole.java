@@ -717,7 +717,7 @@ public class ValentinConsole extends JFrame {
 		// this.setBounds(0, 0, 800, 600);
 		this.setJMenuBar(getJMenuBarMain());
 		this.setContentPane(getJPanelMain());
-		this.setTitle("VETO - ValEnTin pOrt Office 1.1");
+		this.setTitle("VETO - ValEnTin pOrt Office 1.2");
 		this.setIconImage(Toolkit.getDefaultToolkit().getImage("icon.png"));
 		this.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
 		this.pack();
@@ -1050,7 +1050,7 @@ public class ValentinConsole extends JFrame {
 			jMenuItemInfo.setEnabled(true);
 			jMenuItemInfo.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					JOptionPane.showMessageDialog(vc, "VETO - ValEnTin pOrt Office\nVersion 1.1", "Info",
+					JOptionPane.showMessageDialog(vc, "VETO - ValEnTin pOrt Office\nVersion 1.2", "Info",
 							JOptionPane.OK_OPTION);
 				}
 			});
