@@ -4,12 +4,26 @@ import de.carlvalentin.Common.*;
 import de.carlvalentin.Common.UI.*;
 import de.carlvalentin.ValentinConsole.ValentinConsole;
 
-import com.jcraft.jsch.*;
-
+// SSHJ SSH library (hierynomus fork 0.32.0)
+import net.schmizz.sshj.Config;
+import net.schmizz.sshj.DefaultConfig;
+import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.transport.TransportException;
+import net.schmizz.sshj.transport.verification.HostKeyVerifier;
+import net.schmizz.sshj.userauth.UserAuthException;
+import net.schmizz.sshj.connection.channel.direct.Session;
+import net.schmizz.sshj.transport.kex.KeyExchange;
+import net.schmizz.sshj.transport.kex.Curve25519SHA256;
+import net.schmizz.sshj.common.Factory;
 import java.io.*;
+import java.security.PublicKey;
+import java.security.Security;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Uebertraegt Daten ueber SSH und die Netzwerkschnittstelle an den Drucker.
+ * Verwendet SSHJ 0.32.0 fuer SSH-Verbindungen mit erweiterter Algorithm-Unterstuetzung.
  */
 public class CVNetworkSSH extends CVInterface
 {
@@ -19,15 +33,20 @@ public class CVNetworkSSH extends CVInterface
     private CVNetworkSettings lk_cNetworkSettingsSSH = null;
 
     /**
-     * SSH Session.
+     * SSHJ SSH Client.
      */
-    private Session lk_cSSHSession = null;
+    private SSHClient lk_cSSHClient = null;
 
     /**
-     * SSH Channel fuer den Datentransport.
+     * Session for data transfer.
      */
-    private Channel lk_cSSHChannel = null;
-
+    private Session lk_cSession = null;
+    
+    /**
+     * Shell for I/O streams.
+     */
+    private Session.Shell lk_cShell = null;
+    
     /**
      * InputStream vom SSH Channel.
      */
@@ -42,11 +61,6 @@ public class CVNetworkSSH extends CVInterface
 
     /**
      * Konstruktor der Klasse CVNetworkSSH
-     *
-     * @param errorMessage Ausgabe von Fehlermeldungen als Dialog.
-     * @param errorFile Ausgabe von Fehlermeldungen in eine Datei.
-     * @param statusMessage Ausgabe von Statusmeldungen auf Statuszeile.
-     * @param configFile Einlesen und Schreiben Konfigurationsdatei.
      */
     public CVNetworkSSH(
             CVErrorMessage errorMessage,
@@ -63,7 +77,21 @@ public class CVNetworkSSH extends CVInterface
                                         this.lk_cConfigFile,
                                         CVNetworkProtocol.SSH);
 
-        this.lk_cSSHSession = null;
+        this.lk_cSSHClient = null;
+
+        // Register BouncyCastle for full algorithm support
+        try {
+            Class.forName("org.bouncycastle.jce.provider.BouncyCastleProvider");
+            Security.addProvider((java.security.Provider)
+                Class.forName("org.bouncycastle.jce.provider.BouncyCastleProvider").getConstructor().newInstance());
+            if(this.lk_cErrorFile != null) {
+                this.lk_cErrorFile.write("CVNetworkSSH: BouncyCastle registered for enhanced crypto");
+            }
+        } catch(Exception e) {
+            if(this.lk_cErrorFile != null) {
+                this.lk_cErrorFile.write("CVNetworkSSH: BouncyCastle not available, using JCE");
+            }
+        }
 
         return;
     }
@@ -75,10 +103,7 @@ public class CVNetworkSSH extends CVInterface
     {
         if(this.lk_bIsConnected == true)
         {
-            if(this.close() != true)
-            {
-
-            }
+            if(this.close() != true) { }
         }
 
         super.finalize();
@@ -88,8 +113,6 @@ public class CVNetworkSSH extends CVInterface
 
     /**
      * Oeffnen des Interface.
-     *
-     * @return true, wenn Interface geoeffnet werden konnte.
      */
     public boolean open()
     {
@@ -105,131 +128,132 @@ public class CVNetworkSSH extends CVInterface
         }
 
         //----------------------------------------------------------------------
-        // SSH-Verbindung herstellen
+        // SSH-Verbindung herstellen mit SSHJ 0.32.0
         //----------------------------------------------------------------------
         try
         {
-            // Debug-Logging fuer JSch aktivieren
-            JSch.setLogger(new com.jcraft.jsch.Logger() {
-                public boolean isEnabled(int level) { return true; }
-                public void log(int level, String message) {
-                    String prefix = "";
-                    if(level == DEBUG) prefix = "[JSch DEBUG] ";
-                    else if(level == INFO) prefix = "[JSch INFO] ";
-                    else if(level == WARN) prefix = "[JSch WARN] ";
-                    else if(level == ERROR) prefix = "[JSch ERROR] ";
-                    
+            String host = this.lk_cNetworkSettingsSSH.getIPAdress();
+            int port = this.lk_cNetworkSettingsSSH.getPort();
+            String username = this.lk_cNetworkSettingsSSH.getSSHUsername();
+            String password = this.lk_cNetworkSettingsSSH.getSSHPassword();
+            
+            if(this.lk_cErrorFile != null) {
+                this.lk_cErrorFile.write("CVNetworkSSH->open: Connecting to " + host + ":" + port + " as " + username);
+            }
+            System.out.println("SSHJ: Connecting to " + host + ":" + port + " as " + username);
+
+            // Create config with modern key exchange algorithms
+            Config config = new DefaultConfig() {
+                {
+                    List<Factory.Named<KeyExchange>> kex = new ArrayList<>();
+                    // Curve25519 for modern SSH servers
+                    kex.add(new Curve25519SHA256.Factory());
+                    kex.add(new Curve25519SHA256.FactoryLibSsh());
+                    // Diffie-Hellman groups for compatibility
+                    kex.add(com.hierynomus.sshj.transport.kex.DHGroups.Group14SHA256());
+                    kex.add(com.hierynomus.sshj.transport.kex.DHGroups.Group14SHA1());
+                    kex.add(com.hierynomus.sshj.transport.kex.DHGroups.Group1SHA1());
+                    kex.add(new net.schmizz.sshj.transport.kex.DHGexSHA1.Factory());
+                    setKeyExchangeFactories(kex);
+                }
+            };
+
+            // SSHJ SSH Client erstellen
+            this.lk_cSSHClient = new SSHClient(config);
+            
+            // Host key verification
+            this.lk_cSSHClient.addHostKeyVerifier(new HostKeyVerifier() {
+                public boolean verify(String host, int port, PublicKey key) {
                     if(lk_cErrorFile != null) {
-                        lk_cErrorFile.write(prefix + message);
+                        lk_cErrorFile.write("CVNetworkSSH->open: Host key received: " + key.getAlgorithm());
                     }
-                    System.out.println(prefix + message);
+                    return true;
+                }
+                public List<String> findExistingAlgorithms(String host, int port) {
+                    return new ArrayList<String>();
                 }
             });
-            
-            JSch jsch = new JSch();
-
-            // SSH-Session erstellen
-            this.lk_cSSHSession = jsch.getSession(
-                this.lk_cNetworkSettingsSSH.getSSHUsername(),
-                this.lk_cNetworkSettingsSSH.getIPAdress(),
-                this.lk_cNetworkSettingsSSH.getPort());
-
-            // Passwort setzen wenn vorhanden
-            String password = this.lk_cNetworkSettingsSSH.getSSHPassword();
-            if (password != null && !password.isEmpty())
-            {
-                this.lk_cSSHSession.setPassword(password);
-            }
-
-            // SSH-Eigenschaften setzen
-            java.util.Properties config = new java.util.Properties();
-            config.put("StrictHostKeyChecking", "no");
-            config.put("PreferredAuthentications", "password,publickey");
-            
-            // Algorithmus-Verhandlung verbessern fuer libssh und moderne Server
-            // Key Exchange - curve25519 hinzufuegen
-            config.put("kex", "curve25519-sha256,curve25519-sha256@libssh.org," +
-                "ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521," +
-                "diffie-hellman-group14-sha256,diffie-hellman-group14-sha1," +
-                "diffie-hellman-group-exchange-sha256");
-            
-            // Host Key - rsa-sha2 hinzufuegen
-            config.put("server_host_key", "rsa-sha2-512,rsa-sha2-256," +
-                "ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521," +
-                "ssh-ed25519,ssh-rsa");
-            
-            // Pubkey accepted algorithms
-            config.put("PubkeyAcceptedAlgorithms", "rsa-sha2-512,rsa-sha2-256," +
-                "ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521," +
-                "ssh-ed25519,ssh-rsa");
-            
-            // CheckSignatures - rsa-sha2 aktivieren
-            config.put("CheckSignatures", "ecdsa-sha2-nistp256,ecdsa-sha2-nistp384," +
-                "ecdsa-sha2-nistp521,rsa-sha2-512,rsa-sha2-256,ssh-ed25519");
-            
-            this.lk_cSSHSession.setConfig(config);
 
             // Verbinden
-            this.lk_cSSHSession.connect(30000);
-
-            // Port-Forwarding einrichten fuer die Verbindung zum Drucker
-            // Wir leiten Local-Port -> Remote-Host:RemotePort
-            int localPort = 0; // 0 = automatisch vergeben
-            String remoteHost = "127.0.0.1"; // Host auf der anderen Seite der SSH-Verbindung
-            int remotePort = this.lk_cNetworkSettingsSSH.getPort();
-
-            // Forwarded Port oeffnen
-            this.lk_cSSHSession.setPortForwardingL(localPort, remoteHost, remotePort);
-
-            // Shell-Kanal oeffnen fuer Datentransport
-            this.lk_cSSHChannel = this.lk_cSSHSession.openChannel("shell");
-            this.lk_cSSHChannel.setInputStream(System.in, true);
-            this.lk_cSSHChannel.setOutputStream(System.out, true);
-
-            this.lk_cSSHInputStream = this.lk_cSSHChannel.getInputStream();
-            this.lk_cSSHOutputStream = this.lk_cSSHChannel.getOutputStream();
-
-            this.lk_cSSHChannel.connect(10000);
+            this.lk_cSSHClient.connect(host, port);
+            
+            // Authentifizierung
+            if(password != null && !password.isEmpty()) {
+                this.lk_cSSHClient.authPassword(username, password);
+                if(this.lk_cErrorFile != null) {
+                    this.lk_cErrorFile.write("CVNetworkSSH->open: Authenticated with password");
+                }
+            } else {
+                // Key-based auth versuchen
+                try {
+                    this.lk_cSSHClient.authPublickey(username);
+                    if(this.lk_cErrorFile != null) {
+                        this.lk_cErrorFile.write("CVNetworkSSH->open: Authenticated with key");
+                    }
+                } catch(UserAuthException e) {
+                    if(this.lk_cErrorFile != null) {
+                        this.lk_cErrorFile.write("CVNetworkSSH->open: Key auth failed: " + e.getMessage());
+                    }
+                    throw e;
+                }
+            }
+            
+            if(this.lk_cErrorFile != null) {
+                this.lk_cErrorFile.write("CVNetworkSSH->open: SSHJ connected and authenticated");
+            }
+            System.out.println("SSHJ: Connected and authenticated");
+            
+            // Session starten und Shell oeffnen
+            this.lk_cSession = this.lk_cSSHClient.startSession();
+            this.lk_cSession.allocateDefaultPTY();
+            this.lk_cShell = this.lk_cSession.startShell();
+            
+            // Input/Output Streams vom Shell
+            this.lk_cSSHInputStream = this.lk_cShell.getInputStream();
+            this.lk_cSSHOutputStream = this.lk_cShell.getOutputStream();
+            
+            if(this.lk_cErrorFile != null) {
+                this.lk_cErrorFile.write("CVNetworkSSH->open: Shell started");
+            }
+            System.out.println("SSHJ: Shell started");
         }
-        catch(JSchException ex)
+        catch(TransportException ex)
         {
-            // Detaillierte Fehlerinformationen sammeln
-            String serverVersion = "unknown";
-            String clientVersion = "JSCH 2.28.0";
-            if(this.lk_cSSHSession != null) {
-                try { serverVersion = this.lk_cSSHSession.getServerVersion(); } catch(Exception e) {}
-            }
-            
-            StringBuilder details = new StringBuilder();
-            details.append("CVNetworkSSH->open: JSchException: ").append(ex.getMessage()).append("\n");
-            details.append("  Server: ").append(this.lk_cNetworkSettingsSSH.getIPAdress())
-                  .append(":").append(this.lk_cNetworkSettingsSSH.getPort()).append("\n");
-            details.append("  Server Version: ").append(serverVersion).append("\n");
-            details.append("  Client Version: ").append(clientVersion).append("\n");
-            details.append("  User: ").append(this.lk_cNetworkSettingsSSH.getSSHUsername()).append("\n");
-            
-            if(ex.getCause() != null) {
-                details.append("  Cause: ").append(ex.getCause().getMessage()).append("\n");
-            }
-            
             if(this.lk_cErrorFile != null)
             {
-                this.lk_cErrorFile.write(details.toString());
+                this.lk_cErrorFile.write("CVNetworkSSH->open: TransportException: " + ex.getMessage());
             }
-            System.err.println(details.toString());
+            System.err.println("SSHJ TransportException: " + ex.getMessage());
             this.lk_cStatusMessage.write("CVNetworkSSH: SSH connection failed");
-
+            if(this.lk_cSSHClient != null) {
+                try { this.lk_cSSHClient.disconnect(); } catch(Exception e) {}
+            }
             return false;
         }
-        catch(Exception ex)
+        catch(UserAuthException ex)
         {
             if(this.lk_cErrorFile != null)
             {
-                this.lk_cErrorFile.write("CVNetworkSSH->open: " +
-                    "Exception: " + ex.getMessage());
+                this.lk_cErrorFile.write("CVNetworkSSH->open: UserAuthException: " + ex.getMessage());
             }
+            System.err.println("SSHJ UserAuthException: " + ex.getMessage());
+            this.lk_cStatusMessage.write("CVNetworkSSH: SSH authentication failed");
+            if(this.lk_cSSHClient != null) {
+                try { this.lk_cSSHClient.disconnect(); } catch(Exception e) {}
+            }
+            return false;
+        }
+        catch(java.io.IOException ex)
+        {
+            if(this.lk_cErrorFile != null)
+            {
+                this.lk_cErrorFile.write("CVNetworkSSH->open: IOException: " + ex.getMessage());
+            }
+            System.err.println("SSHJ IOException: " + ex.getMessage());
             this.lk_cStatusMessage.write("CVNetworkSSH: network port not open");
-
+            if(this.lk_cSSHClient != null) {
+                try { this.lk_cSSHClient.disconnect(); } catch(Exception e) {}
+            }
             return false;
         }
 
@@ -281,8 +305,6 @@ public class CVNetworkSSH extends CVInterface
 
     /**
      * Schliessen des Interface.
-     *
-     * @return true, wenn Interface geschlossen werden konnte.
      */
     public boolean close()
     {
@@ -325,16 +347,22 @@ public class CVNetworkSSH extends CVInterface
                 this.lk_cInputStreamBinary = null;
             }
 
-            if(this.lk_cSSHChannel != null)
+            if(this.lk_cShell != null)
             {
-                this.lk_cSSHChannel.disconnect();
-                this.lk_cSSHChannel = null;
+                this.lk_cShell.close();
+                this.lk_cShell = null;
             }
-
-            if(this.lk_cSSHSession != null)
+            
+            if(this.lk_cSession != null)
             {
-                this.lk_cSSHSession.disconnect();
-                this.lk_cSSHSession = null;
+                this.lk_cSession.close();
+                this.lk_cSession = null;
+            }
+            
+            if(this.lk_cSSHClient != null)
+            {
+                this.lk_cSSHClient.disconnect();
+                this.lk_cSSHClient = null;
             }
         }
         catch(Exception ex)
@@ -351,7 +379,7 @@ public class CVNetworkSSH extends CVInterface
             return false;
         }
 
-        this.lk_cStatusMessage.write("CVNetworkSSH: SSH connection closed");
+        this.lk_cStatusMessage.write("CVNetworkSSH: SSH network interface closed");
 
         this.lk_bIsConnected = false;
 
@@ -359,69 +387,88 @@ public class CVNetworkSSH extends CVInterface
     }
 
     /**
-     * Abfrage der aktuellen Einstellungen.
-     *
-     * @return Objekt zur Speicherung der Einstellungen.
+     * Pruefen ob Interface geoeffnet ist.
      */
-    public Object getInterfaceSettings()
+    public boolean isConnected()
     {
-        return (Object) this.lk_cNetworkSettingsSSH;
+        return this.lk_bIsConnected;
     }
 
     /**
-     * Setzen der aktuellen Einstellungen.
-     *
-     * @param cSettings Objekt zur Speicherung der Einstellungen.
+     * Automatische Wiederherstellung der Verbindung.
+     */
+    public void setAutoReconnect(boolean active)
+    {
+        this.bAutoReconnectRunning = active;
+    }
+
+    /**
+     * Gibt den Namen der Netzwerkschnittstelle zurueck.
+     */
+    public String getInterfaceName()
+    {
+        return "CVNetworkSSH";
+    }
+
+    /**
+     * Gibt die IP-Adresse zurueck.
+     */
+    public String getIPAddress()
+    {
+        return this.lk_cNetworkSettingsSSH.getIPAdress();
+    }
+
+    /**
+     * Gibt den Port zurueck.
+     */
+    public String getPort()
+    {
+        return Integer.toString(this.lk_cNetworkSettingsSSH.getPort());
+    }
+
+    /**
+     * Setzt die Konfiguration der Netzwerkschnittstelle.
      */
     public void setInterfaceSettings(Object cSettings)
     {
-        if(cSettings != null)
-        {
+        if(cSettings != null) {
             this.lk_cNetworkSettingsSSH = (CVNetworkSettings) cSettings;
         }
-
         return;
     }
 
-    public void doAutoReconnect()
+    /**
+     * Setzt die Konfiguration der Netzwerkschnittstelle.
+     */
+    public void setInterfaceSettings(Object cSettings, Object networkProtocol)
     {
-        // SSH Auto-Reconnect - optional implementieren
-        Thread thread = new Thread(){
-            public void run() {
-                boolean bSuccess = false;
-                int i = 1;
-                bAutoReconnectRunning = true;
-                while (!bSuccess && bAutoReconnectRunning) {
-                    try {
-                        sleep(10000);
-                        // Versuche neu zu verbinden
-                        // (vereinfacht - in echter Implementierung waere
-                        // ein echter Reconnect-Versuch notwendig)
-                        if (lk_cSSHSession == null || !lk_cSSHSession.isConnected()) {
-                            // Hier koennte man eine neue Verbindung aufbauen
-                            lk_cStatusMessage.write("CVNetworkSSH: AutoReconnect attempt " + i++);
-                        } else {
-                            bSuccess = true;
-                            lk_cStatusMessage.write("CVNetworkSSH: AutoReconnect succeed");
-                            ValentinConsole.connect();
-                        }
-                    }
-                    catch(Exception ex) {
-                        lk_cStatusMessage.write("CVNetworkSSH: AutoReconnect attempt " + i++);
-                    }
-                }
-                if (!bSuccess) {
-                    lk_cStatusMessage.write("CVNetworkSSH: AutoReconnect failed");
-                }
-                bAutoReconnectRunning = false;
-            }
-        };
-
-        thread.start();
+        if(cSettings != null) {
+            this.lk_cNetworkSettingsSSH = (CVNetworkSettings) cSettings;
+        }
+        return;
     }
 
-    public void stopAutoReconnect()
+    /**
+     * Gibt die Netzwerkschnittstelle zurueck.
+     */
+    public CVInterface getInterface()
     {
-        bAutoReconnectRunning = false;
+        return this;
+    }
+
+    /**
+     * Gibt die Einstellungen der Netzwerkschnittstelle zurueck.
+     */
+    public Object getInterfaceSettings()
+    {
+        return this.lk_cNetworkSettingsSSH;
+    }
+
+    /**
+     * Gibt die Einstellungen der Netzwerkschnittstelle zurueck.
+     */
+    public CVNetworkSettings getNetworkSettings()
+    {
+        return this.lk_cNetworkSettingsSSH;
     }
 }
