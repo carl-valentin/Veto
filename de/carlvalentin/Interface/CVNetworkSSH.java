@@ -308,60 +308,72 @@ public class CVNetworkSSH extends CVInterface
      */
     public boolean close()
     {
-        if(this.lk_bIsConnected == false)
-        {
-            if(this.lk_cErrorMessage != null)
-            {
-                this.lk_cErrorMessage.write("CVNetworkSSH->close: " +
-                    "SSH network interface not open");
-            }
-
-            return false;
-        }
-
+        // Even if already disconnected (due to I/O error), close resources
         //----------------------------------------------------------------------
         // SSH-Verbindung schliessen
         //----------------------------------------------------------------------
         try
         {
+            // Close output writer first
             if(this.lk_cOutputStreamWriter != null)
             {
-                this.lk_cOutputStreamWriter.flush();
-                this.lk_cOutputStreamWriter.close();
+                try {
+                    this.lk_cOutputStreamWriter.flush();
+                } catch(Exception e) {}
+                try {
+                    this.lk_cOutputStreamWriter.close();
+                } catch(Exception e) {}
                 this.lk_cOutputStreamWriter = null;
             }
             if(this.lk_cOutputStreamBinary != null)
             {
-                this.lk_cOutputStreamBinary.flush();
-                this.lk_cOutputStreamBinary.close();
+                try {
+                    this.lk_cOutputStreamBinary.flush();
+                } catch(Exception e) {}
+                try {
+                    this.lk_cOutputStreamBinary.close();
+                } catch(Exception e) {}
                 this.lk_cOutputStreamBinary = null;
             }
             if(this.lk_cInputStreamReader != null)
             {
-                this.lk_cInputStreamReader.close();
+                try {
+                    this.lk_cInputStreamReader.close();
+                } catch(Exception e) {}
                 this.lk_cInputStreamReader = null;
             }
             if(this.lk_cInputStreamBinary != null)
             {
-                this.lk_cInputStreamBinary.close();
+                try {
+                    this.lk_cInputStreamBinary.close();
+                } catch(Exception e) {}
                 this.lk_cInputStreamBinary = null;
             }
 
+            // Close SSH shell
             if(this.lk_cShell != null)
             {
-                this.lk_cShell.close();
+                try {
+                    this.lk_cShell.close();
+                } catch(Exception e) {}
                 this.lk_cShell = null;
             }
             
+            // Close SSH session
             if(this.lk_cSession != null)
             {
-                this.lk_cSession.close();
+                try {
+                    this.lk_cSession.close();
+                } catch(Exception e) {}
                 this.lk_cSession = null;
             }
             
+            // Disconnect SSH client
             if(this.lk_cSSHClient != null)
             {
-                this.lk_cSSHClient.disconnect();
+                try {
+                    this.lk_cSSHClient.disconnect();
+                } catch(Exception e) {}
                 this.lk_cSSHClient = null;
             }
         }
