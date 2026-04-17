@@ -565,6 +565,8 @@ public class ValentinConsole extends JFrame {
 
 			if (sDescrInterface.equals((String) "TCP network")) {
 				cSelectedInterface = (CVInterface) this.lk_cConnectionManager.getTCPNetworkInterface();
+			} else if (sDescrInterface.equals((String) "SSH network")) {
+				cSelectedInterface = (CVInterface) this.lk_cConnectionManager.getSSHNetworkInterface();
 			} else if (sDescrInterface.equals((String) "UDP network")) {
 				cSelectedInterface = (CVInterface) this.lk_cConnectionManager.getUDPNetworkInterface();
 			} else if (sDescrInterface.equals((String) "serial port")) {
@@ -632,6 +634,8 @@ public class ValentinConsole extends JFrame {
 
 			if (sDescrInterface.equals((String) "TCP network")) {
 				cSelectedInterface = (CVInterface) this.lk_cConnectionManager.getTCPNetworkInterface();
+			} else if (sDescrInterface.equals((String) "SSH network")) {
+				cSelectedInterface = (CVInterface) this.lk_cConnectionManager.getSSHNetworkInterface();
 			} else if (sDescrInterface.equals((String) "UDP network")) {
 				cSelectedInterface = (CVInterface) this.lk_cConnectionManager.getUDPNetworkInterface();
 			} else if (sDescrInterface.equals((String) "serial port")) {
@@ -840,6 +844,7 @@ public class ValentinConsole extends JFrame {
 			jComboBoxConnectBarChooseInterface.addItem((String) "serial port");
 			jComboBoxConnectBarChooseInterface.addItem((String) "parallel port");
 			jComboBoxConnectBarChooseInterface.addItem((String) "TCP network");
+			jComboBoxConnectBarChooseInterface.addItem((String) "SSH network");
 			jComboBoxConnectBarChooseInterface.addItem((String) "UDP network");
 
 			jComboBoxConnectBarChooseInterface.setSelectedItem((String) "serial port");
@@ -883,9 +888,12 @@ public class ValentinConsole extends JFrame {
 					if (currentInterface.equals((String) "TCP network") == true) {
 						// TCP network
 						showUINetworkTCPConfig();
+					} else if (currentInterface.equals((String) "SSH network") == true) {
+						// SSH network
+						showUINetworkSSHConfig();
 					} else if (currentInterface.equals((String) "UDP network") == true) {
 						// UDP network
-						showUINetworkUDPConfig(); // TODO Searchbutton einbauen
+						showUINetworkUDPConfig();
 					} else if (currentInterface.equals((String) "serial port") == true) {
 						// serial port
 						showUISerialPortConfig();
@@ -1743,6 +1751,7 @@ public class ValentinConsole extends JFrame {
 			jMenuInterface.setToolTipText("configure interfaces");
 			jMenuInterface.setMnemonic(java.awt.event.KeyEvent.VK_I);
 			jMenuInterface.add(getJMenuItemConfigureNetworkTCP());
+			jMenuInterface.add(getJMenuItemConfigureNetworkSSH());
 			jMenuInterface.add(getJMenuItemConfigureNetworkUDP());
 			jMenuInterface.add(getJMenuItemConfigureRS232());
 			jMenuInterface.add(getJMenuItemConfigureParallel());

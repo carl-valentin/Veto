@@ -12,5 +12,6 @@
 	<classpathentry kind="lib" path="rsyntaxtextarea-2.6.0/rsyntaxtextarea-2.6.0.jar"/>
 	<classpathentry kind="lib" path="javax.comm/nrjavaserial-5.2.1/nrjavaserial-5.2.1.jar"/>
 	<classpathentry kind="lib" path="javax.comm/Win32.V2.0/comm.jar"/>
+	<classpathentry kind="lib" path="jsch.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
