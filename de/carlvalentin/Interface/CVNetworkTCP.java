@@ -205,7 +205,9 @@ public class CVNetworkTCP extends CVInterface
             return false;
         }
         
-        this.lk_cStatusMessage.write("CVNetworkTCP: network port open");
+        this.lk_cStatusMessage.write("CVNetworkTCP: network port open to " 
+        		+ this.lk_cNetworkSettingsTCP.getIPAdress() + ":" 
+        		+ this.lk_cNetworkSettingsTCP.getPort());
 
         this.lk_bIsConnected = true;
 
