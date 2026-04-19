@@ -106,6 +106,14 @@ public class ValentinConsole extends JFrame {
 	String lk_szConfigTokenPathRecent4 = "ValentinConsoleSettingsPathRecent4";
 
 	/**
+	 * Token zum Speichern von Windowsposition und -gr&ouml;&szlig;e in Konfigurationsdatei
+	 */
+	String lk_szConfigTokenWindowX = "ValentinConsoleSettingsWindowX";
+	String lk_szConfigTokenWindowY = "ValentinConsoleSettingsWindowY";
+	String lk_szConfigTokenWindowWidth = "ValentinConsoleSettingsWindowWidth";
+	String lk_szConfigTokenWindowHeight = "ValentinConsoleSettingsWindowHeight";
+	
+	/**
 	 * Grafische Oberflaeche fuer Einstellung Start-/Stopzeichen CVPL
 	 */
 	private CVUISohEtb lk_cUISohEtb = null;
@@ -734,13 +742,75 @@ public class ValentinConsole extends JFrame {
 	 * @return void
 	 */
 	private void initialize() {
-		// this.setBounds(0, 0, 800, 600);
 		this.setJMenuBar(getJMenuBarMain());
 		this.setContentPane(getJPanelMain());
-		this.setTitle("VETO - ValEnTin pOrt Office 1.1");
+		this.setTitle("VETO - ValEnTin pOrt Office 1.2");
 		this.setIconImage(Toolkit.getDefaultToolkit().getImage("icon.png"));
-		this.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(javax.swing.JFrame.DO_NOTHING_ON_CLOSE);
+		this.addWindowListener(new java.awt.event.WindowAdapter() {
+			@Override
+			public void windowClosing(java.awt.event.WindowEvent e) {
+				ValentinConsole.this.cleanupAndExit();
+			}
+		});
+
+		// Fensterposition und -größe wiederherstellen
+		if (lk_cConfigFile != null) {
+			try {
+				int x = 10, y = 10, w = 800, h = 700; // Defaultwerte
+				try {
+				    String sx = lk_cConfigFile.getConfig(lk_szConfigTokenWindowX);
+				    String sy = lk_cConfigFile.getConfig(lk_szConfigTokenWindowY);
+				    String sw = lk_cConfigFile.getConfig(lk_szConfigTokenWindowWidth);
+				    String sh = lk_cConfigFile.getConfig(lk_szConfigTokenWindowHeight);
+				    if (sx != null) x = Integer.parseInt(sx);
+				    if (sy != null) y = Integer.parseInt(sy);
+				    if (sw != null) w = Integer.parseInt(sw);
+				    if (sh != null) h = Integer.parseInt(sh);
+				} catch (Exception ex) {
+				    // Bei Fehlern werden die Defaultwerte verwendet
+				}
+
+				// Multi-Screen: Prüfen, ob Position auf einem Screen liegt
+				Rectangle windowRect = new Rectangle(x, y, w, h);
+				boolean fits = false;
+				GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+				GraphicsDevice[] screens = ge.getScreenDevices();
+				for (GraphicsDevice screen : screens) {
+					Rectangle bounds = screen.getDefaultConfiguration().getBounds();
+					if (bounds.intersects(windowRect)) {
+						fits = true;
+						break;
+					}
+				}
+				if (fits) {
+					this.setBounds(x, y, w, h);
+				} else {
+					this.setLocationRelativeTo(null); // zentrieren
+				}
+			} catch (Exception ex) {
+				this.setLocationRelativeTo(null);
+			}
+		}
+
 		this.pack();
+	}
+	
+	/**
+	 * This method initializes jMenuItem
+	 *
+	 * @return javax.swing.JMenuItem
+	 */
+	private void cleanupAndExit() {
+
+		// Fensterposition und -größe speichern
+		if (lk_cConfigFile != null) {
+			lk_cConfigFile.setConfig(lk_szConfigTokenWindowX, Integer.toString(this.getX()));
+			lk_cConfigFile.setConfig(lk_szConfigTokenWindowY, Integer.toString(this.getY()));
+			lk_cConfigFile.setConfig(lk_szConfigTokenWindowWidth, Integer.toString(this.getWidth()));
+			lk_cConfigFile.setConfig(lk_szConfigTokenWindowHeight, Integer.toString(this.getHeight()));
+		}
+		System.exit(0);
 	}
 
 	/**
@@ -1074,7 +1144,7 @@ public class ValentinConsole extends JFrame {
 			jMenuItemInfo.setEnabled(true);
 			jMenuItemInfo.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					JOptionPane.showMessageDialog(vc, "VETO - ValEnTin pOrt Office\nVersion 1.1", "Info",
+					JOptionPane.showMessageDialog(vc, "VETO - ValEnTin pOrt Office\nVersion 1.2", "Info",
 							JOptionPane.OK_OPTION);
 				}
 			});

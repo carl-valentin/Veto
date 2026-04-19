@@ -313,7 +313,8 @@ public class CVNetworkSSH extends CVInterface
             return false;
         }
 
-        this.lk_cStatusMessage.write("CVNetworkSSH: SSH connection established");
+        this.lk_cStatusMessage.write("CVNetworkSSH: SSH connection established with " 
+        		+ this.lk_cNetworkSettingsSSH.getIPAdress() + ":" + this.lk_cNetworkSettingsSSH.getPort());
 
         this.lk_bIsConnected = true;
 
