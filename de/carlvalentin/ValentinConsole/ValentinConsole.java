@@ -1,4 +1,3 @@
-
 package de.carlvalentin.ValentinConsole;
 
 import de.carlvalentin.Common.*;
@@ -2037,4 +2036,3 @@ public class ValentinConsole extends JFrame {
 		return jMenuItemClearConsole;
 	}
 } // @jve:visual-info decl-index=0 visual-constraint="10,10"
->>>>>>> refs/heads/feature/console-context-menu
