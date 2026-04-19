@@ -4,7 +4,6 @@
 // -> boolean close( File );
 // -> boolean close( CVNetworkTCP );
 // -> boolean close( CVNetworkUDP );
-// -> boolean close( CVParallel );
 // -> boolean close( CVSerial );
 // -----------------------------------------------------------------------------
 // 
@@ -70,30 +69,6 @@ boolean close( CVNetworkUDP cUDPNetworkInterface)
 	}
 
 	if( true == cConnectionManager.disconnect( cUDPNetworkInterface ) )
-    {
-        ValentinConsole.setButtonsOnDisconnect();
-        return true;
-    }
-    chk4StpScr();
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-// -> boolean close( CVParallel );
-// Schliesst die Parallelschnittstelle.
-boolean close( CVParallel cParallelInterface )
-{
-    chk4StpScr();
-	if( false == cConnectionManager.isConnected() )
-	{
-		printf("\n<-------------------------------------->\n");
-        printf("Scripting: close->could not close parallel port interface\n");
-        printf("<-------------------------------------->\n");
-        error("Scripting: close->could not close parallel port interface");
-		return false;
-	}
-
-	if( true == cConnectionManager.disconnect( cParallelInterface ) )
     {
         ValentinConsole.setButtonsOnDisconnect();
         return true;

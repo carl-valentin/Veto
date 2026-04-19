@@ -21,12 +21,6 @@ file = openFile("ExampleScripts\\CRCComTestFkt.bsh");
 script = read(file);
 eval(script);
 
-printf("Parallel ...\n");
-itf = openParallel("LPT1");
-CRCComTest("LPT:1K", 1024, 10000);
-close(itf);
-sleep(20000);
-
 printf("Serial ...\n");
 itf = openSerial("COM1");
 CRCComTest("COM:1K", 1024, 10000);

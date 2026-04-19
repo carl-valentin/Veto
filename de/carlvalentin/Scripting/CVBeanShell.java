@@ -82,11 +82,6 @@ public class CVBeanShell
     private CVSerial           lk_cBeanShellInterfaceSerial = null;
 
     /**
-     * Internes Interface des Skriptinterpreters zur parallelen Schnittstelle
-     */
-//    private CVParallel         lk_cBeanShellInterfaceParallel = null;
-
-    /**
      * Printf im C-Stil zur Formatierung von Textausgaben
      */
     private CVPrintf           lk_cPrintf = null;
@@ -518,10 +513,6 @@ public class CVBeanShell
                    ("NetworkInterfaceTCP", this.lk_cBeanShellInterfaceNetworkTCP);
             this.lk_cBeanShellInterpreter.set
                 ("NetworkInterfaceUDP", this.lk_cBeanShellInterfaceNetworkUDP);
-/*            
-            this.lk_cBeanShellInterpreter.set
-                   ("ParallelInterface", this.lk_cBeanShellInterfaceParallel);
-*/
             this.lk_cBeanShellInterpreter.set
                    ("SerialInterface", this.lk_cBeanShellInterfaceSerial);
             this.lk_cBeanShellInterpreter.set

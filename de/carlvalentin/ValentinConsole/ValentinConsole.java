@@ -197,7 +197,6 @@ public class ValentinConsole extends JFrame {
 	private JMenuItem jMenuItemConfigureNetworkUDP = null;
 	private JMenuItem jMenuItemConfigureNetworkSSH = null;
 	private JMenuItem jMenuItemConfigureRS232 = null;
-	private JMenuItem jMenuItemConfigureParallel = null;
 	/**
 	 * Men&uuml zur Beeinflussung der Konsole
 	 */
@@ -448,21 +447,6 @@ public class ValentinConsole extends JFrame {
 		serialUI.setLocationRelativeTo(vc);
 		serialUI.setVisible(true);
 		return;
-	}
-
-	/**
-	 * Anzeige der grafischen Oberflaeche zur Konfiguration serieller Ports.
-	 *
-	 */	
-	private void showUIParallelPortConfig() {
-/*	    
-		CVUIParallel parallelUI = new CVUIParallel(this.lk_cErrorMessage, this.lk_cErrorFile, this.lk_cStatusMessage,
-				this.lk_cConnectionManager);
-		parallelUI.setModal(true);
-		parallelUI.setLocationRelativeTo(vc);
-		parallelUI.setVisible(true);
-		return;
-*/
 	}
 
 	/**
@@ -912,7 +896,6 @@ public class ValentinConsole extends JFrame {
 
 			// Einlesen aller Schnittstellen
 			jComboBoxConnectBarChooseInterface.addItem((String) "serial port");
-			jComboBoxConnectBarChooseInterface.addItem((String) "parallel port");
 			jComboBoxConnectBarChooseInterface.addItem((String) "TCP network");
 			jComboBoxConnectBarChooseInterface.addItem((String) "SSH network");
 			jComboBoxConnectBarChooseInterface.addItem((String) "UDP network");
@@ -967,9 +950,6 @@ public class ValentinConsole extends JFrame {
 					} else if (currentInterface.equals((String) "serial port") == true) {
 						// serial port
 						showUISerialPortConfig();
-					} else {
-						// parallel port
-						showUIParallelPortConfig();
 					}
 				}
 			});
@@ -1050,7 +1030,6 @@ public class ValentinConsole extends JFrame {
 						jMenuItemConfigureNetworkTCP.setEnabled(false);
 						jMenuItemConfigureNetworkUDP.setEnabled(false);
 						jMenuItemConfigureRS232.setEnabled(false);
-						jMenuItemConfigureParallel.setEnabled(false);
 
 						jMenuItemTransmitFile.setEnabled(true);
 						jMenuFileSubmenuRecentFile.setEnabled(true);
@@ -1086,7 +1065,6 @@ public class ValentinConsole extends JFrame {
 						jMenuItemConfigureNetworkTCP.setEnabled(true);
 						jMenuItemConfigureNetworkUDP.setEnabled(true);
 						jMenuItemConfigureRS232.setEnabled(true);
-						jMenuItemConfigureParallel.setEnabled(true);
 
 						jMenuItemTransmitFile.setEnabled(false);
 						jMenuFileSubmenuRecentFile.setEnabled(false);
@@ -1824,7 +1802,6 @@ public class ValentinConsole extends JFrame {
 			jMenuInterface.add(getJMenuItemConfigureNetworkSSH());
 			jMenuInterface.add(getJMenuItemConfigureNetworkUDP());
 			jMenuInterface.add(getJMenuItemConfigureRS232());
-			jMenuInterface.add(getJMenuItemConfigureParallel());
 		}
 		return jMenuInterface;
 	}
@@ -1901,25 +1878,6 @@ public class ValentinConsole extends JFrame {
 			});
 		}
 		return jMenuItemConfigureRS232;
-	}
-
-	/**
-	 * This method initializes jMenuItem
-	 *
-	 * @return javax.swing.JMenuItem
-	 */
-	private JMenuItem getJMenuItemConfigureParallel() {
-		if (jMenuItemConfigureParallel == null) {
-			jMenuItemConfigureParallel = new JMenuItem();
-			jMenuItemConfigureParallel.setText("Configure Parallel");
-			jMenuItemConfigureParallel.setToolTipText("configure parallel ports");
-			jMenuItemConfigureParallel.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					showUIParallelPortConfig();
-				}
-			});
-		}
-		return jMenuItemConfigureParallel;
 	}
 
 	/**

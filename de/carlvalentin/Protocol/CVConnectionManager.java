@@ -73,11 +73,6 @@ public class CVConnectionManager
     private CVSerial             lk_cInterfaceSerial = null;
 
     /**
-     * Interface zur parallelen Schnittstelle
-     */
-    // private CVParallel           lk_cInterfaceParallel = null;
-
-    /**
      * Interface, uber welches Verbindung zum Drucker besteht
      */
     private CVInterface          lk_cInterfaceCurrentConnected = null;
@@ -132,13 +127,6 @@ public class CVConnectionManager
     		this.lk_cInterfaceNetworkUDP.finalize();
     		this.lk_cInterfaceNetworkUDP = null;
     	}
-/*    	
-    	if(this.lk_cInterfaceParallel != null)
-    	{
-    		this.lk_cInterfaceParallel.finalize();
-    		this.lk_cInterfaceParallel = null;
-    	}
-*/
     	if(this.lk_cInterfaceSerial != null)
     	{
     		this.lk_cInterfaceSerial.finalize();
@@ -303,51 +291,6 @@ public class CVConnectionManager
 
         return;
     }
-
-    /**
-     * Abfrage Parallelinterface
-     *
-     * @return Parallelinterface
-     */
-/*    
-    public CVParallel getParallelInterface()
-    {
-    	if(this.lk_cInterfaceParallel == null)
-    	{
-    		this.lk_cInterfaceParallel = new CVParallel(
-                    this.lk_cErrorMessage,
-                    this.lk_cErrorFile,
-                    this.lk_cStatusMessage,
-                    this.lk_cConfigFile);
-    	}
-    	return this.lk_cInterfaceParallel;
-    }
-*/
-
-    /**
-     * Setzen Parallelinterface
-     *
-     * @param cParallelInterface Parallelinterface
-     */
-/*    
-    public void setParallelInterface(CVParallel cParallelInterface)
-    {
-        if(cParallelInterface != null)
-        {
-        	this.lk_cInterfaceParallel = cParallelInterface;
-        }
-        else
-        {
-        	if(this.lk_cErrorMessage != null)
-            {
-        		this.lk_cErrorMessage.write("CVConnectionManager->" +
-                        "setParallelInterface: null pointer");
-            }
-        }
-
-        return;
-    }
-*/
 
     /**
      * Abfrage serielles Interface
@@ -657,10 +600,6 @@ public class CVConnectionManager
         	return -1;
         }
 
-        //----------------------------------------------------------------------
-        // Parallelport hat unter Java keine Moeglichkeit Daten zu empfangen
-        //----------------------------------------------------------------------
-        // if(cInterface.equals((CVInterface)this.lk_cInterfaceParallel) != true)
         {
         	//------------------------------------------------------------------
         	// Thread zum Empfangen von Daten anlegen
@@ -870,12 +809,6 @@ public class CVConnectionManager
         {
         	this.lk_cInterfaceNetworkUDP = null;
         }
-/*        
-        if(cInterface.equals(this.lk_cInterfaceParallel) == true)
-        {
-        	this.lk_cInterfaceParallel = null;
-        }
-*/
         if(cInterface.equals(this.lk_cInterfaceSerial) == true)
         {
         	this.lk_cInterfaceSerial = null;

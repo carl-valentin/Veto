@@ -25,7 +25,7 @@
             description="compile the source" >
         <!-- Compile the java code from ${src} into ${outputdir} -->
         <javac srcdir="." destdir="${ODIR_CLASSES}"
-        	   excludes="**/CVUIParallel.java **/CVParallel*.*"
+        	  
                classpath="javax.comm/nrjavaserial-5.2.1/nrjavaserial-5.2.1.jar;
         	              bsh/bsh-2.0b4.jar;
         	              com/sharkysoft/lava3-core.jar;
@@ -38,7 +38,7 @@
             description="compile the source Win32-specific" >
         <!-- Compile the java code from ${src} into ${outputdir} -->
         <javac srcdir="." destdir="${ODIR_CLASSES}"
-        	   excludes="**/CVUIParallel.java **/CVParallel*.*"
+        	  
                classpath="javax.comm/nrjavaserial-5.2.1/nrjavaserial-5.2.1.jar;
         	              bsh/bsh-2.0b4.jar;
                           com/sharkysoft/lava3-core.jar;
@@ -51,7 +51,7 @@
             description="compile the source Win64-specific" >
         <!-- Compile the java code from ${src} into ${outputdir} -->
         <javac srcdir="." destdir="${ODIR_CLASSES}"    
-        	   excludes="**/CVUIParallel.java **/CVParallel*.*"
+        	  
                classpath="javax.comm/nrjavaserial-5.2.1/nrjavaserial-5.2.1.jar;
         	              bsh/bsh-2.0b4.jar;
                           com/sharkysoft/lava3-core.jar;
@@ -64,7 +64,7 @@
             description="compile the source Linux64-specific" >
         <!-- Compile the java code from ${src} into ${outputdir} -->
         <javac srcdir="." destdir="${ODIR_CLASSES}"
-        	   excludes="**/CVUIParallel.java **/CVParallel*.*"
+        	  
                classpath="javax.comm/nrjavaserial-5.2.1/nrjavaserial-5.2.1.jar;
         	              bsh/bsh-2.0b4.jar;
                           com/sharkysoft/lava3-core.jar;
