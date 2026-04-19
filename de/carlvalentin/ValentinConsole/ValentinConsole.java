@@ -1,3 +1,4 @@
+
 package de.carlvalentin.ValentinConsole;
 
 import de.carlvalentin.Common.*;
@@ -187,6 +188,7 @@ public class ValentinConsole extends JFrame {
 	private JMenu jMenuInterface = null;
 	private JMenuItem jMenuItemConfigureNetworkTCP = null;
 	private JMenuItem jMenuItemConfigureNetworkUDP = null;
+	private JMenuItem jMenuItemConfigureNetworkSSH = null;
 	private JMenuItem jMenuItemConfigureRS232 = null;
 	private JMenuItem jMenuItemConfigureParallel = null;
 	/**
@@ -414,6 +416,21 @@ public class ValentinConsole extends JFrame {
 	}
 
 	/**
+	 * Anzeige der grafischen Oberflaeche zur Konfiguration SSH-Netzwerk.
+	 *
+	 */
+	private void showUINetworkSSHConfig() {
+		CVUINetwork cSSHNetworkUI = new CVUINetwork(this.lk_cErrorMessage, this.lk_cErrorFile, this.lk_cStatusMessage,
+				this.lk_cConnectionManager, CVNetworkProtocol.SSH);
+		cSSHNetworkUI.setPreferredSize(new java.awt.Dimension(400, 450));
+		cSSHNetworkUI.pack();
+		cSSHNetworkUI.setModal(true);
+		cSSHNetworkUI.setLocationRelativeTo(vc);
+		cSSHNetworkUI.setVisible(true);
+		return;
+	}
+
+	/**
 	 * Anzeige der grafischen Oberflaeche zur Konfiguration serieller Ports.
 	 *
 	 */
@@ -549,6 +566,8 @@ public class ValentinConsole extends JFrame {
 
 			if (sDescrInterface.equals((String) "TCP network")) {
 				cSelectedInterface = (CVInterface) this.lk_cConnectionManager.getTCPNetworkInterface();
+			} else if (sDescrInterface.equals((String) "SSH network")) {
+				cSelectedInterface = (CVInterface) this.lk_cConnectionManager.getSSHNetworkInterface();
 			} else if (sDescrInterface.equals((String) "UDP network")) {
 				cSelectedInterface = (CVInterface) this.lk_cConnectionManager.getUDPNetworkInterface();
 			} else if (sDescrInterface.equals((String) "serial port")) {
@@ -616,6 +635,8 @@ public class ValentinConsole extends JFrame {
 
 			if (sDescrInterface.equals((String) "TCP network")) {
 				cSelectedInterface = (CVInterface) this.lk_cConnectionManager.getTCPNetworkInterface();
+			} else if (sDescrInterface.equals((String) "SSH network")) {
+				cSelectedInterface = (CVInterface) this.lk_cConnectionManager.getSSHNetworkInterface();
 			} else if (sDescrInterface.equals((String) "UDP network")) {
 				cSelectedInterface = (CVInterface) this.lk_cConnectionManager.getUDPNetworkInterface();
 			} else if (sDescrInterface.equals((String) "serial port")) {
@@ -717,7 +738,7 @@ public class ValentinConsole extends JFrame {
 		// this.setBounds(0, 0, 800, 600);
 		this.setJMenuBar(getJMenuBarMain());
 		this.setContentPane(getJPanelMain());
-		this.setTitle("VETO - ValEnTin pOrt Office 1.2");
+		this.setTitle("VETO - ValEnTin pOrt Office 1.1");
 		this.setIconImage(Toolkit.getDefaultToolkit().getImage("icon.png"));
 		this.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
 		this.pack();
@@ -824,6 +845,7 @@ public class ValentinConsole extends JFrame {
 			jComboBoxConnectBarChooseInterface.addItem((String) "serial port");
 			jComboBoxConnectBarChooseInterface.addItem((String) "parallel port");
 			jComboBoxConnectBarChooseInterface.addItem((String) "TCP network");
+			jComboBoxConnectBarChooseInterface.addItem((String) "SSH network");
 			jComboBoxConnectBarChooseInterface.addItem((String) "UDP network");
 
 			jComboBoxConnectBarChooseInterface.setSelectedItem((String) "serial port");
@@ -867,9 +889,12 @@ public class ValentinConsole extends JFrame {
 					if (currentInterface.equals((String) "TCP network") == true) {
 						// TCP network
 						showUINetworkTCPConfig();
+					} else if (currentInterface.equals((String) "SSH network") == true) {
+						// SSH network
+						showUINetworkSSHConfig();
 					} else if (currentInterface.equals((String) "UDP network") == true) {
 						// UDP network
-						showUINetworkUDPConfig(); // TODO Searchbutton einbauen
+						showUINetworkUDPConfig();
 					} else if (currentInterface.equals((String) "serial port") == true) {
 						// serial port
 						showUISerialPortConfig();
@@ -1050,7 +1075,7 @@ public class ValentinConsole extends JFrame {
 			jMenuItemInfo.setEnabled(true);
 			jMenuItemInfo.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					JOptionPane.showMessageDialog(vc, "VETO - ValEnTin pOrt Office\nVersion 1.2", "Info",
+					JOptionPane.showMessageDialog(vc, "VETO - ValEnTin pOrt Office\nVersion 1.1", "Info",
 							JOptionPane.OK_OPTION);
 				}
 			});
@@ -1727,6 +1752,7 @@ public class ValentinConsole extends JFrame {
 			jMenuInterface.setToolTipText("configure interfaces");
 			jMenuInterface.setMnemonic(java.awt.event.KeyEvent.VK_I);
 			jMenuInterface.add(getJMenuItemConfigureNetworkTCP());
+			jMenuInterface.add(getJMenuItemConfigureNetworkSSH());
 			jMenuInterface.add(getJMenuItemConfigureNetworkUDP());
 			jMenuInterface.add(getJMenuItemConfigureRS232());
 			jMenuInterface.add(getJMenuItemConfigureParallel());
@@ -1771,7 +1797,24 @@ public class ValentinConsole extends JFrame {
 		}
 		return jMenuItemConfigureNetworkUDP;
 	}
-
+	/**
+	 * This method initializes jMenuItem for SSH
+	 *
+	 * @return javax.swing.JMenuItem
+	 */
+	private JMenuItem getJMenuItemConfigureNetworkSSH() {
+		if (jMenuItemConfigureNetworkSSH == null) {
+			jMenuItemConfigureNetworkSSH = new JMenuItem();
+			jMenuItemConfigureNetworkSSH.setText("Configure Network SSH");
+			jMenuItemConfigureNetworkSSH.setToolTipText("configure SSH network interface");
+			jMenuItemConfigureNetworkSSH.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					showUINetworkSSHConfig();
+				}
+			});
+		}
+		return jMenuItemConfigureNetworkSSH;
+	}
 	/**
 	 * This method initializes jMenuItem
 	 *
@@ -1994,3 +2037,4 @@ public class ValentinConsole extends JFrame {
 		return jMenuItemClearConsole;
 	}
 } // @jve:visual-info decl-index=0 visual-constraint="10,10"
+>>>>>>> refs/heads/feature/console-context-menu

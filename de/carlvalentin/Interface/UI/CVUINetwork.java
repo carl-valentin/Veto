@@ -28,6 +28,11 @@ public class CVUINetwork extends JDialog {
 	private CVNetworkUDP lk_cUDPNetworkInterface = null;
 
 	/**
+	 * Netzwerkschnittstelle SSH-Protokoll
+	 */
+	private CVNetworkSSH lk_cSSHNetworkInterface = null;
+
+	/**
 	 * Einstellungen Netzwerkschnittstelle
 	 */
 	private CVNetworkSettings lk_cNetworkInterfaceSettings = null;
@@ -90,6 +95,14 @@ public class CVUINetwork extends JDialog {
 	// --------------------------------------------------------------------------
 	private JCheckBox jCheckBoxUDPBroadcast = null;
 
+	// --------------------------------------------------------------------------
+	// SSH
+	// --------------------------------------------------------------------------
+	private JLabel jLabelSSHUsername = null;
+	private JTextField jTextFieldSSHUsername = null;
+	private JLabel jLabelSSHPassword = null;
+	private JPasswordField jPasswordFieldSSHPassword = null;
+
 	//Druckersuche
 	CVUINetworkSearch pCVUINetworkSearch = null;
 	CVUINetworkSearch6 pCVUINetworkSearch6 = null;
@@ -124,6 +137,13 @@ public class CVUINetwork extends JDialog {
 		if (this.lk_cNetworkProtocol == CVNetworkProtocol.UDP) {
 			this.lk_cUDPNetworkInterface = this.lk_cConnectionManager.getUDPNetworkInterface();
 			this.lk_cNetworkInterfaceSettings = (CVNetworkSettings) this.lk_cUDPNetworkInterface.getInterfaceSettings();
+		}
+		// ----------------------------------------------------------------------
+		// SSH
+		// ----------------------------------------------------------------------
+		if (this.lk_cNetworkProtocol == CVNetworkProtocol.SSH) {
+			this.lk_cSSHNetworkInterface = this.lk_cConnectionManager.getSSHNetworkInterface();
+			this.lk_cNetworkInterfaceSettings = (CVNetworkSettings) this.lk_cSSHNetworkInterface.getInterfaceSettings();
 		}
 
 		pCVUINetworkSearch = new CVUINetworkSearch();
@@ -171,6 +191,15 @@ public class CVUINetwork extends JDialog {
 			if (this.lk_cNetworkProtocol == CVNetworkProtocol.UDP) {
 				this.lk_cUDPNetworkInterface.setInterfaceSettings((Object) this.lk_cNetworkInterfaceSettings);
 				this.lk_cConnectionManager.setUDPNetworkInterface(this.lk_cUDPNetworkInterface);
+			}
+			// ------------------------------------------------------------------
+			// SSH
+			// ------------------------------------------------------------------
+			if (this.lk_cNetworkProtocol == CVNetworkProtocol.SSH) {
+				this.lk_cNetworkInterfaceSettings.setSSHUsername(this.jTextFieldSSHUsername.getText());
+				this.lk_cNetworkInterfaceSettings.setSSHPassword(new String(this.jPasswordFieldSSHPassword.getPassword()));
+				this.lk_cSSHNetworkInterface.setInterfaceSettings((Object) this.lk_cNetworkInterfaceSettings);
+				this.lk_cConnectionManager.setSSHNetworkInterface(this.lk_cSSHNetworkInterface);
 			}
 
 			this.setVisible(false);
@@ -349,6 +378,15 @@ public class CVUINetwork extends JDialog {
 			// ------------------------------------------------------------------
 			if (this.lk_cNetworkProtocol == CVNetworkProtocol.UDP) {
 				this.jPanelNetworkSettings.add(this.getJCheckBoxUDPBroadcast());
+			}
+			// ------------------------------------------------------------------
+			// Einstellungen fuer SSH
+			// ------------------------------------------------------------------
+			if (this.lk_cNetworkProtocol == CVNetworkProtocol.SSH) {
+				this.jPanelNetworkSettings.add(this.getJLabelSSHUsername());
+				this.jPanelNetworkSettings.add(this.getJTextFieldSSHUsername());
+				this.jPanelNetworkSettings.add(this.getJLabelSSHPassword());
+				this.jPanelNetworkSettings.add(this.getJPasswordFieldSSHPassword());
 			}
 		}
 		return jPanelNetworkSettings;
@@ -531,6 +569,47 @@ public class CVUINetwork extends JDialog {
 	public void SetIPAddr(String sIP) {
 		jTextFieldTCPUDPIPAdress.setText(sIP);
 		processButtonOK();
+	}
+
+	// SSH Getter Methods
+	private JLabel getJLabelSSHUsername() {
+		if (this.jLabelSSHUsername == null) {
+			this.jLabelSSHUsername = new JLabel();
+			this.jLabelSSHUsername.setText("SSH Username:");
+			this.jLabelSSHUsername.setHorizontalAlignment(SwingConstants.CENTER);
+			this.jLabelSSHUsername.setToolTipText("SSH username for authentication");
+		}
+		return this.jLabelSSHUsername;
+	}
+
+	private JTextField getJTextFieldSSHUsername() {
+		if (this.jTextFieldSSHUsername == null) {
+			this.jTextFieldSSHUsername = new JTextField();
+			this.jTextFieldSSHUsername.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+			this.jTextFieldSSHUsername.setText(this.lk_cNetworkInterfaceSettings.getSSHUsername());
+			this.jTextFieldSSHUsername.setToolTipText("Enter SSH username");
+		}
+		return this.jTextFieldSSHUsername;
+	}
+
+	private JLabel getJLabelSSHPassword() {
+		if (this.jLabelSSHPassword == null) {
+			this.jLabelSSHPassword = new JLabel();
+			this.jLabelSSHPassword.setText("SSH Password:");
+			this.jLabelSSHPassword.setHorizontalAlignment(SwingConstants.CENTER);
+			this.jLabelSSHPassword.setToolTipText("SSH password for authentication");
+		}
+		return this.jLabelSSHPassword;
+	}
+
+	private JPasswordField getJPasswordFieldSSHPassword() {
+		if (this.jPasswordFieldSSHPassword == null) {
+			this.jPasswordFieldSSHPassword = new JPasswordField();
+			this.jPasswordFieldSSHPassword.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+			this.jPasswordFieldSSHPassword.setText(this.lk_cNetworkInterfaceSettings.getSSHPassword());
+			this.jPasswordFieldSSHPassword.setToolTipText("Enter SSH password");
+		}
+		return this.jPasswordFieldSSHPassword;
 	}
 
 }

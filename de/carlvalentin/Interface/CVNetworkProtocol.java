@@ -98,6 +98,11 @@ public final class CVNetworkProtocol
         {           
             return CVNetworkProtocol.UDP;
         }
+
+        if (str.compareTo(CVNetworkProtocol.SSH.toString()) == 0)
+        {
+            return CVNetworkProtocol.SSH;
+        }
         
         return null;
     }
@@ -106,4 +111,6 @@ public final class CVNetworkProtocol
         new CVNetworkProtocol("TCP/IP");
     public static final CVNetworkProtocol UDP = 
         new CVNetworkProtocol("UDP/IP");
+    public static final CVNetworkProtocol SSH = 
+        new CVNetworkProtocol("SSH");
 }

@@ -68,6 +68,14 @@ public class CVNetworkSettings extends CVInterfaceSettings
             "NetworkSettingsTCPSendAfterConn";
     private String      lk_szTCPAutoSendAfterConn = "";
 
+    // SSH specific settings
+    private String      lk_szSSHUsername = "root";
+    private final String lk_szConfigTokenSSHUsername =
+            "NetworkSettingsSSHUsername";
+    private String      lk_szSSHPassword = "";
+    private final String lk_szConfigTokenSSHPassword =
+            "NetworkSettingsSSHPassword";
+
     /**
      * Konstruktor der Klasse CVNetworkSettings.
      *
@@ -201,6 +209,28 @@ public class CVNetworkSettings extends CVInterfaceSettings
         			}
         		}
         		configValue = null;
+        	}
+
+        	//------------------------------------------------------------------
+        	// SSH
+        	//------------------------------------------------------------------
+        	if(this.lk_cNetworkProtocol == CVNetworkProtocol.SSH)
+        	{
+                configValue = this.lk_cConfigFile.getConfig(
+                        this.lk_szConfigTokenSSHUsername);
+                if(configValue != null)
+                {
+                    this.lk_szSSHUsername = configValue;
+                }
+                configValue = null;
+
+                configValue = this.lk_cConfigFile.getConfig(
+                        this.lk_szConfigTokenSSHPassword);
+                if(configValue != null)
+                {
+                    this.lk_szSSHPassword = configValue;
+                }
+                configValue = null;
         	}
         }
 
@@ -511,5 +541,65 @@ public class CVNetworkSettings extends CVInterfaceSettings
     private static boolean isValidIp(final String ip)
     {
         return ip.matches(IP_PATTERN);
+    }
+
+    /**
+     * Setzen des SSH-Benutzernamens.
+     *
+     * @param username SSH-Benutzername.
+     */
+    public void setSSHUsername(String username)
+    {
+        this.lk_szSSHUsername = username;
+
+        // Speichern in Konfigurationsdatei
+        if(this.lk_cConfigFile != null)
+        {
+            this.lk_cConfigFile.setConfig(
+                    this.lk_szConfigTokenSSHUsername,
+                    this.lk_szSSHUsername);
+        }
+
+        return;
+    }
+
+    /**
+     * Abfrage des SSH-Benutzernamens.
+     *
+     * @return SSH-Benutzername.
+     */
+    public String getSSHUsername()
+    {
+        return this.lk_szSSHUsername;
+    }
+
+    /**
+     * Setzen des SSH-Passworts.
+     *
+     * @param password SSH-Passwort.
+     */
+    public void setSSHPassword(String password)
+    {
+        this.lk_szSSHPassword = password;
+
+        // Speichern in Konfigurationsdatei
+        if(this.lk_cConfigFile != null)
+        {
+            this.lk_cConfigFile.setConfig(
+                    this.lk_szConfigTokenSSHPassword,
+                    this.lk_szSSHPassword);
+        }
+
+        return;
+    }
+
+    /**
+     * Abfrage des SSH-Passworts.
+     *
+     * @return SSH-Passwort.
+     */
+    public String getSSHPassword()
+    {
+        return this.lk_szSSHPassword;
     }
 }

@@ -63,6 +63,11 @@ public class CVConnectionManager
     private CVNetworkUDP         lk_cInterfaceNetworkUDP = null;
 
     /**
+     * Interface zur Netzwerkschnittstelle SSH-Protokoll
+     */
+    private CVNetworkSSH         lk_cInterfaceNetworkSSH = null;
+
+    /**
      * Interface zur seriellen Schnittstelle
      */
     private CVSerial             lk_cInterfaceSerial = null;
@@ -256,6 +261,47 @@ public class CVConnectionManager
     	}
 
     	return;
+    }
+
+    /**
+     * Abfrage Netzwerkinterface SSH-Protokoll
+     *
+     * @return Netzwerkinterface SSH-Protokoll
+     */
+    public CVNetworkSSH getSSHNetworkInterface()
+    {
+        if(this.lk_cInterfaceNetworkSSH == null)
+        {
+            this.lk_cInterfaceNetworkSSH = new CVNetworkSSH(
+                    this.lk_cErrorMessage,
+                    this.lk_cErrorFile,
+                    this.lk_cStatusMessage,
+                    this.lk_cConfigFile);
+        }
+        return this.lk_cInterfaceNetworkSSH;
+    }
+
+    /**
+     * Setzen Netzwerkinterface SSH-Protokoll
+     *
+     * @param cSSHNetworkInterface Netzwerkinterface SSH-Protokoll
+     */
+    public void setSSHNetworkInterface(CVNetworkSSH cSSHNetworkInterface)
+    {
+        if(cSSHNetworkInterface != null)
+        {
+            this.lk_cInterfaceNetworkSSH = cSSHNetworkInterface;
+        }
+        else
+        {
+            if(this.lk_cErrorMessage != null)
+            {
+                this.lk_cErrorMessage.write("CVConnectionManager->" +
+                        "setSSHNetworkInterface: null pointer");
+            }
+        }
+
+        return;
     }
 
     /**

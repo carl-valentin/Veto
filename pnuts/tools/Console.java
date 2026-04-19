@@ -13,9 +13,13 @@ import java.util.Vector;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import javax.swing.JTextArea;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
+import javax.swing.JPopupMenu;
+import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.DocumentEvent;
@@ -79,6 +83,8 @@ public class Console {
         this.handler = new EventHandler();
         textarea.getDocument().addDocumentListener(handler);
         textarea.addKeyListener(handler);
+        textarea.addMouseListener(handler);
+        textarea.setComponentPopupMenu(null); // Disable default popup
         textarea.setLineWrap(true);
         textarea.setFont(new Font("Monospaced", 0, 12));
 /*        
@@ -241,7 +247,7 @@ public class Console {
         }
     }
 
-    class EventHandler implements KeyListener, DocumentListener {
+    class EventHandler implements KeyListener, DocumentListener, MouseListener {
 
         public void keyPressed(KeyEvent e) {
             int code = e.getKeyCode();
@@ -389,6 +395,60 @@ public class Console {
         }
 
         public void changedUpdate(DocumentEvent e) {
+        }
+
+        // --- MouseListener implementation ---
+        public void mouseClicked(MouseEvent e) {
+        }
+
+        public void mousePressed(MouseEvent e) {
+            if (e.isPopupTrigger()) {
+                showPopupMenu(e);
+            }
+        }
+
+        public void mouseReleased(MouseEvent e) {
+            if (e.isPopupTrigger()) {
+                showPopupMenu(e);
+            }
+        }
+
+        public void mouseEntered(MouseEvent e) {
+        }
+
+        public void mouseExited(MouseEvent e) {
+        }
+
+        private void showPopupMenu(MouseEvent e) {
+            JPopupMenu popup = new JPopupMenu();
+            
+            JMenuItem cutItem = new JMenuItem("Cut");
+            cutItem.addActionListener(ae -> {
+                textarea.cut();
+            });
+            popup.add(cutItem);
+            
+            JMenuItem copyItem = new JMenuItem("Copy");
+            copyItem.addActionListener(ae -> {
+                textarea.copy();
+            });
+            popup.add(copyItem);
+            
+            JMenuItem pasteItem = new JMenuItem("Paste");
+            pasteItem.addActionListener(ae -> {
+                textarea.paste();
+            });
+            popup.add(pasteItem);
+            
+            popup.addSeparator();
+            
+            JMenuItem selectAllItem = new JMenuItem("Select All");
+            selectAllItem.addActionListener(ae -> {
+                textarea.selectAll();
+            });
+            popup.add(selectAllItem);
+            
+            popup.show(textarea, e.getX(), e.getY());
         }
     }
 
