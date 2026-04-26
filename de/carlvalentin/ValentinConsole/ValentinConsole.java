@@ -467,10 +467,20 @@ public class ValentinConsole extends JFrame {
 		if (iRet == 1) {
 			this.lk_cConsoleInput.getTextArea().setEnabled(true);
 			this.lk_cConsoleInput.setBinaryOutput(this.lk_cConnectionManager.getInterfaceBinaryOutput());
-			// Request focus after connection is established
-			javax.swing.SwingUtilities.invokeLater(new Runnable() {
-				public void run() { lk_cConsoleInput.getTextArea().requestFocusInWindow(); }
-			});
+			
+			// Ensure focus is set before returning - use invokeAndWait to wait for focus
+			try {
+				SwingUtilities.invokeAndWait(new Runnable() {
+					public void run() {
+						lk_cConsoleInput.getTextArea().requestFocusInWindow();
+					}
+				});
+			} catch (Exception ex) {
+				// Log if focus waiting fails, but continue
+				if(this.lk_cErrorFile != null) {
+					this.lk_cErrorFile.write("Focus request exception: " + ex.getMessage());
+				}
+			}
 			return true;
 		}
 		else if (iRet == -1){
