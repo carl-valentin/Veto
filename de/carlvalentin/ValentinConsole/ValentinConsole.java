@@ -467,6 +467,10 @@ public class ValentinConsole extends JFrame {
 		if (iRet == 1) {
 			this.lk_cConsoleInput.getTextArea().setEnabled(true);
 			this.lk_cConsoleInput.setBinaryOutput(this.lk_cConnectionManager.getInterfaceBinaryOutput());
+			// Request focus after connection is established
+			javax.swing.SwingUtilities.invokeLater(new Runnable() {
+				public void run() { lk_cConsoleInput.getTextArea().requestFocusInWindow(); }
+			});
 			return true;
 		}
 		else if (iRet == -1){
