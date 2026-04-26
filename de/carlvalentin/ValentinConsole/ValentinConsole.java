@@ -1022,8 +1022,8 @@ public class ValentinConsole extends JFrame {
 			// jButtonConnectBarConnect.setPreferredSize(new java.awt.Dimension(100, 26));
 			jButtonConnectBarConnect.setText("Connect");
                         jButtonConnectBarConnect.setToolTipText("connect to printer (Alt+C)");
-			jButtonConnectBarConnect.addActionListener(new java.awt.event.ActionListener() {
                         jButtonConnectBarConnect.setMnemonic(java.awt.event.KeyEvent.VK_C);
+			jButtonConnectBarConnect.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					if (connectPrinter() == true) {
 						jButtonConnectBarConnect.setEnabled(false);
@@ -1058,8 +1058,8 @@ public class ValentinConsole extends JFrame {
 			// jButtonConnectBarDisconnect.setPreferredSize(new java.awt.Dimension(100, 26));
 			jButtonConnectBarDisconnect.setText("Disconnect");
                         jButtonConnectBarDisconnect.setToolTipText("disconnect printer (Alt+D)");
-			jButtonConnectBarDisconnect.addActionListener(new java.awt.event.ActionListener() {
                         jButtonConnectBarDisconnect.setMnemonic(java.awt.event.KeyEvent.VK_D);
+			jButtonConnectBarDisconnect.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					if (disconnectPrinter() == true) {
 						jButtonConnectBarConnect.setEnabled(true);
