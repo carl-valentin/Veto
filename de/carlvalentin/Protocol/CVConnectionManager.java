@@ -667,62 +667,49 @@ public class CVConnectionManager
             this.lk_cSendThread.setBinaryOutput(
                 cInterface.getInterfaceBinaryOutput());
 
-            if(cInterface.equals((CVInterface)this.lk_cInterfaceNetworkTCP) == true)
-            {
-                CVNetworkSettings cNetworkSettings = (CVNetworkSettings)
-                        this.lk_cInterfaceNetworkTCP.getInterfaceSettings();
-                if (cNetworkSettings.getTCPAutoSendAfterConnOnOff())
-                {
-                    try
-                    {
-                        OutputStreamWriter cOutStreamWriter = cInterface.getInterfaceWriter();
-                        cOutStreamWriter.write(this.lk_cSohEtb.gl_iSOH);
-                        cOutStreamWriter.write(cNetworkSettings.getTCPAutoSendAfterConn());
-                        cOutStreamWriter.write(this.lk_cSohEtb.gl_iETB);
-                        cOutStreamWriter.flush();
-                    }
-                    catch(IOException ex)
-                    {
-                        if(this.lk_cErrorMessage != null)
-                        {
-                            this.lk_cErrorMessage.write("Send After Conn: " +
-                                "IOException: " + ex.getMessage());
-                        }
-                        if(this.lk_cErrorFile != null)
-                        {
-                            this.lk_cErrorMessage.write("Send After Conn: " +
-                                "IOException: " + ex.getMessage());
-                        }
-                    }
-                }
-            }
-        }
-        else
-        {
-            if(this.lk_cErrorMessage != null)
-            {
-            	this.lk_cErrorMessage.write("CVConnectionManager->" +
-                        "connect: interface has no writer - no send thread");
-            }
-            if(this.lk_cErrorFile != null)
-            {
-                this.lk_cErrorFile.write("CVConnectionManager->" +
-                        "connect: interface has no writer - no send thread");
-            }
-
-        	return -1;
-        }
-
-        //----------------------------------------------------------------------
+            //----------------------------------------------------------------------
         // Threads starten
         //----------------------------------------------------------------------
         if(this.lk_cRecvThread != null)
         {
-        	this.lk_cRecvThread.start();
+                this.lk_cRecvThread.start();
         }
         if(this.lk_cSendThread != null)
         {
-        	this.lk_cSendThread.start();
+                this.lk_cSendThread.start();
+        }
+
+        //----------------------------------------------------------------------
+        // TCP Auto Send After Connect - Nach dem Thread-Start
+        //----------------------------------------------------------------------
+        if(cInterface.equals((CVInterface)this.lk_cInterfaceNetworkTCP) == true)
+        {
+            CVNetworkSettings cNetworkSettings = (CVNetworkSettings)
+                    this.lk_cInterfaceNetworkTCP.getInterfaceSettings();
+            if (cNetworkSettings.getTCPAutoSendAfterConnOnOff())
+            {
+                try
+                {
+                    OutputStreamWriter cOutStreamWriter = cInterface.getInterfaceWriter();
+                    cOutStreamWriter.write(this.lk_cSohEtb.gl_iSOH);
+                    cOutStreamWriter.write(cNetworkSettings.getTCPAutoSendAfterConn());
+                    cOutStreamWriter.write(this.lk_cSohEtb.gl_iETB);
+                    cOutStreamWriter.flush();
+                }
+                catch(IOException ex)
+                {
+                    if(this.lk_cErrorMessage != null)
+                    {
+                        this.lk_cErrorMessage.write("Send After Conn: " +
+                            "IOException: " + ex.getMessage());
+                    }
+                    if(this.lk_cErrorFile != null)
+                    {
+                        this.lk_cErrorFile.write("Send After Conn: " +
+                            "IOException: " + ex.getMessage());
+                    }
+                }
+            }
         }
 
         this.lk_cInterfaceCurrentConnected = cInterface;
